@@ -1,0 +1,8 @@
+"Chave","Tipo de item","Pai","Resumo","Status","Responsável","Sprint","Data de início","Data de início inferida","Data limite","Data de entrega inferida","Cor do item","ID temporário","Pai (ref. temporária)"
+"","Epic","","Cursos (Integração Externa)","A fazer","","","","","","","teal","EPIC-CURSOS",""
+"","História","","Como gestor, quero que os cursos sejam sincronizados automaticamente a partir de uma API externa, para não ter de os inserir manualmente","A fazer","","","","","","","purple","HIST-CURSOS-A","EPIC-CURSOS"
+"","História","","Como gestor, quero selecionar os cursos sincronizados que saem na newsletter","A fazer","","","","","","","purple","HIST-CURSOS-B","EPIC-CURSOS"
+"","História","","Como gestor, quero ver o estado da última sincronização com a API externa, para saber se os dados estão atualizados","A fazer","","","","","","","purple","HIST-CURSOS-C","EPIC-CURSOS"
+"","Epic","","Calendário de Eventos","A fazer","","","","","","","dark_teal","EPIC-CALENDARIO",""
+"","História","","Como gestor, quero criar e editar eventos de calendário (data, título), para que sejam incluídos na newsletter","A fazer","","","","","","","purple","HIST-CAL-D","EPIC-CALENDARIO"
+"","História","","Como gestor, quero selecionar os eventos de calendário que saem na newsletter","A fazer","","","","","","","purple","HIST-CAL-E","EPIC-CALENDARIO"
