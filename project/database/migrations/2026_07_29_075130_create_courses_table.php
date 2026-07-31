@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('url');
-            $table->string('image_url');
-            $table->string('location');
-            $table->string('schedule');
+            $table->string('image_url')->nullable();
+            $table->string('location')->nullable();
+            $table->string('schedule')->nullable();
             $table->date('start_date');
             $table->decimal('price', 8, 2);
-            $table->enum('status', ['received', 'accepted', 'refused'])->default('received');
+            $table->string('status')->default('received');
             $table->timestamps();
         });
     }

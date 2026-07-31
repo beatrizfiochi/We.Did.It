@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable(['category_id', 'title', 'description', 'image', 'status'])]
-class New extends Model
+class News extends Model
 {
     protected $table = 'news';
 
