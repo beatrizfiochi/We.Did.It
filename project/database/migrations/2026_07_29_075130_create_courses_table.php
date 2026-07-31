@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('schedule')->nullable();
             $table->string('start_date');
-            $table->decimal('price');
+            $table->string('price');
             $table->string('status');
             $table->string('url');
             
