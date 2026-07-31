@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('newsletter_calendar', function (Blueprint $table) {
+        Schema::create('calendar_newsletter', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('calendar_id')->constrained('calendars')->onDelete('cascade');
+            $table->foreignId('newsletter_id')->constrained('newsletters')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('newsletter_calendar');
+        Schema::dropIfExists('calendar_newsletter');
     }
 };

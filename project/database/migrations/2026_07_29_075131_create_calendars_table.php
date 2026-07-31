@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('newsletter', function (Blueprint $table) {
+        Schema::create('calendars', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
+            $table->string('title');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('newsletter');
+        Schema::dropIfExists('calendars');
     }
 };

@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('new_newsletter', function (Blueprint $table) {
+        Schema::create('logs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('table_name');
+            $table->unsignedBigInteger('record_id')->nullable();
+            $table->enum('operation', ['created', 'updated', 'removed']);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('new_newsletter');
+        Schema::dropIfExists('logs');
     }
 };
