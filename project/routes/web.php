@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Public\NewsSubmissionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -31,5 +32,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('users', [RegisteredUserController::class, 'store'])
         ->name('users.store');
 });
+
+Route::get('noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
+
+Route::post('noticias', [NewsSubmissionController::class, 'store'])->name('news.store');
 
 require __DIR__.'/auth.php';
