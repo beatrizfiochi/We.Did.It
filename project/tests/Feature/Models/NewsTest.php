@@ -43,7 +43,7 @@ class NewsTest extends TestCase
 
         $newsletter->news()->attach($news->id, ['order' => 1]);
 
-        $this->assertSame(1, $news->newsletters()->first()->pivot->order);
+        $this->assertSame(1, (int) $news->newsletters()->first()->pivot->order);
         $this->assertTrue($newsletter->news->contains($news));
     }
 }

@@ -27,7 +27,7 @@ class TestimonialTest extends TestCase
 
         $newsletter->testimonials()->attach($testimonial->id, ['order' => 2]);
 
-        $this->assertSame(2, $testimonial->newsletters()->first()->pivot->order);
+        $this->assertSame(2, (int) $testimonial->newsletters()->first()->pivot->order);
         $this->assertTrue($newsletter->testimonials->contains($testimonial));
     }
 }
