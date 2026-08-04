@@ -6,32 +6,40 @@ import { useRef, useState } from "react"
 {/**Component takes children elements as the label titles, categoryList that fetches the existing array and fallbacktext */ }
 export default function NewsForm({ formTitle = "Formulário", titleLabel = "Título", descriptionLabel = "Descrição", imageLabel = "Imagem", categoryLabel = "Categoria", categories = [] }) {
 
+
+    // useRef() creates a box that holds a value across re-renders, and stays the same box for the entire lifetime of the component, comes from ref={} attribute in the inputs of the form
     const titleRef = useRef()
     const descriptionRef = useRef()
     const categoryRef = useRef()
     const imageRef = useRef()
 
+    // clientErrors object that holds error messages, if length [0] -> form submited
     const [clientErrors, setClientErrors] = useState({})
+    // Message for sent news
     const [wasSuccessful, setWasSuccessful] = useState(false)
-    const [imageUploaded, setImageUploaded] = useState(false) // flag for image upload/verification of size
+    // flag for image upload/verification of size
+    const [imageUploaded, setImageUploaded] = useState(false)
 
 
     /* Cliente-side Form Validation before submiting the form(onSubmit)
     set error messages */
     function insertNews() {
 
+        // each variable holds current value of the input accordingly and removing whitespace -> trim()
         const title = titleRef.current.value.trim();
         const description = descriptionRef.current.value.trim();
         const category = categoryRef.current.value;
         const image = imageRef.current.files[0];
 
-
+        // newErrors object starts at empty object
         const newErrors = {}
 
+        // title validation
         if (title.length < 10 || title.length > 255) {
             newErrors.title = "O Título deve ter entre 10 e 255 caracteres."
         }
 
+        // description validation
         if (description.length < 100 || description.length > 1050) {
             newErrors.description = "A Descrição deve ter entre 100 e 1050 caracteres."
         }
@@ -41,6 +49,7 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
         //     newErrors.image = "Selecione até 8 imagens."
         // }
 
+        // image validation
         if (!image) {
             setImageUploaded(false)
         } else {
@@ -70,7 +79,6 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
             <div className="mx-auto">
                 <h2 className="formTitle mt-5 mb-3">{formTitle}</h2>
 
-                {/** inser all ids and htmlfor!!!!!!!!!!!  */}
                 <Form className="formBody container shadow p-5"
                     method="POST"
                     action={route('news.store')}
