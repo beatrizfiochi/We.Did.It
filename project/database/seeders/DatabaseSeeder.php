@@ -16,15 +16,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-            $this->call([
-                UserSeeder::class,
-                CategorySeeder::class,
-                NewsSeeder::class,
-                TestimonialSeeder::class,
-                CourseSeeder::class,
-                CalendarSeeder::class,
-                NewsletterSeeder::class,
-                ActivityLogSeeder::class,
-            ]);
+        $this->call([
+            UserSeeder::class,
+            CategorySeeder::class,
+            NewsSeeder::class,
+            TestimonialSeeder::class,
+            CourseSeeder::class,
+            CalendarSeeder::class,
+            NewsletterSeeder::class,
+            ActivityLogSeeder::class,
+        ]);
     }
 }

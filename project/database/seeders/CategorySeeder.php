@@ -10,9 +10,9 @@ class CategorySeeder extends Seeder
     /**
      * Run the database seeds.
      */
-   public function run(): void
-{
-    Category::create(['name' => 'Tecnologia']);
-    Category::create(['name' => 'Educação']);
-}
+    public function run(): void
+    {
+        Category::create(['name' => 'Tecnologia']);
+        Category::create(['name' => 'Educação']);
+    }
 }
