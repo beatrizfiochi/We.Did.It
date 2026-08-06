@@ -12,6 +12,8 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
     const descriptionRef = useRef()
     const categoryRef = useRef()
     const imageRef = useRef()
+    const image_rights_Ref = useRef()
+    const terms_and_conditions_Ref = useRef()
 
     // clientErrors object that holds error messages, if length [0] -> form submited
     const [clientErrors, setClientErrors] = useState({})
@@ -29,7 +31,9 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
         const title = titleRef.current.value.trim();
         const description = descriptionRef.current.value.trim();
         const category = categoryRef.current.value;
-        const image = imageRef.current.files[0];
+        const image = imageRef.current.files[0]; // [0] cause it's allowed only one image, so it ghrabs the first, and .files -> PI for file inputs
+        const image_rights = image_rights_Ref.current.checked; // to be checked in case of uploaded image
+        const terms_conditions = terms_and_conditions_Ref.current.checked;
 
         // newErrors object starts at empty object
         const newErrors = {}
@@ -49,17 +53,25 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
         //     newErrors.image = "Selecione até 8 imagens."
         // }
 
-        // image validation
-        if (!image) {
-            setImageUploaded(false)
-        } else {
-            // 2 MB max -- 1 KB -> 1024 bytes, 2MB = 2 bytes
-            const maxSize = 2 * 1024 * 1024;
+        // if image was picked, needs to check image rights checkmark
+        if (image) {
 
-            if (image.size > maxSize) {
-                newErrors.image = "A imagem deve ter no máximo 2 MB.";
+            if (!image_rights) {
+                newErrors.image_rights = "É necessário autorizar a utilização da imagem."
             }
+        } else { // no image was picked
+            setImageUploaded(false)
         }
+
+        // if terms and conditions isnt checked, there is error message
+        if (!terms_conditions) {
+            newErrors.terms_conditions = "É necessário aceitar a Política de Privacidade."
+        } else {
+
+        }
+
+        // validacao checkbox terms and contidions --> erro, POR LÁ EM BAIXO NO FORM
+
         // check for the lenght of the object newErrors
         if (Object.keys(newErrors).length > 0) {
             setClientErrors(newErrors) // local state for displaying messages
@@ -67,26 +79,57 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
             return false // cancels the Inertia form submission
         } else {
             setClientErrors({})
-            setWasSuccessful(true)
             return true // sends form submission 
         }
-
-
     }
+
+    function handleImageChange(event) {
+        // event is the change fired by the input, target is the content
+        const file = event.target.files[0]
+
+        if (file) {
+
+            const maxSize = 5 * 1024 * 1024; // max size 5MB
+
+            if (file.size > maxSize) {
+                setImageUploaded(false) // rejects file
+                setClientErrors(prev => ({ ...prev, image: "A imagem deve ter no máximo 5 MB." })) // prints the error message
+            } else {
+                setImageUploaded(true) // accept valid file
+                setClientErrors(prev => ({ ...prev, image: null })) // overwites the image key error to null(no error shown anymore)
+            }
+        } else {
+            setImageUploaded(false)
+        }
+    }
+
+
+
+    // function that clears sucessMessage
+    function clearSuccessMessage() {
+        setWasSuccessful(false)
+    }
+
+
 
     return (
         <div className="p-4">
             <div className="mx-auto">
-                <h2 className="formTitle mt-5 mb-3">{formTitle}</h2>
+                <h2 className="formTitle mt-3 mb-3">{formTitle}</h2>
 
                 <Form className="formBody container shadow p-5"
                     method="POST"
                     action={route('news.store')}
                     noValidate // disables built-in html pop up messages
                     resetOnSuccess // resets visually all camps
-                    onSuccess={() => { // resets errors to empty array
+                    onSuccess={() => { // if form gets accepted into the server, resets errors to empty array
                         setClientErrors({});
+                        setWasSuccessful(true);
                     }}
+                    onError={() => {
+                        setWasSuccessful(false)
+                    }}
+                    onChange={clearSuccessMessage} // no Success Message as/if user changes any camp input
                     onBefore={insertNews} //before submiting calls the function for validation
                 >
 
@@ -95,9 +138,18 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                         <>
                             <div className="">
                                 <div>
-                                    <label htmlFor="">{titleLabel}</label>
+                                    <label htmlFor="news-title">{titleLabel}</label>
                                 </div>
-                                <input ref={titleRef} name="title" type="text" minLength={10} maxLength={255} placeholder="Insira o título da notícia" />
+                                <input ref={titleRef} name="title" id="news-title" type="text" minLength={10} maxLength={255}
+                                    placeholder="Insira o título da notícia"
+                                    onBlur={(event) => {
+                                        const titleValue = event.target.value.trim()
+
+                                        // the title is invalid if it's shorter than 10 or longer than 255.
+                                        if (titleValue.length >= 10 && titleValue.length <= 255) {
+                                            setClientErrors(prev => ({ ...prev, title: null }))
+                                        }
+                                    }} />
 
                                 {/*ERROR MESSAGE - TITLE SIZE  */}
                                 {clientErrors.title && (
@@ -111,9 +163,19 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
 
                             <div className="mt-3">
                                 <div>
-                                    <label className="" htmlFor="">{descriptionLabel}</label>
+                                    <label className="" htmlFor="news-description">{descriptionLabel}</label>
                                 </div>
-                                <textarea ref={descriptionRef} name="description" minLength={100} maxLength={1050} rows={6} cols={40} placeholder=" Descreva a notícia...">
+                                <textarea ref={descriptionRef} name="description" id="news-description"
+                                    minLength={100} maxLength={1050} rows={6} cols={40}
+                                    placeholder=" Descreva a notícia..."
+                                    onBlur={(event) => {
+                                        const descriptionValue = event.target.value.trim()
+                                        // the description is invalid if it's shorter than 100 or longer than 1050.
+                                        if (descriptionValue.length >= 100 && descriptionValue.length <= 1050) {
+                                            setClientErrors(prev => ({ ...prev, description: null }))
+                                        }
+                                    }}
+                                >
                                 </textarea>   {/*verficiar se 1050 é muito ou pouco, admin pode editar anyways */}
 
                                 {/* ERROR MESSAGE - DESCRIPTIONLabeldescriptionLabel SIZE  */}
@@ -128,9 +190,9 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                             {/* * iterate this over the existing categories*/}
                             <div className="mt-3">
                                 <div>
-                                    <label htmlFor="">{categoryLabel}</label>
+                                    <label htmlFor="news-category">{categoryLabel}</label>
                                 </div>
-                                <select ref={categoryRef} name="category_id" id="">
+                                <select ref={categoryRef} name="category_id" id="news-category">
                                     {/* Value for option "nenhuma" is empty string so NewsFormController passes it down as null */}
                                     <option value="" default>Nenhuma</option>
                                     {categories.map((item) =>
@@ -144,9 +206,12 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
 
                             <div className="mt-3">
                                 <div>
-                                    <label htmlFor="">{imageLabel}</label>
+                                    <label htmlFor="news-image">{imageLabel}</label>
                                 </div>
-                                <input ref={imageRef} name="image" type="file" accept="image/jpg, image/jpeg, image/png" />
+                                <input ref={imageRef} name="image" id="news-image"
+                                    type="file" accept="image/jpg, image/jpeg, image/png"
+                                    onChange={handleImageChange}
+                                />
                             </div>
                             {/* ERROR MESSAGE - IMAGE SIZE  */}
                             {clientErrors.image && (
@@ -154,6 +219,55 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                                     {clientErrors.image}
                                 </div>
                             )}
+                            {imageUploaded && <div><button type="button" onClick={() => {
+                                imageRef.current.value = "" // clears the native file input
+                                setImageUploaded(false)
+                                setClientErrors(prev => ({ ...prev, image: null })) // no error message
+                            }}>X REMOVER IMAGEM</button ></div>}
+
+
+                            {/* CHECKBOX IMAGE RIGHTS*/}
+                            <div className="mb-2 mt-4 form-check">
+                                <input
+                                    name='image_rights'
+                                    ref={image_rights_Ref}
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id="news-image-rights"
+                                    disabled={!imageUploaded} // disabled if no image was uploaded
+                                    onChange={(event) => {
+                                        if (event.target.checked) {
+                                            setClientErrors(prev => ({ ...prev, image_rights: null }))
+                                        }
+                                    }}
+                                />
+                                <label className="form-check-label" htmlFor="news-image-rights">
+                                    Autorizo a utilização desta imagem para as finalidades relacionadas a este formulário.
+                                </label>
+                                {imageUploaded && clientErrors.image_rights && <small className="mt-1 text-sm text-red-500" >{clientErrors.image_rights}</small>}
+                            </div>
+
+                            {/* CHECKBOX TERMS AND CONDITIONS*/}
+                            <div className="mb-2 form-check">
+                                <input
+                                    required
+                                    name='terms_and_conditions'
+                                    ref={terms_and_conditions_Ref}
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id="terms-and-conditions"
+                                    onChange={(event) => {
+                                        if (event.target.checked) {
+                                            setClientErrors(prev => ({ ...prev, terms_conditions: null }))
+                                        }
+                                    }}
+                                />
+                                <label className="form-check-label" htmlFor="terms-and-conditions">
+                                    Aceito a Política de Privacidade, consentindo o tratamento dos meus dados pessoais nos termos do RGPD.
+                                </label>
+                                {clientErrors.terms_conditions && <small className="mt-1 text-sm text-red-500" >{clientErrors.terms_conditions}</small>}
+
+                            </div>
 
 
                             <div className="mt-4">

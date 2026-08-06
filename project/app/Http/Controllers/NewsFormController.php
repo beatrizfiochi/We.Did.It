@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\News;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Inertia\Controller;
 use Inertia\Inertia;
 
 class NewsFormController extends Controller
@@ -16,7 +14,7 @@ class NewsFormController extends Controller
      */
     public function allNews()
     {
-        return Inertia::render('InsertForm', [
+        return Inertia::render('News/InsertForm', [
             'news' => News::all(),
         ]);
     }
@@ -28,9 +26,11 @@ class NewsFormController extends Controller
      */
     public function storeNews(Request $request)
     {
+
+        // variable validated holds an array with all camps requested, validating each one
         $validated = $request->validate([
-            'title' => 'required|string| max: 255',
-            'description' => 'required |string| max: 1050',
+            'title' => 'required|string|min:10|max:255',
+            'description' => 'required|string|min:100|max:1050',
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
             'category_id' => 'nullable|exists:categories,id',
         ]);
@@ -41,15 +41,16 @@ class NewsFormController extends Controller
 
         $imagePath = null;
 
+        // if request has a file in image camp, the path gets stored in the image column
         if ($request->hasFile('image')) {
             $imagePath = Storage::disk('public')->putFile('image', $request->file('image'));
         }
 
         $news = News::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $request->image,
-            'category' => $request->category_id,
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'image' => $imagePath, // image is saved with the path
+            'category_id' => $validated['category_id'],
             'status' => 'received'
         ]);
 

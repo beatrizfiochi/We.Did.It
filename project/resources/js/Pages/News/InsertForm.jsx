@@ -1,8 +1,7 @@
 import NewsForm from "@/Components/NewsForm"
-import { Form } from "@inertiajs/react"
-import { useState, useEffect } from "react"
 
 
+// children {categories} is being loaded from the GET route
 export default function InsertForm({ categories }) {
 
 
