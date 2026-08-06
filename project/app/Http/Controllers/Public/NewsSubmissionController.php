@@ -6,17 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNewsRequest;
 use App\Models\Category;
 use App\Models\News;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class NewsSubmissionController extends Controller
 {
-    public function create() {
+    /**
+     * Display the public news submission form.
+     */
+    public function create(): Response
+    {
         return Inertia::render('Public/NewsForm', [
             'categories' => Category::all(['id', 'name']),
         ]);
     }
 
-    public function store(StoreNewsRequest $request) {
+    /**
+     * Store a submitted news article for approval.
+     */
+    public function store(StoreNewsRequest $request): RedirectResponse
+    {
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
