@@ -17,8 +17,8 @@ class NewsFactory extends Factory
             'category_id' => Category::inRandomOrder()->value('id'),
             'title' => fake()->sentence(6),
             'description' => fake()->paragraphs(3, true),
-            'image' => fake()->boolean(70) ? fake()->imageUrl(640, 480, 'news') : null,
-            'status' => 'received',
+            'image' => fake()->boolean(70) ? 'news/'.fake()->uuid().'.jpg' : null,
+            'status' => fake()->randomElement(['received', 'received', 'received', 'accepted', 'accepted', 'refused']),
         ];
     }
 }

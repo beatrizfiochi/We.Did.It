@@ -14,11 +14,11 @@ class NewsletterSeeder extends Seeder
     public function run(): void
     {
         Newsletter::factory(5)->create()->each(function (Newsletter $newsletter) {
-            News::inRandomOrder()->take(random_int(2, 4))->get()->each(
+            News::where('status', 'accepted')->inRandomOrder()->take(random_int(2, 4))->get()->each(
                 fn (News $news, int $index) => $newsletter->news()->attach($news->id, ['order' => $index + 1])
             );
 
-            Testimonial::inRandomOrder()->take(random_int(1, 3))->get()->each(
+            Testimonial::where('status', 'accepted')->inRandomOrder()->take(random_int(1, 3))->get()->each(
                 fn (Testimonial $testimonial, int $index) => $newsletter->testimonials()->attach($testimonial->id, ['order' => $index + 1])
             );
 

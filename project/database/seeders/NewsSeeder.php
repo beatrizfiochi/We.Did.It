@@ -9,6 +9,6 @@ class NewsSeeder extends Seeder
 {
     public function run(): void
     {
-        News::factory(15)->create();
+        News::factory(random_int(6, 8))->create();
     }
 }

@@ -28,6 +28,15 @@ class NewsTest extends TestCase
         $this->assertNull($news->image);
     }
 
+    public function test_news_accepts_all_status_enum_values(): void
+    {
+        $accepted = News::factory()->create(['status' => 'accepted']);
+        $refused = News::factory()->create(['status' => 'refused']);
+
+        $this->assertSame('accepted', $accepted->fresh()->status);
+        $this->assertSame('refused', $refused->fresh()->status);
+    }
+
     public function test_news_belongs_to_category(): void
     {
         $category = Category::create(['name' => 'Tecnologia']);

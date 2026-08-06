@@ -19,8 +19,8 @@ class TestimonialFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'title' => fake()->sentence(5),
             'description' => fake()->paragraphs(2, true),
-            'image' => fake()->boolean(60) ? fake()->imageUrl(400, 400, 'people') : null,
-            'status' => 'received',
+            'image' => fake()->boolean(60) ? 'testimonials/'.fake()->uuid().'.jpg' : null,
+            'status' => fake()->randomElement(['received', 'received', 'received', 'accepted', 'accepted', 'refused']),
         ];
     }
 }

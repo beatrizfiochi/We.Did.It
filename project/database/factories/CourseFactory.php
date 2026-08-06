@@ -15,10 +15,10 @@ class CourseFactory extends Factory
         return [
             'title' => fake()->sentence(4),
             'url' => fake()->url(),
-            'imageUrl' => fake()->boolean(70) ? fake()->imageUrl(640, 480, 'course') : null,
+            'imageUrl' => fake()->boolean(70) ? 'courses/'.fake()->uuid().'.jpg' : null,
             'location' => fake()->boolean(80) ? fake()->city() : null,
             'schedule' => fake()->boolean(80) ? fake()->dayOfWeek().' '.fake()->time('H:i') : null,
-            'start_date' => fake()->date(),
+            'start_date' => fake()->dateTimeBetween('now', '+6 months')->format('Y-m-d'),
             'price' => number_format(fake()->randomFloat(2, 50, 2000), 2, '.', ''),
             'status' => 'received',
         ];

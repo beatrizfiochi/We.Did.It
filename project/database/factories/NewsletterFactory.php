@@ -16,7 +16,7 @@ class NewsletterFactory extends Factory
         $periodEnd = (clone $periodStart)->modify('+7 days');
 
         return [
-            'title' => 'Newsletter '.fake()->monthName().' '.$periodStart->format('Y'),
+            'title' => 'Newsletter '.$periodStart->format('F').' '.$periodStart->format('Y'),
             'edition' => fake()->unique()->numberBetween(1, 500),
             'date' => (clone $periodEnd)->modify('+1 day'),
             'period_start' => $periodStart,
