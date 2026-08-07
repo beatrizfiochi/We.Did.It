@@ -4,50 +4,29 @@ import { Head, Link } from '@inertiajs/react';
 export default function Welcome() {
     return (
         <PublicLayout>
-            <Head title="We.Did.It" />
+            <Head title="Início" />
 
             <section className="welcome-hero">
-                <div className="welcome-intro">
+                <div className="welcome-hero__content">
                     <p className="welcome-kicker">Newsletter interna</p>
 
-                    <h1>We.Did.It</h1>
+                    <h1>WE DID IT</h1>
 
-                    <p>
-                        Um espaço para partilhar notícias, conquistas,
-                        testemunhos e momentos da comunidade CESAE Digital.
+                    <p className="welcome-hero__text">
+                        Um instrumento de comunicação para registar e divulgar o que
+                        de bom fazemos. Uma visão dos presentes projetos e uma
+                        perspetiva dos futuros.
                     </p>
-                </div>
 
-                <div className="welcome-cards">
-                    <Link href="/noticias/create" className="welcome-card">
-                        <span className="welcome-card__label">
-                            Enviar notícia
-                        </span>
+                    <div className="welcome-actions">
+                        <Link href="/noticias/create" className="welcome-action">
+                            Contribua com a sua notícia
+                        </Link>
 
-                        <strong>
-                            Partilha uma novidade com a equipa
-                        </strong>
-
-                        <p>
-                            Usa este formulário para sugerir notícias,
-                            eventos, formações ou atualizações relevantes.
-                        </p>
-                    </Link>
-
-                    <Link href="/testemunhos/create" className="welcome-card">
-                        <span className="welcome-card__label">
-                            Enviar testemunho
-                        </span>
-
-                        <strong>
-                            Conta uma experiência ou conquista
-                        </strong>
-
-                        <p>
-                            Envia um testemunho para destacar histórias,
-                            percursos e resultados da comunidade.
-                        </p>
-                    </Link>
+                        <Link href="/testemunhos/create" className="welcome-action">
+                            Contribua com o seu testemunho
+                        </Link>
+                    </div>
                 </div>
             </section>
         </PublicLayout>
