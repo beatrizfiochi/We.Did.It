@@ -17,7 +17,7 @@ class NewsSubmissionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Public/NewsForm', [
+        return Inertia::render('News/InsertForm', [
             'categories' => Category::all(['id', 'name']),
         ]);
     }

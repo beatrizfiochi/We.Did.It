@@ -2,9 +2,9 @@
 
 Projeto final — Software Developer, Cesae Digital.
 
-Plataforma de gestão de uma newsletter institucional: recolhe notícias e testemunhos
-submetidos pelo público, permite a um administrador aprová-los ou recusá-los, e reúne os
-aprovados numa edição de newsletter.
+Plataforma de gestão de uma newsletter institucional do CESAE Digital: recolhe notícias e
+testemunhos submetidos por formandos e colaboradores, permite a um administrador aprová-los
+ou recusá-los, e reúne os aprovados numa edição de newsletter.
 
 A aplicação Laravel vive na pasta `project/`. A raiz do repositório tem também as atas
 (`Atas/`), o modelo de dados (`DataBase/`) e os planos de sprint (`PLANO_SPRINT2/`).
@@ -112,6 +112,17 @@ Laravel 13 · PHP 8.3 · Inertia 2 · React 18 · Tailwind CSS 3 · MySQL 8 · V
 O `package.json` tem o `@tailwindcss/vite` versão 4 instalado mas **não usado** — o projeto
 corre Tailwind 3 pelo PostCSS. Não migres para o v4 sem falar com a equipa: o build parte.
 
-## Equipa
+## Equipa e método de trabalho
 
-Beatriz Fiochi · Jéssica Amorim · Leida Dupret · Luana Matos
+| Elemento | Responsabilidade |
+|---|---|
+| Beatriz Fiochi (Team Lead) | Rotas de backend |
+| Jéssica Amorim | Layout do frontend e identidade visual |
+| Leida Dupret | Configuração de backend, rotas protegidas, lógica de UX |
+| Luana Matos | Configuração da base de dados e migrações |
+
+O projeto seguiu um workflow por sprints, com cada elemento a levar um conjunto de tarefas
+até ao fim numa sprint de uma semana. Integrar qualquer tarefa na `main` obriga a abrir um
+pull request, que despoleta a revisão pelos restantes elementos: aprovam o PR ou deixam
+comentários para afinar a implementação. Como as componentes são interdependentes, é assim
+que toda a gente acompanha o progresso das outras partes.
