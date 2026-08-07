@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable(['title', 'url', 'imageUrl', 'location', 'schedule', 'start_date', 'price', 'status'])]
 class Course extends Model
 {
+    use HasFactory;
+
     protected $table = 'courses';
 
     public $timestamps = false;
