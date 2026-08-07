@@ -7,6 +7,15 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## We.Did.It — Dados de desenvolvimento
+
+Depois de rodar `php artisan migrate:fresh --seed`, o banco fica populado com dados de exemplo (categorias, notícias, testemunhos, cursos, calendário e newsletters) para testar as telas sem precisar submeter tudo manualmente.
+
+**Credenciais do admin (fixas, para toda a equipe):**
+
+- Email: `admin@wedidit.pt`
+- Senha: `password`
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

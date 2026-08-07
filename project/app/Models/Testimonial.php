@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable(['category_id', 'name', 'email', 'title', 'description', 'image', 'status'])]
 class Testimonial extends Model
 {
+    use HasFactory;
+
     protected $table = 'testimonials';
 
     public function category()
