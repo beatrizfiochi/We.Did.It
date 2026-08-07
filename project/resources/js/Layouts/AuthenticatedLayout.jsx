@@ -9,14 +9,18 @@ export default function AuthenticatedLayout({ header, children }) {
         useState(false);
 
     const adminLinks = [
-        { label: 'Painel Administrativo', href: route('dashboard'), active: route().current('dashboard') },
-        { label: 'Notícias', href: '#', active: false },
-        { label: 'Testemunhos', href: '#', active: false },
-        { label: 'Categorias', href: '#', active: false },
-        { label: 'Formações', href: '#', active: false },
-        { label: 'Agenda', href: '#', active: false },
-        { label: 'Newsletters', href: '#', active: false },
-        { label: 'Administradores', href: '#', active: false },
+        {
+            label: 'Painel Administrativo',
+            href: route('dashboard'),
+            active: route().current('dashboard'),
+        },
+        { label: 'Notícias', disabled: true },
+        { label: 'Testemunhos', disabled: true },
+        { label: 'Categorias', disabled: true },
+        { label: 'Formações', disabled: true },
+        { label: 'Agenda', disabled: true },
+        { label: 'Newsletters', disabled: true },
+        { label: 'Administradores', disabled: true },
     ];
 
     return (
@@ -30,8 +34,18 @@ export default function AuthenticatedLayout({ header, children }) {
                         </Link>
                     </div>
 
-                    <nav className="space-y-1 px-4 py-6">
-                        {adminLinks.map((item) => (
+                    {adminLinks.map((item) => (
+                        item.disabled ? (
+                            <span
+                                key={item.label}
+                                className="block cursor-not-allowed rounded-md px-4 py-3 text-sm font-medium text-gray-400"
+                            >
+                                {item.label}
+                                <span className="ms-2 text-xs text-gray-400">
+                                    Em breve
+                                </span>
+                            </span>
+                        ) : (
                             <Link
                                 key={item.label}
                                 href={item.href}
@@ -44,8 +58,8 @@ export default function AuthenticatedLayout({ header, children }) {
                             >
                                 {item.label}
                             </Link>
-                        ))}
-                    </nav>
+                        )
+                    ))}
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
@@ -87,9 +101,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Área de administração
                                     </p>
 
-                                    <p className="text-lg font-semibold text-gray-900">
+                                    <div className="text-lg font-semibold text-gray-900">
                                         {header ?? 'Painel Administrativo'}
-                                    </p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -149,8 +163,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                 ' border-t border-gray-200 bg-white lg:hidden'
                             }
                         >
-                            <nav className="space-y-1 px-4 py-4">
-                                {adminLinks.map((item) => (
+                            {adminLinks.map((item) => (
+                                item.disabled ? (
+                                    <span
+                                        key={item.label}
+                                        className="block cursor-not-allowed rounded-md px-4 py-3 text-sm font-medium text-gray-400"
+                                    >
+                                        {item.label}
+                                        <span className="ms-2 text-xs text-gray-400">
+                                            Em breve
+                                        </span>
+                                    </span>
+                                ) : (
                                     <Link
                                         key={item.label}
                                         href={item.href}
@@ -163,8 +187,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                     >
                                         {item.label}
                                     </Link>
-                                ))}
-                            </nav>
+                                )
+                            ))}
                         </div>
                     </header>
 
