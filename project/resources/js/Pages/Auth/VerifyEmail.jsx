@@ -1,5 +1,5 @@
 import PrimaryButton from '@/Components/PrimaryButton';
-import GuestLayout from '@/Layouts/GuestLayout';
+import PublicLayout from '@/Layouts/PublicLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function VerifyEmail({ status }) {
@@ -12,39 +12,45 @@ export default function VerifyEmail({ status }) {
     };
 
     return (
-        <GuestLayout>
-            <Head title="Email Verification" />
+        <PublicLayout>
+            <Head title="Verificar email" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Thanks for signing up! Before getting started, could you verify
-                your email address by clicking on the link we just emailed to
-                you? If you didn't receive the email, we will gladly send you
-                another.
-            </div>
+            <section className="mx-auto flex w-full max-w-md flex-col px-6 py-16">
+                <div className="mb-8 text-center">
+                    <h1 className="text-3xl font-bold text-white">
+                        Verificar email
+                    </h1>
 
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+                    <p className="mt-2 text-sm text-slate-200">
+                        Antes de continuares, confirma o teu endereço de email através da ligação que te enviámos.
+                    </p>
                 </div>
-            )}
 
-            <form onSubmit={submit}>
-                <div className="mt-4 flex items-center justify-between">
-                    <PrimaryButton disabled={processing}>
-                        Resend Verification Email
-                    </PrimaryButton>
+                <div className="rounded-lg bg-white px-6 py-6 shadow-xl">
+                    {status === 'verification-link-sent' && (
+                        <div className="mb-4 text-sm font-medium text-green-600">
+                            Foi enviada uma nova ligação de verificação para o email indicado no registo.
+                        </div>
+                    )}
 
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Log Out
-                    </Link>
+                    <form onSubmit={submit}>
+                        <div className="mt-4 flex items-center justify-between">
+                            <PrimaryButton disabled={processing}>
+                                Reenviar email de verificação
+                            </PrimaryButton>
+
+                            <Link
+                                href={route('logout')}
+                                method="post"
+                                as="button"
+                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Sair
+                            </Link>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </GuestLayout>
+            </section>
+        </PublicLayout>
     );
 }
