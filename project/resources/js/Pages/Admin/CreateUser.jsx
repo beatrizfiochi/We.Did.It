@@ -2,10 +2,10 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head, useForm } from '@inertiajs/react';
 
-export default function Register() {
+export default function CreateUser() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
@@ -16,16 +16,22 @@ export default function Register() {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('register'), {
+        post(route('admin.users.store'), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
     };
 
     return (
-        <GuestLayout>
-            <Head title="Register" />
+        <AuthenticatedLayout
+            header={
+                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                    Criar administrador
+                </h2>
+            }
+        >
+            <Head title="Criar administrador" />
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="mx-auto max-w-xl p-6">
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
 
@@ -103,18 +109,11 @@ export default function Register() {
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Already registered?
-                    </Link>
-
                     <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
+                        Criar administrador
                     </PrimaryButton>
                 </div>
             </form>
-        </GuestLayout>
+        </AuthenticatedLayout>
     );
 }

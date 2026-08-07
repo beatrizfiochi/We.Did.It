@@ -193,7 +193,7 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                                     <label htmlFor="news-category">{categoryLabel}</label>
                                 </div>
                                 <select ref={categoryRef} name="category_id" id="news-category">
-                                    {/* Value for option "nenhuma" is empty string so NewsFormController passes it down as null */}
+                                    {/* Value for option "nenhuma" is empty string so it reaches the DB as null */}
                                     <option value="" default>Nenhuma</option>
                                     {categories.map((item) =>
                                         <option key={item.id} value={item.id}>{item.name}</option>

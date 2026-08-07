@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\NewsFormController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Category;
+use App\Http\Controllers\Public\NewsSubmissionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -17,7 +17,6 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
@@ -32,14 +31,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
-// this renders the form to insert news
-Route::get('/newsForm', function () {
-    return Inertia::render('News/InsertForm', [ // renders visual page 
-        'categories' => Category::select('id', 'name')->get(), // categories gets pulled from DataBase
-    ]);
-})->name('newsForm');
+// public news submission form (SCRUM-77), rendered by the News/InsertForm page
+Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
 
-Route::post('/newsForm', [NewsFormController::class, 'storeNews'])->name('news.store');
+Route::post('/noticias', [NewsSubmissionController::class, 'store'])->name('news.store');
 
 
 Route::middleware('auth')->group(function () {
@@ -48,4 +43,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('users/create', [RegisteredUserController::class, 'create'])
+        ->name('users.create');
+
+    Route::post('users', [RegisteredUserController::class, 'store'])
+        ->name('users.store');
+});
+
+require __DIR__.'/auth.php';
