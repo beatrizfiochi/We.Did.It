@@ -1,12 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Public\NewsSubmissionController;
 use Illuminate\Foundation\Application;
->>>>>>> origin/main
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,15 +17,15 @@ use Inertia\Inertia;
 
 // this renders all the pages available through Inertia
 Route::get('/', function () {
-<<<<<<< HEAD
+
     return Inertia::render('Welcome');
-=======
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
->>>>>>> origin/main
+
 });
 
 
@@ -56,6 +55,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::post('users', [RegisteredUserController::class, 'store'])
         ->name('users.store');
+
+    // CRUD das ofertas formativas
+    Route::resource('courses', CourseController::class)->except('show');
+
+    // CRUD dos eventos da agenda
+    Route::resource('calendars', CalendarController::class)->except('show');
 });
 
 require __DIR__.'/auth.php';
