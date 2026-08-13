@@ -2,11 +2,9 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Public\NewsSubmissionController;
+use App\Http\Controllers\TestimonialSubmissionController;
 use Illuminate\Foundation\Application;
->>>>>>> origin/main
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,15 +16,11 @@ use Inertia\Inertia;
 
 // this renders all the pages available through Inertia
 Route::get('/', function () {
-<<<<<<< HEAD
-    return Inertia::render('Welcome');
-=======
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
->>>>>>> origin/main
 });
 
 
@@ -40,8 +34,11 @@ Route::get('/dashboard', function () {
 
 // public news submission form (SCRUM-77), rendered by the News/InsertForm page
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
-
 Route::post('/noticias', [NewsSubmissionController::class, 'store'])->name('news.store');
+
+Route::get('/testemunhos/novo', [TestimonialSubmissionController::class, 'create'])->name('testimonial.create');
+Route::post('/testemunhos', [TestimonialSubmissionController::class, 'store'])->name('testimonial.store');
+
 
 
 Route::middleware('auth')->group(function () {
@@ -58,4 +55,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->name('users.store');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
