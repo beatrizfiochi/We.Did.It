@@ -19,15 +19,15 @@ export default function PublicLayout({ children }) {
                             Home
                         </Link>
 
-                        <Link href="/noticias/create">
+                        <Link href={route('news.create')}>
                             Adicionar notícia
                         </Link>
 
-                        <Link href="/testemunhos/create">
+                        <Link href={route('testimonials.create')}>
                             Adicionar testemunho
                         </Link>
 
-                        <Link href="/login">
+                        <Link href={route('login')}>
                             Login
                         </Link>
                     </div>
