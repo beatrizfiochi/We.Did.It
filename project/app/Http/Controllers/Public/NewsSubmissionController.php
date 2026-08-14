@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Concerns\NotifiesManagers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNewsRequest;
+use App\Mail\NewSubmissionReceived;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\RedirectResponse;
@@ -12,6 +14,8 @@ use Inertia\Response;
 
 class NewsSubmissionController extends Controller
 {
+    use NotifiesManagers;
+
     /**
      * Display the public news submission form.
      */
@@ -33,7 +37,13 @@ class NewsSubmissionController extends Controller
             $data['image'] = $request->file('image')->store('news', 'public');
         }
 
-        News::create($data);
+        $news = News::create($data);
+
+        $this->notifyManagers(new NewSubmissionReceived(
+            type: 'Notícia',
+            title: $news->title,
+            categoryName: $news->category?->name,
+        ), $news->id);
 
         return back()->with('success', 'A tua notícia foi enviada para aprovação.');
     }

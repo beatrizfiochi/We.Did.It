@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Concerns\NotifiesManagers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTestimonialRequest;
+use App\Mail\NewSubmissionReceived;
 use App\Models\Category;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
@@ -12,6 +14,8 @@ use Inertia\Response;
 
 class TestimonialSubmissionController extends Controller
 {
+    use NotifiesManagers;
+
     /**
      * Display the public testimonial submission form.
      */
@@ -34,7 +38,14 @@ class TestimonialSubmissionController extends Controller
         }
 
         // o status não vem do request: o default da migration é 'received'
-        Testimonial::create($data);
+        $testimonial = Testimonial::create($data);
+
+        $this->notifyManagers(new NewSubmissionReceived(
+            type: 'Testemunho',
+            title: $testimonial->title,
+            authorName: $testimonial->name,
+            categoryName: $testimonial->category?->name,
+        ), $testimonial->id);
 
         return back()->with('success', 'O teu testemunho foi enviado para aprovação.');
     }
