@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\NewsSubmissionController;
@@ -44,6 +45,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::post('users', [RegisteredUserController::class, 'store'])
         ->name('users.store');
+
+    // CRUD de categorias (SCRUM-89). O ->parameters() é obrigatório: sem ele o
+    // parâmetro chama-se {categoria} e o route model binding não resolve a Category.
+    Route::resource('categorias', CategoryController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['categorias' => 'category'])
+        ->names('categories');
 });
 
 require __DIR__.'/auth.php';
