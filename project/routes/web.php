@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\NewsSubmissionController;
+use App\Http\Controllers\Public\TestimonialSubmissionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,6 +32,12 @@ Route::get('/dashboard', function () {
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
 
 Route::post('/noticias', [NewsSubmissionController::class, 'store'])->name('news.store');
+
+
+// public testimonial submission form (SCRUM-90), rendered by the Testimonials/InsertForm page
+Route::get('/testemunhos/novo', [TestimonialSubmissionController::class, 'create'])->name('testimonials.create');
+
+Route::post('/testemunhos', [TestimonialSubmissionController::class, 'store'])->name('testimonials.store');
 
 
 Route::middleware('auth')->group(function () {
