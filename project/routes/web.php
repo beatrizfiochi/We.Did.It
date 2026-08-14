@@ -2,11 +2,7 @@
 
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Public\NewsSubmissionController;
-use Illuminate\Foundation\Application;
->>>>>>> origin/main
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,15 +14,7 @@ use Inertia\Inertia;
 
 // this renders all the pages available through Inertia
 Route::get('/', function () {
-<<<<<<< HEAD
     return Inertia::render('Welcome');
-=======
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
->>>>>>> origin/main
 });
 
 
