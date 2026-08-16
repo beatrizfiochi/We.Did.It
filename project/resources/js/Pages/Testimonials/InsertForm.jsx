@@ -8,9 +8,25 @@ import TextInput from '@/Components/TextInput';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Head, useForm } from '@inertiajs/react';
 
-// Formulário mínimo (SCRUM-90). Os nomes dos campos são o contrato com o
-// backend: name, email, title, description, category_id e image.
-// Quem fizer o ecrã definitivo pode mudar o aspeto, mas não os names.
+/*
+ * ⚠️ ECRÃ PROVISÓRIO — substituir pelo formulário definitivo.
+ *
+ * O SCRUM-90 era só backend (rota, controller e validação). Este ficheiro
+ * existe porque sem ele a rota /testemunhos/novo devolve 500: o
+ * app.blade.php procura resources/js/Pages/<componente>.jsx no manifest do
+ * Vite, e rebenta se não encontrar. Não é opcional, é o que faz a rota viver.
+ *
+ * Já funciona: os 6 campos, o upload da imagem, os erros de validação
+ *              devolvidos pelo servidor e a mensagem de sucesso.
+ * Falta:       o desenho a sério, e as checkboxes de direitos de imagem e
+ *              RGPD que o NewsForm.jsx tem (ver o ponto 6 do plano — hoje
+ *              nenhuma das duas é guardada, nem aqui nem nas notícias).
+ *
+ * ⛔ NÃO MUDES os atributos `name` dos inputs sem mudar também as rules do
+ *    App\Http\Requests\StoreTestimonialRequest. São o contrato com o backend:
+ *    name, email, title, description, category_id, image.
+ *    O aspeto muda à vontade; os names partem a submissão sem dar erro claro.
+ */
 export default function InsertForm({ categories = [] }) {
     const { data, setData, post, processing, errors, reset, wasSuccessful } =
         useForm({
