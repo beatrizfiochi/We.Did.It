@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\NewsSubmissionController;
@@ -59,6 +61,19 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->only(['index', 'store', 'update', 'destroy'])
         ->parameters(['categorias' => 'category'])
         ->names('categories');
+
+    // Moderação de notícias e testemunhos (SCRUM-86).
+    // PATCH para aprovar/recusar, que mudam um campo; PUT para o update, que
+    // substitui o conteúdo do registo.
+    Route::get('noticias', [NewsController::class, 'index'])->name('news.index');
+    Route::put('noticias/{news}', [NewsController::class, 'update'])->name('news.update');
+    Route::patch('noticias/{news}/aprovar', [NewsController::class, 'approve'])->name('news.approve');
+    Route::patch('noticias/{news}/recusar', [NewsController::class, 'refuse'])->name('news.refuse');
+
+    Route::get('testemunhos', [TestimonialController::class, 'index'])->name('testimonials.index');
+    Route::put('testemunhos/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
+    Route::patch('testemunhos/{testimonial}/aprovar', [TestimonialController::class, 'approve'])->name('testimonials.approve');
+    Route::patch('testemunhos/{testimonial}/recusar', [TestimonialController::class, 'refuse'])->name('testimonials.refuse');
 });
 
 require __DIR__.'/auth.php';
