@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -69,6 +70,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('noticias/{news}', [NewsController::class, 'update'])->name('news.update');
     Route::patch('noticias/{news}/aprovar', [NewsController::class, 'approve'])->name('news.approve');
     Route::patch('noticias/{news}/recusar', [NewsController::class, 'refuse'])->name('news.refuse');
+
+    // Gestão da agenda (SCRUM-100)
+    Route::resource('agenda', CalendarController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['agenda' => 'calendar'])
+        ->names('calendar');
 
     Route::get('testemunhos', [TestimonialController::class, 'index'])->name('testimonials.index');
     Route::put('testemunhos/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');

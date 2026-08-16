@@ -14,11 +14,27 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route('dashboard'),
             active: route().current('dashboard'),
         },
-        { label: 'Notícias', disabled: true },
-        { label: 'Testemunhos', disabled: true },
-        { label: 'Categorias', disabled: true },
+        {
+            label: 'Notícias',
+            href: route('admin.news.index'),
+            active: route().current('admin.news.*'),
+        },
+        {
+            label: 'Testemunhos',
+            href: route('admin.testimonials.index'),
+            active: route().current('admin.testimonials.*'),
+        },
+        {
+            label: 'Categorias',
+            href: route('admin.categories.index'),
+            active: route().current('admin.categories.*'),
+        },
         { label: 'Formações', disabled: true },
-        { label: 'Agenda', disabled: true },
+        {
+            label: 'Agenda',
+            href: route('admin.calendar.index'),
+            active: route().current('admin.calendar.*'),
+        },
         { label: 'Newsletters', disabled: true },
         { label: 'Administradores', disabled: true },
     ];
