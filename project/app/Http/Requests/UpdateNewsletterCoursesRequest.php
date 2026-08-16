@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCalendarRequest extends FormRequest
+class UpdateNewsletterCoursesRequest extends FormRequest
 {
     /**
      * Determina se o utilizador está autorizado a fazer este pedido.
@@ -23,12 +23,8 @@ class UpdateCalendarRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // sem 'required': um PATCH pode enviar só o campo alterado
-            'date' => ['date'],
-            'title' => ['string', 'max:255'],
-            // newsletters onde este evento deve aparecer
-            'newsletter_ids' => ['sometimes', 'array'],
-            'newsletter_ids.*' => ['integer', 'exists:newsletters,id'],
+            'course_ids' => ['sometimes', 'array'],
+            'course_ids.*' => ['integer', 'exists:courses,id'],
         ];
     }
 }

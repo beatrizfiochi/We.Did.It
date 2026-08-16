@@ -23,14 +23,18 @@ class UpdateCourseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
-            'url' => ['required', 'url', 'max:255'],
+            // sem 'required': um PATCH pode enviar só o campo alterado
+            'title' => ['string', 'max:255'],
+            'url' => ['url', 'max:255'],
             'imageUrl' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
             'schedule' => ['nullable', 'string', 'max:255'],
-            'start_date' => ['required', 'date'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'status' => ['required', 'string', 'in:received,accepted,refused'],
+            'start_date' => ['date'],
+            'price' => ['numeric', 'min:0'],
+            'status' => ['string', 'in:received,accepted,refused'],
+            // newsletters onde esta oferta formativa deve aparecer
+            'newsletter_ids' => ['sometimes', 'array'],
+            'newsletter_ids.*' => ['integer', 'exists:newsletters,id'],
         ];
     }
 }

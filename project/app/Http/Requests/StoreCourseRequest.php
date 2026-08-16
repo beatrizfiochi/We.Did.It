@@ -31,6 +31,9 @@ class StoreCourseRequest extends FormRequest
             'start_date' => ['required', 'date'],
             'price' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'in:received,accepted,refused'],
+            // newsletters onde esta oferta formativa deve aparecer
+            'newsletter_ids' => ['sometimes', 'array'],
+            'newsletter_ids.*' => ['integer', 'exists:newsletters,id'],
         ];
     }
 }
