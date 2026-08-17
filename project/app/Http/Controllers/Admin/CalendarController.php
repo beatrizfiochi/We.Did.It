@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreCalendarRequest;
 use App\Http\Requests\Admin\UpdateCalendarRequest;
 use App\Models\ActivityLog;
 use App\Models\Calendar;
+use App\Models\Newsletter;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -14,22 +15,39 @@ use Inertia\Response;
 class CalendarController extends Controller
 {
     /**
-     * List the calendar events.
+     * List the calendar events, with the newsletters each one already enters.
      */
     public function index(): Response
     {
         return Inertia::render('Admin/Calendar/Index', [
             // sem paginação: são eventos de uma associação, não milhares de linhas
-            'events' => Calendar::orderBy('date')->get(['id', 'date', 'title']),
+            'events' => Calendar::with('newsletters:id,title,edition')
+                ->orderBy('date')
+                ->get(['id', 'date', 'title']),
         ]);
     }
 
     /**
-     * Store a new calendar event.
+     * Show the create form for a new calendar event.
+     */
+    public function create(): Response
+    {
+        return Inertia::render('Admin/Calendar/Create', [
+            'newsletters' => Newsletter::orderByDesc('edition')->get(['id', 'title', 'edition']),
+        ]);
+    }
+
+    /**
+     * Store a new calendar event and associate it with the chosen newsletters.
      */
     public function store(StoreCalendarRequest $request): RedirectResponse
     {
-        $event = Calendar::create($request->validated());
+        $data = $request->validated();
+        $newsletterIds = $data['newsletter_ids'] ?? [];
+        unset($data['newsletter_ids']);
+
+        $event = Calendar::create($data);
+        $event->newsletters()->sync($newsletterIds);
 
         ActivityLog::record($event, 'created');
 
@@ -37,11 +55,36 @@ class CalendarController extends Controller
     }
 
     /**
-     * Update an existing calendar event.
+     * Show the edit form for a calendar event.
+     */
+    public function edit(Calendar $calendar): Response
+    {
+        $calendar->load('newsletters:id');
+
+        return Inertia::render('Admin/Calendar/Edit', [
+            'event' => [
+                ...$calendar->only(['id', 'date', 'title']),
+                'newsletter_ids' => $calendar->newsletters->pluck('id'),
+            ],
+            'newsletters' => Newsletter::orderByDesc('edition')->get(['id', 'title', 'edition']),
+        ]);
+    }
+
+    /**
+     * Update an existing calendar event and the newsletters it belongs to.
      */
     public function update(UpdateCalendarRequest $request, Calendar $calendar): RedirectResponse
     {
-        $calendar->update($request->validated());
+        $data = $request->validated();
+
+        // só mexe nas newsletters associadas se a chave vier no pedido;
+        // uma atualização parcial (ex.: só o date) não deve desassociar tudo
+        if (array_key_exists('newsletter_ids', $data)) {
+            $calendar->newsletters()->sync($data['newsletter_ids']);
+        }
+        unset($data['newsletter_ids']);
+
+        $calendar->update($data);
 
         ActivityLog::record($calendar, 'updated');
 

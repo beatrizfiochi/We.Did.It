@@ -28,6 +28,9 @@ class StoreCalendarRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
+            // newsletters onde este evento deve aparecer
+            'newsletter_ids' => ['sometimes', 'array'],
+            'newsletter_ids.*' => ['integer', 'exists:newsletters,id'],
         ];
     }
 

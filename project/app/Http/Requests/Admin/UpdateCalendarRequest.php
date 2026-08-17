@@ -18,13 +18,20 @@ class UpdateCalendarRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * O 'sometimes' deixa passar uma atualização parcial (ex.: só o date) sem
+     * apagar os restantes campos; o 'required' a seguir só entra em ação
+     * quando o campo vem no pedido mas vazio.
+     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
+            'title' => ['sometimes', 'required', 'string', 'max:255'],
+            'date' => ['sometimes', 'required', 'date'],
+            // newsletters onde este evento deve aparecer
+            'newsletter_ids' => ['sometimes', 'array'],
+            'newsletter_ids.*' => ['integer', 'exists:newsletters,id'],
         ];
     }
 

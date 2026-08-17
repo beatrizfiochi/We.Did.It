@@ -8,8 +8,8 @@ use App\Http\Requests\Admin\UpdateNewsRequest;
 use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\News;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,6 +32,17 @@ class NewsController extends Controller
                 ->paginate(15)
                 ->withQueryString(),
             'filters' => ['status' => $request->string('status')->toString()],
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    /**
+     * Show the edit form for a submitted news article.
+     */
+    public function edit(News $news): Response
+    {
+        return Inertia::render('Admin/News/Edit', [
+            'news' => $news->load('category:id,name'),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }

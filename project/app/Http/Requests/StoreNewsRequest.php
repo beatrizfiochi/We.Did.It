@@ -28,6 +28,8 @@ class StoreNewsRequest extends FormRequest
             // the form has a "Nenhuma" option with an empty value, so no category is valid
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'max:2048'],
+            // honeypot: hidden field that must stay empty; bots tend to fill every field they find
+            'website' => ['prohibited'],
         ];
     }
 }

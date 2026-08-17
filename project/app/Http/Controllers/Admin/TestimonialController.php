@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Concerns\ModeratesSubmissions;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateTestimonialCategoryRequest;
 use App\Http\Requests\Admin\UpdateTestimonialRequest;
 use App\Models\ActivityLog;
 use App\Models\Category;
@@ -64,5 +65,20 @@ class TestimonialController extends Controller
     public function refuse(Testimonial $testimonial): RedirectResponse
     {
         return $this->changeStatus($testimonial, 'refused', 'Testemunho recusado.');
+    }
+
+    /**
+     * Set the category of a submitted testimonial.
+     *
+     * Existe à parte do update() porque categorizar é feito a partir da
+     * listagem, sem passar pelo formulário de conteúdo completo.
+     */
+    public function category(UpdateTestimonialCategoryRequest $request, Testimonial $testimonial): RedirectResponse
+    {
+        $testimonial->update($request->validated());
+
+        ActivityLog::record($testimonial, 'updated');
+
+        return back()->with('success', 'Testemunho categorizado com sucesso.');
     }
 }
