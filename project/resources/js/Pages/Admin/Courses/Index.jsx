@@ -1,0 +1,79 @@
+import DataTable from '@/Components/DataTable';
+import StatusBadge from '@/Components/StatusBadge';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head, Link, router } from '@inertiajs/react';
+
+export default function Index({ courses = [] }) {
+    const columns = [
+        { key: 'title', label: 'Título' },
+        { key: 'location', label: 'Local' },
+        { key: 'schedule', label: 'Horário' },
+        { key: 'start_date', label: 'Data' },
+        { key: 'price', label: 'Preço' },
+        {
+            key: 'status',
+            label: 'Estado',
+            render: (course) => <StatusBadge status={course.status} />,
+        },
+        {
+            key: 'actions',
+            label: 'Ações',
+            render: (course) => (
+                <div className="flex items-center gap-3">
+                    <Link
+                        href={route('admin.courses.edit', course.id)}
+                        className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
+                    >
+                        Editar
+                    </Link>
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (confirm('Tens a certeza que queres remover esta oferta?')) {
+                                router.delete(route('admin.courses.destroy', course.id));
+                            }
+                        }}
+                        className="text-sm font-semibold text-red-600 hover:text-red-900"
+                    >
+                        Remover
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
+    return (
+        <AuthenticatedLayout header="Ofertas formativas">
+            <Head title="Ofertas formativas" />
+
+            <div className="space-y-6">
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-gray-900">
+                            Ofertas formativas
+                        </h1>
+
+                        <p className="mt-1 text-sm text-gray-600">
+                            Gere as ofertas formativas disponíveis para divulgação.
+                        </p>
+                    </div>
+
+                    <Link
+                        href={route('admin.courses.create')}
+                        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                    >
+                        Nova oferta
+                    </Link>
+                </div>
+
+                <DataTable
+                    columns={columns}
+                    rows={courses}
+                    emptyTitle="Ainda não há ofertas formativas"
+                    emptyDescription="Quando forem criadas, as ofertas aparecem nesta lista."
+                />
+            </div>
+        </AuthenticatedLayout>
+    );
+}

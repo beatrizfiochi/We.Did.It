@@ -12,27 +12,15 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
-
-// Main routes that return Inertia responses
-
-
-
 // this renders all the pages available through Inertia
 Route::get('/', function () {
-
     return Inertia::render('Welcome');
-
 });
 
-
-
-
-// this renders dashboard which is guarded by auth 
+// this renders dashboard which is guarded by auth
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
 
 // public news submission form (SCRUM-77), rendered by the News/InsertForm page
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
@@ -40,7 +28,6 @@ Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name(
 Route::post('/noticias', [NewsSubmissionController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('news.store');
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
