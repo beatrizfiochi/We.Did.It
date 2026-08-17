@@ -5,10 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreNewsRequest extends FormRequest
+class UpdateNewsRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determina se o utilizador está autorizado a fazer este pedido.
      */
     public function authorize(): bool
     {
@@ -16,7 +16,7 @@ class StoreNewsRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Regras de validação aplicadas ao pedido.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -25,11 +25,8 @@ class StoreNewsRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            // the form has a "Nenhuma" option with an empty value, so no category is valid
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'max:2048'],
-            // honeypot: hidden field that must stay empty; bots tend to fill every field they find
-            'website' => ['prohibited'],
         ];
     }
 }

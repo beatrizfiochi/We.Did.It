@@ -1,12 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\NewsletterController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Public\NewsSubmissionController;
 use Illuminate\Foundation\Application;
->>>>>>> origin/main
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,15 +20,9 @@ use Inertia\Inertia;
 
 // this renders all the pages available through Inertia
 Route::get('/', function () {
-<<<<<<< HEAD
+
     return Inertia::render('Welcome');
-=======
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
->>>>>>> origin/main
+
 });
 
 
@@ -41,7 +37,9 @@ Route::get('/dashboard', function () {
 // public news submission form (SCRUM-77), rendered by the News/InsertForm page
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
 
-Route::post('/noticias', [NewsSubmissionController::class, 'store'])->name('news.store');
+Route::post('/noticias', [NewsSubmissionController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('news.store');
 
 
 Route::middleware('auth')->group(function () {
@@ -56,6 +54,27 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::post('users', [RegisteredUserController::class, 'store'])
         ->name('users.store');
+
+    // CRUD das ofertas formativas
+    Route::resource('courses', CourseController::class)->except('show');
+
+    // CRUD dos eventos da agenda
+    Route::resource('calendars', CalendarController::class)->except('show');
+
+    // Gestão das notícias recebidas: editar/categorizar, aprovar e recusar
+    Route::get('news', [NewsController::class, 'index'])->name('news.index');
+    Route::get('news/{news}/edit', [NewsController::class, 'edit'])->name('news.edit');
+    Route::put('news/{news}', [NewsController::class, 'update'])->name('news.update');
+    Route::patch('news/{news}/approve', [NewsController::class, 'approve'])->name('news.approve');
+    Route::patch('news/{news}/refuse', [NewsController::class, 'refuse'])->name('news.refuse');
+
+    // Categorização dos testemunhos recebidos
+    Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
+    Route::patch('testimonials/{testimonial}/category', [TestimonialController::class, 'category'])->name('testimonials.category');
+
+    // Seleção das ofertas formativas incluídas numa newsletter
+    Route::get('newsletters/{newsletter}/courses', [NewsletterController::class, 'editCourses'])->name('newsletters.courses.edit');
+    Route::put('newsletters/{newsletter}/courses', [NewsletterController::class, 'updateCourses'])->name('newsletters.courses.update');
 });
 
 require __DIR__.'/auth.php';

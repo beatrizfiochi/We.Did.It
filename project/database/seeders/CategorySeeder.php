@@ -12,9 +12,21 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::create(['name' => 'Formação']);
-        Category::create(['name' => 'Eventos']);
-        Category::create(['name' => 'Institucional']);
-        Category::create(['name' => 'Comunidade']);
+        collect([
+            'Abertura de Turmas',
+            'Entrega de diplomas',
+            'Novo/a colaborador',
+            'Divulgação',
+            'Visita de estudo',
+            'Parcerias',
+            'Estágios',
+            'Competições',
+            'Projetos',
+            'Seminários/Conferências',
+            'Evento interno',
+            'Evento externo',
+            'Testemunho interno',
+            'Testemunho externo',
+        ])->each(fn (string $name) => Category::create(['name' => $name]));
     }
 }

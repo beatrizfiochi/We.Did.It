@@ -15,7 +15,7 @@ class DatabaseSeederTest extends TestCase
         $this->seed();
 
         $this->assertDatabaseCount('users', 1);
-        $this->assertDatabaseCount('categories', 4);
+        $this->assertDatabaseCount('categories', 14);
         $this->assertDatabaseHas('users', ['email' => 'admin@wedidit.pt']);
 
         $newsCount = DB::table('news')->count();
