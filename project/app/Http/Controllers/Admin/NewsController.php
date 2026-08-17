@@ -42,6 +42,8 @@ class NewsController extends Controller
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('news', 'public');
+        } else {
+            unset($data['image']);
         }
 
         $news->update($data);

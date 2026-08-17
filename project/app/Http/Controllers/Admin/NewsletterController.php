@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateNewsletterCoursesRequest;
 use App\Models\Course;
 use App\Models\Newsletter;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -21,9 +20,9 @@ class NewsletterController extends Controller
         $newsletter->load('courses:id');
 
         // start_date é uma string vinda da API externa, não uma coluna de data,
-        // por isso ordenamos em PHP (Carbon::parse) em vez de orderBy() no banco.
+        // por isso ordenamos em PHP (start_date_for_sorting) em vez de orderBy() no banco.
         $courses = Course::get(['id', 'title', 'start_date'])
-            ->sortBy(fn (Course $course) => Carbon::parse($course->start_date))
+            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
             ->values();
 
         return Inertia::render('Admin/Newsletters/Courses', [

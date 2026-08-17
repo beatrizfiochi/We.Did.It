@@ -7,7 +7,6 @@ use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\Newsletter;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,16 +19,17 @@ class CourseController extends Controller
     public function index(): Response
     {
         // start_date é uma string vinda da API externa, não uma coluna de data,
-        // por isso ordenamos em PHP (Carbon::parse) em vez de orderBy() no banco,
+        // por isso ordenamos em PHP (start_date_for_sorting) em vez de orderBy() no banco,
         // que compararia como texto e não cronologicamente.
         $courses = Course::with('newsletters:id,title,edition')->get()
-            ->sortBy(fn (Course $course) => Carbon::parse($course->start_date))
+            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
             ->values();
 
         return Inertia::render('Admin/Courses/Index', [
             'courses' => $courses,
         ]);
     }
+
 
     /**
      * Mostra o formulário de criação de uma nova oferta formativa.
