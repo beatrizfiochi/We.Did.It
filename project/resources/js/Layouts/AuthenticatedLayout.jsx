@@ -17,7 +17,11 @@ export default function AuthenticatedLayout({ header, children }) {
         { label: 'Notícias', disabled: true },
         { label: 'Testemunhos', disabled: true },
         { label: 'Categorias', disabled: true },
-        { label: 'Formações', disabled: true },
+        {
+            label: 'Formações',
+            href: route('admin.courses.index'),
+            active: route().current('admin.courses.*'),
+        },
         { label: 'Agenda', disabled: true },
         { label: 'Newsletters', disabled: true },
         { label: 'Administradores', disabled: true },
