@@ -35,10 +35,10 @@ class TestimonialSubmissionController extends Controller
     {
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:15'],
+            'name' => ['required', 'string', 'min:3', 'max:15'],
             'email' => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@(cesae|cesaedigital)\.[a-zA-Z-]+$/i'],
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'title' => ['required', 'string', 'min:5', 'max:255'],
+            'description' => ['required', 'min:100', 'max:1050', 'string'],
             // the form has a "Nenhuma" option with an empty value, so no category is valid
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
@@ -71,13 +71,6 @@ class TestimonialSubmissionController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.

@@ -5,10 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreNewsRequest extends FormRequest
+class UpdateNewsRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determina se o utilizador está autorizado a fazer este pedido.
      */
     public function authorize(): bool
     {
@@ -16,18 +16,17 @@ class StoreNewsRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Regras de validação aplicadas ao pedido.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'min:100', 'max:1050', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
         ];
     }
 

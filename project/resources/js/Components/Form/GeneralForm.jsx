@@ -31,8 +31,6 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
     return (
         <div className="mt-5 mx-auto">
             <h3 className="text-center mb-3">{formTitle}</h3>
-
-
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-6">
@@ -69,22 +67,22 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
                                                 <textarea className="form-control" rows={4} name={item.name} />
                                             ) : item.type === 'select' ? (
-
-                                                <select name={item.name} id="news-category">
-                                                    {/* Value for option "nenhuma" is empty string so it reaches the DB as null */}
-                                                    <option value="" default>Nenhuma</option>
-                                                    {categoryList.map((category) =>
-                                                        <option key={category.id} value={category.id}>{category.name}</option>
-                                                    )}
-                                                </select>
+                                                <>
+                                                    <select name={item.name} id="news-category">
+                                                        {/* Value for option "nenhuma" is empty string so it reaches the DB as null */}
+                                                        <option value="" default>Nenhuma</option>
+                                                        {categoryList.map((category) =>
+                                                            <option key={category.id} value={category.id}>{category.name}</option>
+                                                        )}
+                                                    </select>
+                                                    {/* Error Message - no Categories available */}
+                                                    {categoryList.length === 0 && <p className="mt-1 text-sm text-red-500">Não existem categorias disponíveis.</p>}
+                                                </>
                                             ) : (
 
                                                 // input type holds type assigned in the labelType array, same position as current item from userLabel
                                                 <input className="form-control" type={item.type} name={item.name} />
-                                            )
-
-                                            }
-
+                                            )}
 
                                             {item.type === 'file' && imageUploaded && <div><button type="button" onClick={handleRemoveImage}>X REMOVER IMAGEM</button></div>}
 

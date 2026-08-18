@@ -1,6 +1,7 @@
 import GeneralForm from "@/Components/Form/GeneralForm"
 import { useState, useEffect } from "react"
 import { usePage } from "@inertiajs/react"
+import PublicLayout from "@/Layouts/PublicLayout"
 
 
 export default function TestimonialForm({ categories }) {
@@ -50,8 +51,8 @@ export default function TestimonialForm({ categories }) {
         const newErrors = {}
 
         // validation min and max characters
-        if (name.length == 0 || name.length > 15) {
-            newErrors['name'] = "Nome inválido."
+        if (name.length < 3 || name.length > 15) {
+            newErrors['name'] = "O nome deve ter entre 3 e 255 caracteres."
         }
 
         // email validation
@@ -62,8 +63,8 @@ export default function TestimonialForm({ categories }) {
         }
 
         // title validation
-        if (title.length < 10 || title.length > 255) {
-            newErrors['title'] = "O Título deve ter entre 10 e 255 caracteres."
+        if (title.length < 5 || title.length > 255) {
+            newErrors['title'] = "O Título deve ter entre 5 e 255 caracteres."
         }
 
         // description validation
@@ -101,19 +102,21 @@ export default function TestimonialForm({ categories }) {
 
 
     return (
-        <div>
-            <GeneralForm
-                formTitle="Adicionar Testemunho"
-                formMethod="POST"
-                formAction={route('testimonial.store')}
-                fields={fields}
-                clientErrors={clientErrors}
-                categoryList={categories}
-                submitFunction={insertTestimonial}
-                successMessage={successMessage}
-                clearSuccessMessage={() => setSuccessMessage(null)}
+        <PublicLayout>
+            <div>
+                <GeneralForm
+                    formTitle="Adicionar Testemunho"
+                    formMethod="POST"
+                    formAction={route('testimonial.store')}
+                    fields={fields}
+                    clientErrors={clientErrors}
+                    categoryList={categories}
+                    submitFunction={insertTestimonial}
+                    successMessage={successMessage}
+                    clearSuccessMessage={() => setSuccessMessage(null)}
 
-            />
-        </div>
+                />
+            </div>
+        </PublicLayout>
     );
 }
