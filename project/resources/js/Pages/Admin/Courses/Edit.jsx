@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CourseForm from '@/Pages/Admin/Courses/Partials/CourseForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function Edit({ course }) {
+export default function Edit({ course, newsletters = [] }) {
     const { data, setData, put, processing, errors } = useForm({
         title: course.title ?? '',
         url: course.url ?? '',
@@ -13,6 +13,7 @@ export default function Edit({ course }) {
         start_date: course.start_date ?? '',
         price: course.price ?? '',
         status: course.status ?? 'received',
+        newsletter_ids: course.newsletter_ids ?? [],
     });
 
     const submit = (e) => {
@@ -27,9 +28,6 @@ export default function Edit({ course }) {
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">
-                        Editar oferta formativa
-                    </h1>
 
                     <p className="mt-1 text-sm text-gray-600">
                         Atualiza os dados da oferta formativa.
@@ -42,6 +40,7 @@ export default function Edit({ course }) {
                             data={data}
                             setData={setData}
                             errors={errors}
+                            newsletters={newsletters}
                         />
 
                         <div className="flex items-center justify-end gap-3">

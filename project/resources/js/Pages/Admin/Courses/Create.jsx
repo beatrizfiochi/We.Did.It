@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CourseForm from '@/Pages/Admin/Courses/Partials/CourseForm';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function Create() {
+export default function Create({ newsletters = [] }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         url: '',
@@ -13,7 +13,9 @@ export default function Create() {
         start_date: '',
         price: '',
         status: 'received',
+        newsletter_ids: [],
     });
+
 
     const submit = (e) => {
         e.preventDefault();
@@ -27,9 +29,6 @@ export default function Create() {
 
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">
-                        Nova oferta formativa
-                    </h1>
 
                     <p className="mt-1 text-sm text-gray-600">
                         Preenche os dados para criar uma nova oferta formativa.
@@ -42,6 +41,7 @@ export default function Create() {
                             data={data}
                             setData={setData}
                             errors={errors}
+                            newsletters={newsletters}
                         />
 
                         <div className="flex items-center justify-end gap-3">
