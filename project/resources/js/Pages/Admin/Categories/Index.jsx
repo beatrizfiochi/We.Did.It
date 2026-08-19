@@ -56,6 +56,7 @@ export default function Index({ categories = [] }) {
 
         router.delete(route('admin.categories.destroy', category.id), {
             preserveScroll: true,
+            onSuccess: cancelEdit,
         });
     }
 
