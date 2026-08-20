@@ -162,7 +162,8 @@ class NewsModerationTest extends TestCase
 
         $this->actingAs(User::factory()->create())
             ->put(route('admin.news.update', $news), $this->validPayload([
-                'title' => 'Curto',
+                // 4 caracteres: abaixo do min:5 do UpdateNewsRequest
+                'title' => 'Curt',
                 'description' => 'Demasiado curta.',
             ]))
             ->assertSessionHasErrors(['title', 'description']);

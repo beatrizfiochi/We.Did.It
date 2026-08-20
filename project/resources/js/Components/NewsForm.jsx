@@ -39,8 +39,8 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
         const newErrors = {}
 
         // title validation
-        if (title.length < 10 || title.length > 255) {
-            newErrors.title = "O Título deve ter entre 10 e 255 caracteres."
+        if (title.length < 5 || title.length > 255) {
+            newErrors.title = "O Título deve ter entre 5 e 255 caracteres."
         }
 
         // description validation
@@ -89,11 +89,11 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
 
         if (file) {
 
-            const maxSize = 5 * 1024 * 1024; // max size 5MB
+            const maxSize = 2 * 1024 * 1024; // igual ao max:2048 do StoreNewsRequest
 
             if (file.size > maxSize) {
                 setImageUploaded(false) // rejects file
-                setClientErrors(prev => ({ ...prev, image: "A imagem deve ter no máximo 5 MB." })) // prints the error message
+                setClientErrors(prev => ({ ...prev, image: "A imagem deve ter no máximo 2 MB." })) // prints the error message
             } else {
                 setImageUploaded(true) // accept valid file
                 setClientErrors(prev => ({ ...prev, image: null })) // overwites the image key error to null(no error shown anymore)
@@ -134,27 +134,42 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                 >
 
                     {/* children function needed for render/display */}
-                    {({ processing }) => (
+                    {({ processing, errors: serverErrors }) => {
+                        // o <Form> do Inertia entrega aqui os erros devolvidos pelo
+                        // servidor. Os do cliente ficam por cima por serem mais recentes.
+                        const fieldErrors = { ...serverErrors, ...clientErrors }
+
+                        return (
                         <>
+                            {/* Honeypot: invisível para pessoas, visível no DOM para bots
+                                que preenchem tudo o que encontram. O StoreNewsRequest
+                                marca 'website' como prohibited, por isso qualquer valor
+                                recusa a submissão. Escondido por CSS e não com
+                                type="hidden": há bots que saltam campos ocultos. */}
+                            <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                                <label htmlFor="website">Website</label>
+                                <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+                            </div>
+
                             <div className="">
                                 <div>
                                     <label htmlFor="news-title">{titleLabel}</label>
                                 </div>
-                                <input ref={titleRef} name="title" id="news-title" type="text" minLength={10} maxLength={255}
+                                <input ref={titleRef} name="title" id="news-title" type="text" minLength={5} maxLength={255}
                                     placeholder="Insira o título da notícia"
                                     onBlur={(event) => {
                                         const titleValue = event.target.value.trim()
 
-                                        // the title is invalid if it's shorter than 10 or longer than 255.
-                                        if (titleValue.length >= 10 && titleValue.length <= 255) {
+                                        // the title is invalid if it's shorter than 5 or longer than 255.
+                                        if (titleValue.length >= 5 && titleValue.length <= 255) {
                                             setClientErrors(prev => ({ ...prev, title: null }))
                                         }
                                     }} />
 
                                 {/*ERROR MESSAGE - TITLE SIZE  */}
-                                {clientErrors.title && (
+                                {fieldErrors.title && (
                                     <div className="mt-1 text-sm text-red-500">
-                                        {clientErrors.title}
+                                        {fieldErrors.title}
                                     </div>
                                 )}
 
@@ -179,9 +194,9 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                                 </textarea>   {/*verficiar se 1050 é muito ou pouco, admin pode editar anyways */}
 
                                 {/* ERROR MESSAGE - DESCRIPTIONLabeldescriptionLabel SIZE  */}
-                                {clientErrors.description && (
+                                {fieldErrors.description && (
                                     <div className="mt-1 text-sm text-red-500">
-                                        {clientErrors.description}
+                                        {fieldErrors.description}
                                     </div>
                                 )}
                             </div>
@@ -214,9 +229,9 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                                 />
                             </div>
                             {/* ERROR MESSAGE - IMAGE SIZE  */}
-                            {clientErrors.image && (
+                            {fieldErrors.image && (
                                 <div className="mt-1 text-sm text-red-500">
-                                    {clientErrors.image}
+                                    {fieldErrors.image}
                                 </div>
                             )}
                             {imageUploaded && <div><button type="button" onClick={() => {
@@ -244,7 +259,7 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                                 <label className="form-check-label" htmlFor="news-image-rights">
                                     Autorizo a utilização desta imagem para as finalidades relacionadas a este formulário.
                                 </label>
-                                {imageUploaded && clientErrors.image_rights && <small className="mt-1 text-sm text-red-500" >{clientErrors.image_rights}</small>}
+                                {imageUploaded && fieldErrors.image_rights && <small className="mt-1 text-sm text-red-500" >{fieldErrors.image_rights}</small>}
                             </div>
 
                             {/* CHECKBOX TERMS AND CONDITIONS*/}
@@ -265,7 +280,7 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                                 <label className="form-check-label" htmlFor="terms-and-conditions">
                                     Aceito a Política de Privacidade, consentindo o tratamento dos meus dados pessoais nos termos do RGPD.
                                 </label>
-                                {clientErrors.terms_conditions && <small className="mt-1 text-sm text-red-500" >{clientErrors.terms_conditions}</small>}
+                                {fieldErrors.terms_conditions && <small className="mt-1 text-sm text-red-500" >{fieldErrors.terms_conditions}</small>}
 
                             </div>
 
@@ -283,7 +298,8 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
 
 
                         </>
-                    )}
+                        )
+                    }}
 
                 </Form>
             </div>
