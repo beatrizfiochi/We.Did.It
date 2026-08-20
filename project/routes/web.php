@@ -13,8 +13,6 @@ use App\Http\Controllers\Public\TestimonialSubmissionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Main routes that return Inertia responses
-
 // this renders all the pages available through Inertia
 Route::get('/', function () {
     return Inertia::render('Welcome');

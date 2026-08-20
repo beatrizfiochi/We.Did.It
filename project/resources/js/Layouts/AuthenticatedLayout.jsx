@@ -29,7 +29,11 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route('admin.categories.index'),
             active: route().current('admin.categories.*'),
         },
-        { label: 'Formações', disabled: true },
+        {
+            label: 'Formações',
+            href: route('admin.courses.index'),
+            active: route().current('admin.courses.*'),
+        },
         {
             label: 'Agenda',
             href: route('admin.calendar.index'),
