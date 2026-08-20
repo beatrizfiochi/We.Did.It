@@ -1,16 +1,20 @@
 
-import { useState } from "react";
-import { usePage } from "@inertiajs/react";
+import { useRef, useState } from "react";
+import { Form, usePage } from "@inertiajs/react";
 
 // component for a form that holds customized props, including the labels and input types.
 // Any page that imports this component, defines its own submitFunction and validation rules.
-export default function GeneralForm({ formTitle, formMethod, formAction, fields = [], submitFunction, clientErrors = {}, categoryList = [], successMessage, clearSuccessMessage }) {
+export default function GeneralForm({ formTitle, formMethod, formAction, fields = [], submitFunction, clientErrors = {}, categoryList = [] }) {
+
+    // dá acesso ao getFormData() do <Form>, para a validação do cliente poder
+    // ler os campos no onBefore sem depender de um evento de DOM
+    const formRef = useRef(null)
 
 
     // os erros de validação do servidor chegam na prop partilhada `errors`.
     // Sem isto, uma submissão recusada pelo backend voltava sem explicação
     // nenhuma: o GeneralForm só mostrava os erros validados no cliente.
-    const { errors: serverErrors = {} } = usePage().props
+    const { errors: serverErrors = {}, flash } = usePage().props
     const errors = { ...serverErrors, ...clientErrors }
 
     const [imageUploaded, setImageUploaded] = useState(false)
@@ -41,15 +45,34 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-6">
-                        <form
+                        <Form
+                            ref={formRef}
                             action={formAction}
                             method={formMethod}
                             encType="multipart/form-data"
-                            onSubmit={submitFunction}
-                            onChange={clearSuccessMessage}
+                            noValidate
+                            resetOnSuccess
+                            onBefore={() => submitFunction(formRef.current.getFormData())}
+                            onSuccess={() => {
+                                setWasSuccessful(true)
+                                handleRemoveImage()
+                            }}
+                            onError={() => setWasSuccessful(false)}
+                            onChange={() => setWasSuccessful(false)}
                             className="container shadow p-3">
+                            {({ processing }) => (
+                            <>
+                            {/* Honeypot: invisível para pessoas, presente no DOM para bots
+                                que preenchem tudo o que encontram. Só tem efeito se o
+                                FormRequest do destino marcar 'website' como prohibited —
+                                sem isso é um campo vazio inofensivo. Escondido por CSS e
+                                não com type="hidden": há bots que saltam campos ocultos. */}
+                            <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                                <label htmlFor="website">Website</label>
+                                <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+                            </div>
+
                             <div>
-                                <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]').content} />
 
                                 {fields.map((item, index) => (
                                     <div key={item.name} className="mb-3">
@@ -133,15 +156,17 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                     )}
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary">Enviar</button>
+                            <button type="submit" className="btn btn-primary" disabled={processing}>Enviar</button>
                             <div>
-                                {successMessage && (
-                                    <small id="testimonial-form-root" className="mt-3 text-sm bg-success">
-                                        {successMessage}
+                                {wasSuccessful && flash?.success && (
+                                    <small className="mt-3 text-sm bg-success">
+                                        {flash.success}
                                     </small>
                                 )}
                             </div>
-                        </form>
+                            </>
+                            )}
+                        </Form>
 
                     </div>
                 </div>

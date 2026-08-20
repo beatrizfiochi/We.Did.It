@@ -35,6 +35,9 @@ class StoreTestimonialRequest extends FormRequest
             // a opção "Nenhuma" do formulário envia string vazia
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            // honeypot: campo escondido que tem de vir vazio; os bots tendem a
+            // preencher tudo o que encontram. Igual ao StoreNewsRequest.
+            'website' => ['prohibited'],
         ];
     }
 

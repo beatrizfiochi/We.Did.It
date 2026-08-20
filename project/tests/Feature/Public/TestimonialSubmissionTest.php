@@ -137,4 +137,38 @@ class TestimonialSubmissionTest extends TestCase
             'image' => UploadedFile::fake()->create('grande.jpg', 5121, 'image/jpeg'),
         ]))->assertSessionHasErrors('image');
     }
+
+    public function test_the_honeypot_field_blocks_the_submission(): void
+    {
+        $response = $this->post(route('testimonials.store'), $this->validPayload([
+            'website' => 'http://spam.example.com',
+        ]));
+
+        $response->assertSessionHasErrors('website');
+        $this->assertDatabaseCount('testimonials', 0);
+    }
+
+    public function test_the_honeypot_field_is_not_required(): void
+    {
+        $response = $this->post(route('testimonials.store'), $this->validPayload(['website' => '']));
+
+        $response->assertSessionDoesntHaveErrors('website');
+        $this->assertDatabaseCount('testimonials', 1);
+    }
+
+    public function test_submissions_are_rate_limited(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $this->post(route('testimonials.store'), $this->validPayload([
+                'title' => "Testemunho numero {$i} com titulo valido",
+            ]))->assertStatus(302);
+        }
+
+        $response = $this->post(route('testimonials.store'), $this->validPayload([
+            'title' => 'Testemunho extra que deve ser bloqueado',
+        ]));
+
+        $response->assertStatus(429);
+        $this->assertDatabaseCount('testimonials', 5);
+    }
 }

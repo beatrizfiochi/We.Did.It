@@ -1,15 +1,9 @@
 import GeneralForm from "@/Components/Form/GeneralForm"
-import { useState, useEffect } from "react"
-import { usePage } from "@inertiajs/react"
+import { useState } from "react"
 import PublicLayout from "@/Layouts/PublicLayout"
 
 
 export default function TestimonialForm({ categories }) {
-
-
-    // grab the success message from controller 
-    const { flash } = usePage().props
-
 
     // Variables that hold arrays with the labels and input type and name 
     const fields =
@@ -26,15 +20,13 @@ export default function TestimonialForm({ categories }) {
 
     const [clientErrors, setClientErrors] = useState({})
     const [imageUploaded, setImageUploaded] = useState(false)
-    const [successMessage, setSuccessMessage] = useState(
-        flash?.success ?? null
-    )
 
 
 
-    function insertTestimonial(event) {
-        // grab reference from form
-        const dataForm = new FormData(event.target)
+    // Chamada no onBefore do <Form>: recebe o FormData que o GeneralForm obtém
+    // do getFormData(). Devolver false cancela a submissão do Inertia — já não
+    // há event.preventDefault(), porque não há evento de DOM.
+    function insertTestimonial(dataForm) {
 
         // variables coming from the form input
         const name = dataForm.get('name')
@@ -84,7 +76,6 @@ export default function TestimonialForm({ categories }) {
         }
 
         if (Object.keys(newErrors).length > 0) {
-            event.preventDefault()
             setClientErrors(newErrors)
             return false
 
@@ -108,9 +99,6 @@ export default function TestimonialForm({ categories }) {
                     clientErrors={clientErrors}
                     categoryList={categories}
                     submitFunction={insertTestimonial}
-                    successMessage={successMessage}
-                    clearSuccessMessage={() => setSuccessMessage(null)}
-
                 />
             </div>
         </PublicLayout>
