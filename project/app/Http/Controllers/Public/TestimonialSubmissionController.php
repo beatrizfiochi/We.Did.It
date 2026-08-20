@@ -31,7 +31,11 @@ class TestimonialSubmissionController extends Controller
      */
     public function store(StoreTestimonialRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        // os consentimentos são validados mas não guardados (decisão do cliente).
+        // O except() é explícito de propósito: sem ele as chaves chegavam ao
+        // create() e eram descartadas em silêncio por não estarem no #[Fillable],
+        // o que se parte no dia em que alguém ligar o Model::shouldBeStrict().
+        $data = $request->safe()->except(['terms_conditions', 'image_rights']);
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('testimonials', 'public');

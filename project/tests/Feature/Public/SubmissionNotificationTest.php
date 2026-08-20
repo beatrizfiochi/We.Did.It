@@ -18,6 +18,7 @@ class SubmissionNotificationTest extends TestCase
     private function testimonialPayload(): array
     {
         return [
+            'terms_conditions' => 'on',
             'name' => 'Maria Silva',
             'email' => 'maria@exemplo.pt',
             'title' => 'A formação mudou o meu percurso',
@@ -32,6 +33,7 @@ class SubmissionNotificationTest extends TestCase
     private function newsPayload(): array
     {
         return [
+            'terms_conditions' => 'on',
             'title' => 'Abertura das inscrições para o próximo ano',
             'description' => str_repeat('Detalhes sobre as inscrições. ', 5),
             'category_id' => '',

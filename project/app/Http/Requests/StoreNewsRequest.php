@@ -27,9 +27,18 @@ class StoreNewsRequest extends FormRequest
             'description' => ['required', 'min:100', 'max:1050', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            //'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
+            // 'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
             // honeypot: hidden field that must stay empty; bots tend to fill every field they find
             'website' => ['prohibited'],
+            // Consentimentos exigidos pelo cliente. Não são guardados: servem
+            // só para recusar a submissão se não vierem marcados. Sem estas
+            // regras a exigência vivia apenas no JavaScript, e um POST direto
+            // ao endpoint passava por cima dela.
+            'terms_conditions' => ['accepted'],
+            // exclude_without: sem imagem, a autorização nem sequer é avaliada.
+            // Só 'accepted' não bastava — essa regra falha também quando o campo
+            // está ausente, o que tornava a autorização obrigatória sempre.
+            'image_rights' => ['exclude_without:image', 'accepted'],
         ];
     }
 
@@ -43,6 +52,8 @@ class StoreNewsRequest extends FormRequest
             'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
+            'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
+            'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
         ];
     }
 }

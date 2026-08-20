@@ -25,6 +25,8 @@ class TestimonialSubmissionTest extends TestCase
             'title' => 'A formação mudou o meu percurso',
             'description' => str_repeat('Foi uma experiência muito positiva. ', 5),
             'category_id' => '',
+            // o cliente exige consentimento explícito; é validado mas não guardado
+            'terms_conditions' => 'on',
         ], $overrides);
     }
 
@@ -110,6 +112,7 @@ class TestimonialSubmissionTest extends TestCase
         // extensão GD, que não está instalada, e a validação olha para o mime
         $this->post(route('testimonials.store'), $this->validPayload([
             'image' => UploadedFile::fake()->create('testemunho.jpg', 100, 'image/jpeg'),
+            'image_rights' => 'on',
         ]))->assertSessionHasNoErrors();
 
         $path = Testimonial::first()->image;
@@ -170,5 +173,49 @@ class TestimonialSubmissionTest extends TestCase
 
         $response->assertStatus(429);
         $this->assertDatabaseCount('testimonials', 5);
+    }
+
+    public function test_the_submission_requires_accepting_the_privacy_policy(): void
+    {
+        $payload = $this->validPayload();
+        unset($payload['terms_conditions']);
+
+        $this->post(route('testimonials.store'), $payload)
+            ->assertSessionHasErrors('terms_conditions');
+
+        $this->assertDatabaseCount('testimonials', 0);
+    }
+
+    public function test_an_image_requires_authorising_its_use(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('testimonials.store'), $this->validPayload([
+            'image' => UploadedFile::fake()->image('foto.jpg'),
+        ]))->assertSessionHasErrors('image_rights');
+
+        $this->assertDatabaseCount('testimonials', 0);
+    }
+
+    public function test_an_authorised_image_is_accepted(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('testimonials.store'), $this->validPayload([
+            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'image_rights' => 'on',
+        ]))->assertSessionHasNoErrors();
+
+        $this->assertDatabaseCount('testimonials', 1);
+    }
+
+    public function test_the_consents_are_not_stored(): void
+    {
+        $this->post(route('testimonials.store'), $this->validPayload());
+
+        $atributos = Testimonial::first()->getAttributes();
+
+        $this->assertArrayNotHasKey('terms_conditions', $atributos);
+        $this->assertArrayNotHasKey('image_rights', $atributos);
     }
 }
