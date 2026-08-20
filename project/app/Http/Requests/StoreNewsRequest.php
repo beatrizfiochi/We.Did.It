@@ -27,7 +27,9 @@ class StoreNewsRequest extends FormRequest
             'description' => ['required', 'min:100', 'max:1050', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
+            //'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
+            // honeypot: hidden field that must stay empty; bots tend to fill every field they find
+            'website' => ['prohibited'],
         ];
     }
 
