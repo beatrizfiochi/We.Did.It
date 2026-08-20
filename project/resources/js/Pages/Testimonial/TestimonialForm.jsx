@@ -1,4 +1,5 @@
 import GeneralForm from "@/Components/Form/GeneralForm"
+import { Head } from "@inertiajs/react"
 import { useState } from "react"
 import PublicLayout from "@/Layouts/PublicLayout"
 
@@ -90,6 +91,8 @@ export default function TestimonialForm({ categories }) {
 
     return (
         <PublicLayout>
+            <Head title="Adicionar testemunho" />
+
             <div>
                 <GeneralForm
                     formTitle="Adicionar Testemunho"

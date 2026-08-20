@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- <title inertia>{{ config('app.name', 'Laravel') }}</title> --}}
-    <title>We did it - Newsletter</title>
+    {{-- O atributo `inertia` é obrigatório: é por ele que o Inertia identifica
+         o title que lhe pertence e o substitui a cada navegação. Sem ele, o
+         Inertia acrescenta um segundo <title> e o browser usa o primeiro,
+         deixando os <Head title="..."> das páginas sem efeito nenhum. --}}
+    <title inertia>{{ config('app.name') }}</title>
 
 
     <!-- Fonts -->

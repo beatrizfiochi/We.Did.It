@@ -1,5 +1,6 @@
 import NewsForm from "@/Components/NewsForm"
 import PublicLayout from "@/Layouts/PublicLayout"
+import { Head } from "@inertiajs/react"
 
 
 // children {categories} is being loaded from the GET route
@@ -10,6 +11,8 @@ export default function InsertForm({ categories }) {
     return (
 
         <PublicLayout>
+            <Head title="Inserir uma notícia" />
+
             <div>
 
                 <NewsForm
