@@ -36,7 +36,7 @@ class TestimonialSubmissionTest extends TestCase
             ->assertOk()
             ->assertInertia(
                 fn (Assert $page) => $page
-                    ->component('Testimonials/InsertForm')
+                    ->component('Testimonial/TestimonialForm')
                     ->has('categories', 1)
                     ->where('categories.0.name', 'Formação')
             );

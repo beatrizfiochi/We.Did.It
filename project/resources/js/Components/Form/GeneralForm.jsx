@@ -1,10 +1,17 @@
 
 import { useState } from "react";
+import { usePage } from "@inertiajs/react";
 
 // component for a form that holds customized props, including the labels and input types.
 // Any page that imports this component, defines its own submitFunction and validation rules.
 export default function GeneralForm({ formTitle, formMethod, formAction, fields = [], submitFunction, clientErrors = {}, categoryList = [], successMessage, clearSuccessMessage }) {
 
+
+    // os erros de validação do servidor chegam na prop partilhada `errors`.
+    // Sem isto, uma submissão recusada pelo backend voltava sem explicação
+    // nenhuma: o GeneralForm só mostrava os erros validados no cliente.
+    const { errors: serverErrors = {} } = usePage().props
+    const errors = { ...serverErrors, ...clientErrors }
 
     const [imageUploaded, setImageUploaded] = useState(false)
     const [fileInputKey, setFileInputKey] = useState(0)
@@ -88,7 +95,7 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
                                         </div>
                                         {/* if there is an error associated to item, it shows under input */}
-                                        {clientErrors[item.name] && <small className="mt-1 text-sm text-red-500">{clientErrors[item.name]}</small>}
+                                        {errors[item.name] && <small className="mt-1 text-sm text-red-500">{errors[item.name]}</small>}
                                     </div>
                                 ))}
 
@@ -110,8 +117,8 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                     <label className="form-check-label" htmlFor="image_rights">
                                         Autorizo a utilização desta imagem para as finalidades relacionadas a este formulário.
                                     </label>
-                                    {imageUploaded && clientErrors.image_rights && (
-                                        <small className="d-block text-danger">{clientErrors.image_rights}</small>
+                                    {imageUploaded && errors.image_rights && (
+                                        <small className="d-block text-danger">{errors.image_rights}</small>
                                     )}
                                 </div>
 
@@ -121,8 +128,8 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                     <label className="form-check-label" htmlFor="terms-conditions">
                                         Aceito a Política de Privacidade.
                                     </label>
-                                    {clientErrors.terms_conditions && (
-                                        <small className="d-block text-danger">{clientErrors.terms_conditions}</small>
+                                    {errors.terms_conditions && (
+                                        <small className="d-block text-danger">{errors.terms_conditions}</small>
                                     )}
                                 </div>
                             </div>
