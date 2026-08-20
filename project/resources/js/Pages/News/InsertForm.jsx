@@ -6,7 +6,7 @@ import PublicLayout from "@/Layouts/PublicLayout"
 
 export default function InsertForm({ categories }) {
 
-    // campos do formulário, na mesma forma que o TestimonialForm usa
+    // campos do formulário, na mesma forma que o InsertForm dos testemunhos usa
     const fields =
         [
             { name: 'title', label: 'Título', type: 'text' },

@@ -4,7 +4,7 @@ import { useState } from "react"
 import PublicLayout from "@/Layouts/PublicLayout"
 
 
-export default function TestimonialForm({ categories }) {
+export default function InsertForm({ categories }) {
 
     // Variables that hold arrays with the labels and input type and name 
     const fields =

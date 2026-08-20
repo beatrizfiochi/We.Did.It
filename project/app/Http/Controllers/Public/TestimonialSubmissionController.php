@@ -21,7 +21,7 @@ class TestimonialSubmissionController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Testimonials/TestimonialForm', [
+        return Inertia::render('Testimonials/InsertForm', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
