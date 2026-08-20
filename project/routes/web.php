@@ -9,22 +9,19 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\NewsSubmissionController;
 use App\Http\Controllers\TestimonialSubmissionController;
-use Illuminate\Foundation\Application;
+//use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
-
-// Main routes that return Inertia responses
-
-
-
 // this renders all the pages available through Inertia
 Route::get('/', function () {
-
     return Inertia::render('Welcome');
 });
 
+// this renders dashboard which is guarded by auth
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // public news submission form (SCRUM-77), rendered by the News/InsertForm page
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
