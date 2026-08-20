@@ -30,7 +30,7 @@ Route::post('/noticias', [NewsSubmissionController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('news.store');
 
-// public testimonial submission form (SCRUM-90), rendered by the Testimonial/TestimonialForm page
+// public testimonial submission form (SCRUM-90), rendered by the Testimonials/TestimonialForm page
 Route::get('/testemunhos/novo', [TestimonialSubmissionController::class, 'create'])->name('testimonials.create');
 
 Route::post('/testemunhos', [TestimonialSubmissionController::class, 'store'])
