@@ -1,0 +1,122 @@
+import GeneralForm from "@/Components/Form/GeneralForm"
+import { useState, useEffect } from "react"
+import { usePage } from "@inertiajs/react"
+import PublicLayout from "@/Layouts/PublicLayout"
+
+
+export default function TestimonialForm({ categories }) {
+
+
+    // grab the success message from controller 
+    const { flash } = usePage().props
+
+
+    // Variables that hold arrays with the labels and input type and name 
+    const fields =
+        [
+            { name: 'name', label: 'Nome', type: 'text' },
+            { name: 'email', label: 'Email', type: 'email' },
+            { name: 'title', label: 'Título', type: 'text' },
+            { name: 'description', label: 'Descrição', type: 'textarea' },
+            { name: 'category_id', label: 'Categoria', type: 'select' },
+            { name: 'image', label: 'Imagem', type: 'file' },
+        ]
+
+
+
+    const [clientErrors, setClientErrors] = useState({})
+    const [imageUploaded, setImageUploaded] = useState(false)
+    const [successMessage, setSuccessMessage] = useState(
+        flash?.success ?? null
+    )
+
+
+
+    function insertTestimonial(event) {
+        // grab reference from form
+        const dataForm = new FormData(event.target)
+
+        // variables coming from the form input
+        const name = dataForm.get('name')
+        const email = dataForm.get('email')
+        const title = dataForm.get('title')
+        const description = dataForm.get('description')
+        const category = dataForm.get('category_id')
+        const image = dataForm.get('image')
+
+        const image_rights = dataForm.get('image_rights'); // to be checked in case of uploaded image
+        const terms_conditions = dataForm.get('terms_conditions');
+
+        // object that holds errors according to what's inside here [''] -> the name 
+        const newErrors = {}
+
+        // validation min and max characters
+        if (name.length < 3 || name.length > 15) {
+            newErrors['name'] = "O nome deve ter entre 3 e 255 caracteres."
+        }
+
+        // email validation
+        // accepts only @cesae.pt or @cesaedigital.pt
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(cesae\.pt|cesaedigital\.pt)$/i;
+        if (!emailRegex.test(email)) {
+            newErrors['email'] = "Email inválido. Apenas emails institucionais são aceites.";
+        }
+
+        // title validation
+        if (title.length < 5 || title.length > 255) {
+            newErrors['title'] = "O Título deve ter entre 5 e 255 caracteres."
+        }
+
+        // description validation
+        if (description.length < 100 || description.length > 1050) {
+            newErrors['description'] = "A Descrição deve ter entre 100 e 1050 caracteres."
+        }
+
+        // if image was picked, needs to check image rights checkmark
+        if (image && image.size > 0) {
+            if (!image_rights) {
+                newErrors['image_rights'] = "É necessário autorizar a utilização da imagem.";
+            }
+        } else {
+            // no image was picked
+            setImageUploaded(false)
+        }
+
+        // if terms and conditions isnt checked, there is error message
+        if (!terms_conditions) {
+            newErrors['terms_conditions'] = "É necessário aceitar a Política de Privacidade."
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            event.preventDefault()
+            setClientErrors(newErrors)
+            return false
+
+        } else {
+            setClientErrors({})
+            return true // sends form now that it's valid
+
+        }
+    }
+
+
+
+    return (
+        <PublicLayout>
+            <div>
+                <GeneralForm
+                    formTitle="Adicionar Testemunho"
+                    formMethod="POST"
+                    formAction={route('testimonial.store')}
+                    fields={fields}
+                    clientErrors={clientErrors}
+                    categoryList={categories}
+                    submitFunction={insertTestimonial}
+                    successMessage={successMessage}
+                    clearSuccessMessage={() => setSuccessMessage(null)}
+
+                />
+            </div>
+        </PublicLayout>
+    );
+}

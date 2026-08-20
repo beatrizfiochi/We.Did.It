@@ -8,7 +8,8 @@ use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\NewsSubmissionController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\TestimonialSubmissionController;
+//use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,14 +27,31 @@ Route::get('/dashboard', function () {
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
 
 Route::post('/noticias', [NewsSubmissionController::class, 'store'])
+    ->name('news.store');
+
+Route::post('/noticias', [NewsSubmissionController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('news.store');
+
+
+Route::get('/testemunhos/novo', [TestimonialSubmissionController::class, 'create'])->name('testimonial.create');
+Route::post('/testemunhos', [TestimonialSubmissionController::class, 'store'])->name('testimonial.store');
+
+
+
+// MIDDLEWARE PROTECTED
+// this renders dashboard which is guarded by auth 
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('users/create', [RegisteredUserController::class, 'create'])
@@ -57,6 +75,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     // Categorização dos testemunhos recebidos
     Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
+    Route::put('testimonials/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
     Route::patch('testimonials/{testimonial}/category', [TestimonialController::class, 'category'])->name('testimonials.category');
 
     // Seleção das ofertas formativas incluídas numa newsletter
@@ -64,4 +83,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('newsletters/{newsletter}/courses', [NewsletterController::class, 'updateCourses'])->name('newsletters.courses.update');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateNewsRequest;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,6 +20,7 @@ class NewsController extends Controller
     {
         return Inertia::render('Admin/News/Index', [
             'news' => News::with('category:id,name')->latest()->get(),
+            'categories' => category::all(['id', 'name']),
         ]);
     }
 
@@ -41,7 +43,15 @@ class NewsController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
+            $oldImage = $news->image;
+
+            // Stores new image --- folder storage<app<public< news
             $data['image'] = $request->file('image')->store('news', 'public');
+
+            // deletes old image
+            if ($oldImage) {
+                Storage::disk('public')->delete($oldImage);
+            }
         } else {
             unset($data['image']);
         }
