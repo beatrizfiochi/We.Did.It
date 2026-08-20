@@ -29,8 +29,7 @@ class NewsController extends Controller
                     fn ($query, $status) => $query->where('status', $status),
                 )
                 ->latest()
-                ->paginate(15)
-                ->withQueryString(),
+                ->get(),
             'filters' => ['status' => $request->string('status')->toString()],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);

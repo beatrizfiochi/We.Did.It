@@ -1,5 +1,8 @@
 <?php
 
+
+// shares data (like the authenticated user ) with ecery inertia page
+
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;

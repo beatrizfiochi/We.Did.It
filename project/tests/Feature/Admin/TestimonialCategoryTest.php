@@ -34,9 +34,8 @@ class TestimonialCategoryTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.testimonials.index'));
 
         $response->assertOk();
-        // a listagem é paginada, por isso os registos vêm em testimonials.data
         $response->assertInertia(fn (Assert $page) => $page->component('Admin/Testimonials/Index')
-            ->has('testimonials.data', 3)
+            ->has('testimonials', 3)
             ->has('categories')
         );
     }

@@ -136,16 +136,6 @@ export default function NewsForm({ formTitle = "Formulário", titleLabel = "Tít
                     {/* children function needed for render/display */}
                     {({ processing }) => (
                         <>
-                            {/* Honeypot: campo invisível para utilizadores reais; se vier preenchido, o pedido é rejeitado no backend */}
-                            <input
-                                type="text"
-                                name="website"
-                                tabIndex={-1}
-                                autoComplete="off"
-                                aria-hidden="true"
-                                style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
-                            />
-
                             <div className="">
                                 <div>
                                     <label htmlFor="news-title">{titleLabel}</label>

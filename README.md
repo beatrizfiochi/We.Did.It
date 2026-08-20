@@ -40,53 +40,11 @@ projeto. Antes de continuar, altera estas quatro coisas:
 ```dotenv
 APP_NAME="We Did It"
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=project
-DB_USERNAME=root
-DB_PASSWORD=
-
-FILESYSTEM_DISK=public
-```
-
-Três avisos sobre este bloco:
-
-- O `.env.example` traz `DB_CONNECTION=sqlite` e as restantes linhas `DB_*` comentadas. Se
-  as deixares assim, o Laravel cria uma base SQLite e as migrações correm **sem dar erro** —
-  só muito mais tarde percebes que estás a trabalhar contra a base errada. Descomenta-as.
-- O `FILESYSTEM_DISK` vem em `local`. Tem de passar a `public`, senão as imagens submetidas
-  no formulário de notícias ficam guardadas mas não são acessíveis pelo browser.
-- O `MAIL_MAILER=log` fica como está. Os emails são escritos em `storage/logs/laravel.log`
-  em vez de enviados — é o que queremos em desenvolvimento.
-
-### Criar a base de dados e arrancar
-
-```bash
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS project;"
-
-php artisan storage:link
-php artisan migrate:fresh --seed
-
-npm run dev
-```
-
-Num segundo terminal:
-
-```bash
-php artisan serve
-```
-
-A aplicação fica em <http://localhost:8000>.
-
-## Credenciais de acesso
-
-Não existe registo público: a única forma de entrar na área de administração é com a conta
-criada pelo seeder.
-
-| Email | Password |
-|---|---|
-| _(a preencher quando a SCRUM-74 fechar)_ | _(a preencher)_ |
+| Member | Responsibility |
+| Beatriz Fiocchi (Team Lead) | Backend routes |
+| Jéssica Amorim | Frontend layout & visual identity |
+| Leida Dupret | Backend config, protected routes, UX logic |
+| Luana Santos | Database configuration & migrations |
 
 > O `AdminUserSeeder` lê os valores de `ADMIN_EMAIL`, `ADMIN_NAME` e `ADMIN_PASSWORD` do
 > `.env`, com `admin@example.com` / `password` por defeito. Enquanto essas credenciais não

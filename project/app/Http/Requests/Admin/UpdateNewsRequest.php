@@ -40,8 +40,10 @@ class UpdateNewsRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'title.required' => 'O título é obrigatório.',
             'title.min' => 'O título deve ter entre 10 e 255 caracteres.',
             'title.max' => 'O título deve ter entre 10 e 255 caracteres.',
+            'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'image.max' => 'A imagem deve ter no máximo 5 MB.',

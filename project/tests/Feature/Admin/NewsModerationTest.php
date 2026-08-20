@@ -49,8 +49,8 @@ class NewsModerationTest extends TestCase
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('Admin/News/Index')
-                    ->has('news.data', 1)
-                    ->where('news.data.0.title', 'Uma notícia qualquer')
+                    ->has('news', 1)
+                    ->where('news.0.title', 'Uma notícia qualquer')
             );
     }
 
@@ -63,8 +63,8 @@ class NewsModerationTest extends TestCase
             ->get(route('admin.news.index', ['status' => 'accepted']))
             ->assertInertia(
                 fn (Assert $page) => $page
-                    ->has('news.data', 1)
-                    ->where('news.data.0.status', 'accepted')
+                    ->has('news', 1)
+                    ->where('news.0.status', 'accepted')
             );
     }
 

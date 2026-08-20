@@ -53,8 +53,8 @@ class TestimonialModerationTest extends TestCase
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('Admin/Testimonials/Index')
-                    ->has('testimonials.data', 1)
-                    ->where('testimonials.data.0.name', 'Maria Silva')
+                    ->has('testimonials', 1)
+                    ->where('testimonials.0.name', 'Maria Silva')
             );
     }
 

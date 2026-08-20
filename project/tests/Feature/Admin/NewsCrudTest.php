@@ -34,9 +34,8 @@ class NewsCrudTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.news.index'));
 
         $response->assertOk();
-        // a listagem é paginada, por isso os registos vêm em news.data
         $response->assertInertia(fn (Assert $page) => $page->component('Admin/News/Index')
-            ->has('news.data', 3)
+            ->has('news', 3)
         );
     }
 
