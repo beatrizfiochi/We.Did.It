@@ -13,6 +13,16 @@ class Newsletter extends Model
 
     protected $table = 'newsletters';
 
+    protected function casts(): array
+    {
+        return [
+            'status' => 'boolean',
+            'date' => 'date',
+            'period_start' => 'date',
+            'period_end' => 'date',
+        ];
+    }
+
     public function news()
     {
         return $this->belongsToMany(News::class, 'news_newsletter', 'newsletter_id', 'news_id')

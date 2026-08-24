@@ -87,6 +87,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Seleção das ofertas formativas incluídas numa newsletter
     Route::get('newsletters/{newsletter}/cursos', [NewsletterController::class, 'editCourses'])->name('newsletters.courses.edit');
     Route::put('newsletters/{newsletter}/cursos', [NewsletterController::class, 'updateCourses'])->name('newsletters.courses.update');
+
+    // CRUD da newsletter (SCRUM-102)
+    Route::resource('newsletters', NewsletterController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->names('newsletters');
 });
 
 require __DIR__.'/auth.php';
