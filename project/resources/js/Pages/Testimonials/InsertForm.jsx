@@ -1,15 +1,10 @@
 import GeneralForm from "@/Components/Form/GeneralForm"
-import { useState, useEffect } from "react"
-import { usePage } from "@inertiajs/react"
+import { Head } from "@inertiajs/react"
+import { useState } from "react"
 import PublicLayout from "@/Layouts/PublicLayout"
 
 
-export default function TestimonialForm({ categories }) {
-
-
-    // grab the success message from controller 
-    const { flash } = usePage().props
-
+export default function InsertForm({ categories }) {
 
     // Variables that hold arrays with the labels and input type and name 
     const fields =
@@ -26,22 +21,18 @@ export default function TestimonialForm({ categories }) {
 
     const [clientErrors, setClientErrors] = useState({})
     const [imageUploaded, setImageUploaded] = useState(false)
-    const [successMessage, setSuccessMessage] = useState(
-        flash?.success ?? null
-    )
 
 
 
-    function insertTestimonial(event) {
-        // grab reference from form
-        const dataForm = new FormData(event.target)
+    // Chamada no onBefore do <Form>: recebe o FormData que o GeneralForm obtém
+    // do getFormData(). Devolver false cancela a submissão do Inertia — já não
+    // há event.preventDefault(), porque não há evento de DOM.
+    function insertTestimonial(dataForm) {
 
         // variables coming from the form input
         const name = dataForm.get('name')
-        const email = dataForm.get('email')
         const title = dataForm.get('title')
         const description = dataForm.get('description')
-        const category = dataForm.get('category_id')
         const image = dataForm.get('image')
 
         const image_rights = dataForm.get('image_rights'); // to be checked in case of uploaded image
@@ -50,17 +41,15 @@ export default function TestimonialForm({ categories }) {
         // object that holds errors according to what's inside here [''] -> the name 
         const newErrors = {}
 
-        // validation min and max characters
-        if (name.length < 3 || name.length > 15) {
-            newErrors['name'] = "O nome deve ter entre 3 e 255 caracteres."
+        // As regras abaixo espelham o StoreTestimonialRequest. Quando divergem,
+        // o cliente deixa passar algo que o servidor recusa (ou ao contrário) e
+        // o utilizador fica sem perceber porquê.
+        if (name.length > 255) {
+            newErrors['name'] = "O nome deve ter no máximo 255 caracteres."
         }
 
-        // email validation
-        // accepts only @cesae.pt or @cesaedigital.pt
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@(cesae\.pt|cesaedigital\.pt)$/i;
-        if (!emailRegex.test(email)) {
-            newErrors['email'] = "Email inválido. Apenas emails institucionais são aceites.";
-        }
+        // o email é validado no servidor (required|email): qualquer pessoa pode
+        // submeter, não só emails institucionais
 
         // title validation
         if (title.length < 5 || title.length > 255) {
@@ -88,7 +77,6 @@ export default function TestimonialForm({ categories }) {
         }
 
         if (Object.keys(newErrors).length > 0) {
-            event.preventDefault()
             setClientErrors(newErrors)
             return false
 
@@ -103,18 +91,17 @@ export default function TestimonialForm({ categories }) {
 
     return (
         <PublicLayout>
+            <Head title="Adicionar testemunho" />
+
             <div>
                 <GeneralForm
                     formTitle="Adicionar Testemunho"
                     formMethod="POST"
-                    formAction={route('testimonial.store')}
+                    formAction={route('testimonials.store')}
                     fields={fields}
                     clientErrors={clientErrors}
                     categoryList={categories}
                     submitFunction={insertTestimonial}
-                    successMessage={successMessage}
-                    clearSuccessMessage={() => setSuccessMessage(null)}
-
                 />
             </div>
         </PublicLayout>

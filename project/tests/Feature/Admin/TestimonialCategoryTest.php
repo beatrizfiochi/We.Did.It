@@ -46,9 +46,13 @@ class TestimonialCategoryTest extends TestCase
         $testimonial = Testimonial::factory()->create(['category_id' => null]);
         $category = Category::create(['name' => 'Testemunho interno']);
 
-        $response = $this->actingAs($admin)->patch(route('admin.testimonials.category', $testimonial), [
-            'category_id' => $category->id,
-        ]);
+        // o controller responde com back(): o from() é o que faz o redirect
+        // voltar para a listagem, como acontece no browser
+        $response = $this->actingAs($admin)
+            ->from(route('admin.testimonials.index'))
+            ->patch(route('admin.testimonials.category', $testimonial), [
+                'category_id' => $category->id,
+            ]);
 
         $this->assertDatabaseHas('testimonials', ['id' => $testimonial->id, 'category_id' => $category->id]);
         $response->assertRedirect(route('admin.testimonials.index'));

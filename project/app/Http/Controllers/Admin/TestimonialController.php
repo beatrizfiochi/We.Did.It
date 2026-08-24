@@ -2,66 +2,82 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\ModeratesSubmissions;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateTestimonialCategoryRequest;
+use App\Http\Requests\Admin\UpdateTestimonialCategoryRequest;
+use App\Http\Requests\Admin\UpdateTestimonialRequest;
+use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TestimonialController extends Controller
 {
+    use ModeratesSubmissions;
+
     /**
-     * Lista os testemunhos para o gestor categorizar.
+     * List the submitted testimonials for moderation.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Admin/Testimonials/Index', [
-            'testimonials' => Testimonial::with('category:id,name')->latest()->get(),
-            'categories' => Category::all(['id', 'name']),
+            'testimonials' => Testimonial::with('category:id,name')
+                ->when(
+                    $request->string('status')->toString(),
+                    fn ($query, $status) => $query->where('status', $status),
+                )
+                ->latest()
+                ->get(),
+            'filters' => ['status' => $request->string('status')->toString()],
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     /**
-     * Define a categoria de um testemunho.
+     * Update the content of a submitted testimonial.
+     */
+    public function update(UpdateTestimonialRequest $request, Testimonial $testimonial): RedirectResponse
+    {
+        $data = $this->replaceImage($request->validated(), $request, $testimonial, 'testimonials');
+
+        $testimonial->update($data);
+
+        ActivityLog::record($testimonial, 'updated');
+
+        return back()->with('success', 'Testemunho atualizado com sucesso.');
+    }
+
+    /**
+     * Approve a submitted testimonial.
+     */
+    public function approve(Testimonial $testimonial): RedirectResponse
+    {
+        return $this->changeStatus($testimonial, 'accepted', 'Testemunho aprovado.');
+    }
+
+    /**
+     * Refuse a submitted testimonial.
+     */
+    public function refuse(Testimonial $testimonial): RedirectResponse
+    {
+        return $this->changeStatus($testimonial, 'refused', 'Testemunho recusado.');
+    }
+
+    /**
+     * Set the category of a submitted testimonial.
+     *
+     * Existe à parte do update() porque categorizar é feito a partir da
+     * listagem, sem passar pelo formulário de conteúdo completo.
      */
     public function category(UpdateTestimonialCategoryRequest $request, Testimonial $testimonial): RedirectResponse
     {
         $testimonial->update($request->validated());
 
-        return redirect()->route('admin.testimonials.index')->with('success', 'Testemunho categorizado com sucesso.');
-    }
+        ActivityLog::record($testimonial, 'updated');
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTestimonialCategoryRequest $request, Testimonial $testimonial): RedirectResponse
-    {
-        //dd($request->hasFile('image'), $request->all());
-
-        $data = $request->validated();
-
-        if ($request->hasFile('image')) {
-            $oldImage = $testimonial->image;
-
-            // store new image
-            $data['image'] = $request->file('image')->store('testimonials', 'public');
-
-            // deletes old image
-            if ($oldImage) {
-                Storage::disk('public')->delete($oldImage);
-            }
-
-            //dd($data['image'], $testimonial->fresh());
-        } else {
-            unset($data['image']);
-        }
-
-
-        $testimonial->update($data);
-
-        return redirect()->route('admin.testimonials.index')->with('success', 'Testemunho atualizado com sucesso.');
+        return back()->with('success', 'Testemunho categorizado com sucesso.');
     }
 }

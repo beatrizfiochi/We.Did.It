@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCalendarRequest;
-use App\Http\Requests\UpdateCalendarRequest;
+use App\Http\Requests\Admin\StoreCalendarRequest;
+use App\Http\Requests\Admin\UpdateCalendarRequest;
+use App\Models\ActivityLog;
 use App\Models\Calendar;
 use App\Models\Newsletter;
 use Illuminate\Http\RedirectResponse;
@@ -14,11 +15,12 @@ use Inertia\Response;
 class CalendarController extends Controller
 {
     /**
-     * Lista os eventos da agenda, com as newsletters onde cada um já entra.
+     * List the calendar events, with the newsletters each one already enters.
      */
     public function index(): Response
     {
-        return Inertia::render('Admin/Calendars/Index', [
+        return Inertia::render('Admin/Calendar/Index', [
+            // sem paginação: são eventos de uma associação, não milhares de linhas
             'events' => Calendar::with('newsletters:id,title,edition')
                 ->orderBy('date')
                 ->get(['id', 'date', 'title']),
@@ -26,17 +28,17 @@ class CalendarController extends Controller
     }
 
     /**
-     * Mostra o formulário de criação de um novo evento.
+     * Show the create form for a new calendar event.
      */
     public function create(): Response
     {
-        return Inertia::render('Admin/Calendars/Create', [
+        return Inertia::render('Admin/Calendar/Create', [
             'newsletters' => Newsletter::orderByDesc('edition')->get(['id', 'title', 'edition']),
         ]);
     }
 
     /**
-     * Guarda um novo evento da agenda e associa-o às newsletters escolhidas.
+     * Store a new calendar event and associate it with the chosen newsletters.
      */
     public function store(StoreCalendarRequest $request): RedirectResponse
     {
@@ -44,20 +46,22 @@ class CalendarController extends Controller
         $newsletterIds = $data['newsletter_ids'] ?? [];
         unset($data['newsletter_ids']);
 
-        $calendar = Calendar::create($data);
-        $calendar->newsletters()->sync($newsletterIds);
+        $event = Calendar::create($data);
+        $event->newsletters()->sync($newsletterIds);
 
-        return redirect()->route('admin.calendars.index')->with('success', 'Evento criado com sucesso.');
+        ActivityLog::record($event, 'created');
+
+        return back()->with('success', 'Evento criado com sucesso.');
     }
 
     /**
-     * Mostra o formulário de edição de um evento.
+     * Show the edit form for a calendar event.
      */
     public function edit(Calendar $calendar): Response
     {
         $calendar->load('newsletters:id');
 
-        return Inertia::render('Admin/Calendars/Edit', [
+        return Inertia::render('Admin/Calendar/Edit', [
             'event' => [
                 ...$calendar->only(['id', 'date', 'title']),
                 'newsletter_ids' => $calendar->newsletters->pluck('id'),
@@ -67,7 +71,7 @@ class CalendarController extends Controller
     }
 
     /**
-     * Atualiza um evento da agenda existente e as newsletters associadas.
+     * Update an existing calendar event and the newsletters it belongs to.
      */
     public function update(UpdateCalendarRequest $request, Calendar $calendar): RedirectResponse
     {
@@ -82,16 +86,22 @@ class CalendarController extends Controller
 
         $calendar->update($data);
 
-        return redirect()->route('admin.calendars.index')->with('success', 'Evento atualizado com sucesso.');
+        ActivityLog::record($calendar, 'updated');
+
+        return back()->with('success', 'Evento atualizado com sucesso.');
     }
 
     /**
-     * Remove um evento da agenda.
+     * Remove a calendar event.
      */
     public function destroy(Calendar $calendar): RedirectResponse
     {
         $calendar->delete();
 
-        return redirect()->route('admin.calendars.index')->with('success', 'Evento removido com sucesso.');
+        // depois do delete(): o Eloquent mantém os atributos na instância e o
+        // record_id não é chave estrangeira, por isso a linha do log sobrevive
+        ActivityLog::record($calendar, 'removed');
+
+        return back()->with('success', 'Evento removido com sucesso.');
     }
 }

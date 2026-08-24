@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTestimonialCategoryRequest extends FormRequest
+class UpdateNewsRequest extends FormRequest
 {
     /**
-     * Determina se o utilizador está autorizado a fazer este pedido.
+     * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
@@ -16,7 +16,11 @@ class UpdateTestimonialCategoryRequest extends FormRequest
     }
 
     /**
-     * Regras de validação aplicadas ao pedido.
+     * Get the validation rules that apply to the request.
+     *
+     * O status fica de fora de propósito. O model tem-no no #[Fillable], por
+     * isso incluí-lo aqui deixaria qualquer pedido de edição aprovar-se a si
+     * mesmo. Mudar o estado é exclusivo dos endpoints approve() e refuse().
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -26,23 +30,23 @@ class UpdateTestimonialCategoryRequest extends FormRequest
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'string', 'min:100', 'max:1050'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
-
-            // no name and email because it's disabled
-
             'title.required' => 'O título é obrigatório.',
             'title.min' => 'O título deve ter entre 5 e 255 caracteres.',
             'title.max' => 'O título deve ter entre 5 e 255 caracteres.',
-
             'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
+            'image.max' => 'A imagem deve ter no máximo 5 MB.',
         ];
     }
 }

@@ -9,6 +9,10 @@ class TestimonialSeeder extends Seeder
 {
     public function run(): void
     {
-        Testimonial::factory(random_int(4, 5))->create();
+        // pelo mesmo motivo do NewsSeeder: garantir que há sempre pelo menos um
+        // testemunho aprovado para o NewsletterSeeder associar
+        Testimonial::factory(1)->create(['status' => 'accepted']);
+
+        Testimonial::factory(random_int(3, 4))->create();
     }
 }

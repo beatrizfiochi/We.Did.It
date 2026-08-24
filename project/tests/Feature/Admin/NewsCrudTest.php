@@ -60,11 +60,15 @@ class NewsCrudTest extends TestCase
         $news = News::factory()->create(['category_id' => null]);
         $category = Category::create(['name' => 'Estágios']);
 
-        $response = $this->actingAs($admin)->put(route('admin.news.update', $news), [
-            'title' => $news->title,
-            'description' => $news->description,
-            'category_id' => $category->id,
-        ]);
+        // o controller responde com back(): o from() é o que faz o redirect
+        // voltar para a listagem, como acontece no browser
+        $response = $this->actingAs($admin)
+            ->from(route('admin.news.index'))
+            ->put(route('admin.news.update', $news), [
+                'title' => $news->title,
+                'description' => $news->description,
+                'category_id' => $category->id,
+            ]);
 
         $this->assertDatabaseHas('news', ['id' => $news->id, 'category_id' => $category->id]);
         $response->assertRedirect(route('admin.news.index'));
@@ -86,7 +90,9 @@ class NewsCrudTest extends TestCase
         $admin = User::factory()->create();
         $news = News::factory()->create(['status' => 'received']);
 
-        $response = $this->actingAs($admin)->patch(route('admin.news.approve', $news));
+        $response = $this->actingAs($admin)
+            ->from(route('admin.news.index'))
+            ->patch(route('admin.news.approve', $news));
 
         $this->assertDatabaseHas('news', ['id' => $news->id, 'status' => 'accepted']);
         $response->assertRedirect(route('admin.news.index'));
@@ -98,7 +104,9 @@ class NewsCrudTest extends TestCase
         $admin = User::factory()->create();
         $news = News::factory()->create(['status' => 'received']);
 
-        $response = $this->actingAs($admin)->patch(route('admin.news.refuse', $news));
+        $response = $this->actingAs($admin)
+            ->from(route('admin.news.index'))
+            ->patch(route('admin.news.refuse', $news));
 
         $this->assertDatabaseHas('news', ['id' => $news->id, 'status' => 'refused']);
         $response->assertRedirect(route('admin.news.index'));

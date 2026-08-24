@@ -25,12 +25,12 @@ class CalendarCrudTest extends TestCase
     {
         $calendar = Calendar::factory()->create();
 
-        $this->get(route('admin.calendars.index'))->assertRedirect(route('login'));
-        $this->get(route('admin.calendars.create'))->assertRedirect(route('login'));
-        $this->post(route('admin.calendars.store'), $this->validPayload())->assertRedirect(route('login'));
-        $this->get(route('admin.calendars.edit', $calendar))->assertRedirect(route('login'));
-        $this->put(route('admin.calendars.update', $calendar), $this->validPayload())->assertRedirect(route('login'));
-        $this->delete(route('admin.calendars.destroy', $calendar))->assertRedirect(route('login'));
+        $this->get(route('admin.calendar.index'))->assertRedirect(route('login'));
+        $this->get(route('admin.calendar.create'))->assertRedirect(route('login'));
+        $this->post(route('admin.calendar.store'), $this->validPayload())->assertRedirect(route('login'));
+        $this->get(route('admin.calendar.edit', $calendar))->assertRedirect(route('login'));
+        $this->put(route('admin.calendar.update', $calendar), $this->validPayload())->assertRedirect(route('login'));
+        $this->delete(route('admin.calendar.destroy', $calendar))->assertRedirect(route('login'));
 
         $this->assertDatabaseCount('calendars', 1);
     }
@@ -40,10 +40,10 @@ class CalendarCrudTest extends TestCase
         $admin = User::factory()->create();
         Calendar::factory()->count(3)->create();
 
-        $response = $this->actingAs($admin)->get(route('admin.calendars.index'));
+        $response = $this->actingAs($admin)->get(route('admin.calendar.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Calendars/Index')
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Calendar/Index')
             ->has('events', 3)
         );
     }
@@ -52,22 +52,26 @@ class CalendarCrudTest extends TestCase
     {
         $admin = User::factory()->create();
 
-        $response = $this->actingAs($admin)->get(route('admin.calendars.create'));
+        $response = $this->actingAs($admin)->get(route('admin.calendar.create'));
 
         $response->assertOk();
-        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Calendars/Create'));
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Calendar/Create'));
     }
 
     public function test_authenticated_users_can_create_an_event(): void
     {
         $admin = User::factory()->create();
 
-        $response = $this->actingAs($admin)->post(route('admin.calendars.store'), $this->validPayload([
-            'title' => 'Feira de emprego',
-        ]));
+        // o controller responde com back(): o from() é o que faz o redirect
+        // voltar para a listagem, como acontece no browser
+        $response = $this->actingAs($admin)
+            ->from(route('admin.calendar.index'))
+            ->post(route('admin.calendar.store'), $this->validPayload([
+                'title' => 'Feira de emprego',
+            ]));
 
         $this->assertDatabaseHas('calendars', ['title' => 'Feira de emprego']);
-        $response->assertRedirect(route('admin.calendars.index'));
+        $response->assertRedirect(route('admin.calendar.index'));
         $response->assertSessionHas('success');
     }
 
@@ -75,7 +79,7 @@ class CalendarCrudTest extends TestCase
     {
         $admin = User::factory()->create();
 
-        $response = $this->actingAs($admin)->post(route('admin.calendars.store'), []);
+        $response = $this->actingAs($admin)->post(route('admin.calendar.store'), []);
 
         $response->assertSessionHasErrors(['date', 'title']);
         $this->assertDatabaseCount('calendars', 0);
@@ -86,10 +90,10 @@ class CalendarCrudTest extends TestCase
         $admin = User::factory()->create();
         $calendar = Calendar::factory()->create();
 
-        $response = $this->actingAs($admin)->get(route('admin.calendars.edit', $calendar));
+        $response = $this->actingAs($admin)->get(route('admin.calendar.edit', $calendar));
 
         $response->assertOk();
-        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Calendars/Edit')
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Calendar/Edit')
             ->where('event.id', $calendar->id)
         );
     }
@@ -99,12 +103,14 @@ class CalendarCrudTest extends TestCase
         $admin = User::factory()->create();
         $calendar = Calendar::factory()->create(['title' => 'Título antigo']);
 
-        $response = $this->actingAs($admin)->put(route('admin.calendars.update', $calendar), $this->validPayload([
-            'title' => 'Título atualizado',
-        ]));
+        $response = $this->actingAs($admin)
+            ->from(route('admin.calendar.index'))
+            ->put(route('admin.calendar.update', $calendar), $this->validPayload([
+                'title' => 'Título atualizado',
+            ]));
 
         $this->assertDatabaseHas('calendars', ['id' => $calendar->id, 'title' => 'Título atualizado']);
-        $response->assertRedirect(route('admin.calendars.index'));
+        $response->assertRedirect(route('admin.calendar.index'));
         $response->assertSessionHas('success');
     }
 
@@ -113,10 +119,12 @@ class CalendarCrudTest extends TestCase
         $admin = User::factory()->create();
         $calendar = Calendar::factory()->create();
 
-        $response = $this->actingAs($admin)->delete(route('admin.calendars.destroy', $calendar));
+        $response = $this->actingAs($admin)
+            ->from(route('admin.calendar.index'))
+            ->delete(route('admin.calendar.destroy', $calendar));
 
         $this->assertDatabaseMissing('calendars', ['id' => $calendar->id]);
-        $response->assertRedirect(route('admin.calendars.index'));
+        $response->assertRedirect(route('admin.calendar.index'));
         $response->assertSessionHas('success');
     }
 
@@ -125,7 +133,7 @@ class CalendarCrudTest extends TestCase
         $admin = User::factory()->create();
         $newsletters = Newsletter::factory()->count(2)->create();
 
-        $response = $this->actingAs($admin)->post(route('admin.calendars.store'), $this->validPayload([
+        $response = $this->actingAs($admin)->post(route('admin.calendar.store'), $this->validPayload([
             'newsletter_ids' => $newsletters->pluck('id')->all(),
         ]));
 
@@ -141,7 +149,7 @@ class CalendarCrudTest extends TestCase
         [$oldNewsletter, $newNewsletter] = Newsletter::factory()->count(2)->create();
         $calendar->newsletters()->attach($oldNewsletter->id);
 
-        $response = $this->actingAs($admin)->put(route('admin.calendars.update', $calendar), $this->validPayload([
+        $response = $this->actingAs($admin)->put(route('admin.calendar.update', $calendar), $this->validPayload([
             'newsletter_ids' => [$newNewsletter->id],
         ]));
 
@@ -156,7 +164,7 @@ class CalendarCrudTest extends TestCase
         $newsletter = Newsletter::factory()->create();
         $calendar->newsletters()->attach($newsletter->id);
 
-        $this->actingAs($admin)->put(route('admin.calendars.update', $calendar), $this->validPayload());
+        $this->actingAs($admin)->put(route('admin.calendar.update', $calendar), $this->validPayload());
 
         $this->assertEqualsCanonicalizing([$newsletter->id], $calendar->newsletters()->get()->pluck('id')->all());
     }
@@ -168,7 +176,7 @@ class CalendarCrudTest extends TestCase
         $newsletter = Newsletter::factory()->create();
         $calendar->newsletters()->attach($newsletter->id);
 
-        $this->actingAs($admin)->put(route('admin.calendars.update', $calendar), $this->validPayload([
+        $this->actingAs($admin)->put(route('admin.calendar.update', $calendar), $this->validPayload([
             'newsletter_ids' => [],
         ]));
 
@@ -183,7 +191,7 @@ class CalendarCrudTest extends TestCase
             'title' => 'Título original',
         ]);
 
-        $response = $this->actingAs($admin)->put(route('admin.calendars.update', $calendar), [
+        $response = $this->actingAs($admin)->put(route('admin.calendar.update', $calendar), [
             'date' => '2026-10-01',
         ]);
 
@@ -202,7 +210,7 @@ class CalendarCrudTest extends TestCase
         $newsletter = Newsletter::factory()->create();
         $calendar->newsletters()->attach($newsletter->id);
 
-        $response = $this->actingAs($admin)->get(route('admin.calendars.edit', $calendar));
+        $response = $this->actingAs($admin)->get(route('admin.calendar.edit', $calendar));
 
         $response->assertInertia(fn (Assert $page) => $page->where('event.newsletter_ids', [$newsletter->id]));
     }

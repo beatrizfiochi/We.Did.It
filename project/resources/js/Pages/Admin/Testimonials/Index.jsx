@@ -1,8 +1,9 @@
 import DataTable from "@/Components/DataTable";
+import FlashMessage from "@/Components/FlashMessage";
 import Modal from "@/Components/Modal";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
-import { router } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 
 
 
@@ -20,7 +21,7 @@ export default function Index({ testimonials, categories }) {
         {
             key: 'status',
             label: 'Estado',
-            render: (row) => statusLabels[row.status]  // status show up in portuguese from the variable
+            render: (row) => statusLabels[row.status] ?? row.status
         },
         {
             key: 'actions',
@@ -30,12 +31,16 @@ export default function Index({ testimonials, categories }) {
                     <button
                         type="button"
                         className="btn btn-success btn-sm"
+                        disabled={row.status === 'accepted'}
+                        onClick={() => router.patch(route('admin.testimonials.approve', row.id), {}, { preserveScroll: true })}
                     >
                         Aprovar
                     </button>
                     <button
                         type="button"
                         className="btn btn-danger btn-sm"
+                        disabled={row.status === 'refused'}
+                        onClick={() => router.patch(route('admin.testimonials.refuse', row.id), {}, { preserveScroll: true })}
                     >
                         Recusar
                     </button>
@@ -60,8 +65,8 @@ export default function Index({ testimonials, categories }) {
     // labels for status
     const statusLabels = {
         received: "Recebido",
-        approved: "Aprovado",
-        rejected: "Recusado",
+        accepted: "Aprovado",
+        refused: "Recusado",
     };
 
 
@@ -83,14 +88,12 @@ export default function Index({ testimonials, categories }) {
     const filteredTestimonials = testimonials.filter((item) => {
 
         // use the status in portuguese coming from the variable as the status column for the testimonials, else use original one
-        const statusLabel = statusLabels[item.status];
-
-        if (!statusLabel) {
-            return null;
-        }
+        // se um estado novo aparecer sem tradução, mostra-se o valor cru em vez
+        // de a linha desaparecer da tabela
+        const statusLabel = statusLabels[item.status] ?? item.status;
 
         // search permits searching status in portuguese or original form from DB (in english)
-        const matchesStatus = statusLabel?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusLabel.toLowerCase().includes(searchTerm.toLowerCase());
 
         // what is shown in the table is according to the filtered testimonials ( By category)
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(item.category_id);
@@ -132,6 +135,10 @@ export default function Index({ testimonials, categories }) {
             route('admin.testimonials.update', editingTestimonials.id),
             {
                 _method: 'put',
+                // o UpdateTestimonialRequest exige name e email; não são
+                // editáveis no formulário, por isso reenviam-se inalterados
+                name: editingTestimonials.name,
+                email: editingTestimonials.email,
                 title: editingTestimonials.title,
                 description: editingTestimonials.description,
                 category_id: editingTestimonials.category_id,
@@ -163,6 +170,9 @@ export default function Index({ testimonials, categories }) {
     return (
 
         <AuthenticatedLayout header="Testemunhos">
+            <Head title="Testemunhos" />
+
+            <FlashMessage />
 
             <div className="row ">
 
@@ -259,7 +269,7 @@ export default function Index({ testimonials, categories }) {
                         {selectedTestimonials.image && (
                             <img
                                 //grabds from local storage the specific image from the testimonial
-                                src={`http://127.0.0.1:8000/storage/${selectedTestimonials.image}`}
+                                src={`/storage/${selectedTestimonials.image}`}
                                 alt={selectedTestimonials.title}
                                 className="w-full h-auto rounded-lg mb-4 mt-3"
                             />
@@ -400,12 +410,13 @@ export default function Index({ testimonials, categories }) {
                                     }
 
                                     // front-end validation for choosing image with 2mb
-                                    const maxSizeBytes = 2 * 1024 * 1024 // 2MB
+                                    // igual ao max:5120 do UpdateTestimonialRequest
+                                    const maxSizeBytes = 5 * 1024 * 1024 // 5MB
 
                                     if (file.size > maxSizeBytes) {
                                         setEditErrors(prev => ({
                                             ...prev,
-                                            image: 'O ficheiro deve ter no máximo 2MB.'
+                                            image: 'O ficheiro deve ter no máximo 5MB.'
                                         }));
 
                                         // image value stays empty so it doesnt get uploaded
@@ -435,7 +446,7 @@ export default function Index({ testimonials, categories }) {
                                 />
                             ) : editingTestimonials.image ? (
                                 <img
-                                    src={`http://127.0.0.1:8000/storage/${editingTestimonials.image}`}
+                                    src={`/storage/${editingTestimonials.image}`}
                                     alt="Imagem atual"
                                     className="w-32 h-auto rounded-lg mt-2"
                                 />

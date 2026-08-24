@@ -5,13 +5,6 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
-import NewsForm from './Components/NewsForm';
-import InsertForm from './Pages/News/insertForm';
-
-
-// resources folder --> where laravel and inertia/React overlap
-
-
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

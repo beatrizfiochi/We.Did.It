@@ -10,6 +10,7 @@ import { useState } from 'react';
 
 export default function Index({ categories = [] }) {
     const [editingCategory, setEditingCategory] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
 
     const createForm = useForm({
         name: '',
@@ -54,9 +55,17 @@ export default function Index({ categories = [] }) {
             return;
         }
 
+        // O botão fica desativado quando a categoria está em uso, mas as
+        // contagens podem estar desatualizadas. A guarda real é no servidor:
+        // a foreign key é onDelete('restrict') e o controller devolve um erro
+        // de validação na chave 'category' em vez de quebrar com QueryException.
         router.delete(route('admin.categories.destroy', category.id), {
             preserveScroll: true,
-            onSuccess: cancelEdit,
+            onSuccess: () => {
+                setDeleteError(null);
+                cancelEdit();
+            },
+            onError: (errors) => setDeleteError(errors.category),
         });
     }
 
@@ -121,15 +130,9 @@ export default function Index({ categories = [] }) {
             <div className="space-y-6">
                 <FlashMessage />
 
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-900">
-                        Categorias
-                    </h1>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Gere as categorias usadas nas notícias e testemunhos.
-                    </p>
-                </div>
+                <p className="text-sm text-gray-600">
+                    Gere as categorias usadas nas notícias e testemunhos.
+                </p>
 
                 <div className="rounded-lg bg-white p-6 shadow-sm">
                     <form onSubmit={submitCreate} className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -144,7 +147,6 @@ export default function Index({ categories = [] }) {
                             />
 
                             <InputError message={createForm.errors.name} className="mt-2" />
-                            <InputError message={createForm.errors.category} className="mt-2" />
                         </div>
 
                         <PrimaryButton disabled={createForm.processing}>
@@ -184,6 +186,8 @@ export default function Index({ categories = [] }) {
                         </form>
                     </div>
                 )}
+
+                <InputError message={deleteError} className="mb-2" />
 
                 <DataTable
                     columns={columns}

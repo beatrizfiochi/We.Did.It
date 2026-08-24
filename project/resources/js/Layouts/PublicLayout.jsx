@@ -23,11 +23,11 @@ export default function PublicLayout({ children }) {
                             Adicionar notícia
                         </Link>
 
-                        <Link href={route('testimonial.create')}>
+                        <Link href={route('testimonials.create')}>
                             Adicionar testemunho
                         </Link>
 
-                        <Link href="/login">
+                        <Link href={route('login')}>
                             Login
                         </Link>
                     </div>

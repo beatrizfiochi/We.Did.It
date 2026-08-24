@@ -2,82 +2,78 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\ModeratesSubmissions;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateNewsRequest;
+use App\Http\Requests\Admin\UpdateNewsRequest;
+use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class NewsController extends Controller
 {
+    use ModeratesSubmissions;
+
     /**
-     * Lista as notícias recebidas para o gestor rever.
+     * List the submitted news for moderation.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Admin/News/Index', [
-            'news' => News::with('category:id,name')->latest()->get(),
-            'categories' => category::all(['id', 'name']),
+            'news' => News::with('category:id,name')
+                ->when(
+                    $request->string('status')->toString(),
+                    fn ($query, $status) => $query->where('status', $status),
+                )
+                ->latest()
+                ->get(),
+            'filters' => ['status' => $request->string('status')->toString()],
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     /**
-     * Mostra o formulário de edição de uma notícia.
+     * Show the edit form for a submitted news article.
      */
     public function edit(News $news): Response
     {
         return Inertia::render('Admin/News/Edit', [
             'news' => $news->load('category:id,name'),
-            'categories' => Category::all(['id', 'name']),
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     /**
-     * Atualiza o conteúdo de uma notícia.
+     * Update the content of a submitted news article.
      */
     public function update(UpdateNewsRequest $request, News $news): RedirectResponse
     {
-        $data = $request->validated();
-
-        if ($request->hasFile('image')) {
-            $oldImage = $news->image;
-
-            // Stores new image --- folder storage<app<public< news
-            $data['image'] = $request->file('image')->store('news', 'public');
-
-            // deletes old image
-            if ($oldImage) {
-                Storage::disk('public')->delete($oldImage);
-            }
-        } else {
-            unset($data['image']);
-        }
+        // o status não vem nas rules: editar conteúdo não muda o estado
+        $data = $this->replaceImage($request->validated(), $request, $news, 'news');
 
         $news->update($data);
 
-        return redirect()->route('admin.news.index')->with('success', 'Notícia atualizada com sucesso.');
+        ActivityLog::record($news, 'updated');
+
+        return back()->with('success', 'Notícia atualizada com sucesso.');
     }
 
     /**
-     * Aprova uma notícia recebida, tornando-a elegível para a newsletter.
+     * Approve a submitted news article.
      */
     public function approve(News $news): RedirectResponse
     {
-        $news->update(['status' => 'accepted']);
-
-        return redirect()->route('admin.news.index')->with('success', 'Notícia aprovada com sucesso.');
+        return $this->changeStatus($news, 'accepted', 'Notícia aprovada.');
     }
 
     /**
-     * Recusa uma notícia recebida.
+     * Refuse a submitted news article.
      */
     public function refuse(News $news): RedirectResponse
     {
-        $news->update(['status' => 'refused']);
-
-        return redirect()->route('admin.news.index')->with('success', 'Notícia recusada com sucesso.');
+        return $this->changeStatus($news, 'refused', 'Notícia recusada.');
     }
 }
