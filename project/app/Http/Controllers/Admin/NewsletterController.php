@@ -12,6 +12,18 @@ use Inertia\Response;
 
 class NewsletterController extends Controller
 {
+
+    /**
+     * Lista as newsletters, da edição mais recente para a mais antiga.
+     */
+    public function index(): Response
+    {
+        return Inertia::render('Admin/Newsletters/Index', [
+            'newsletters' => Newsletter::orderByDesc('edition')
+                ->get(['id', 'title', 'edition', 'date', 'status']),
+        ]);
+    }
+
     /**
      * Mostra o ecrã de seleção das ofertas formativas para esta newsletter.
      */
