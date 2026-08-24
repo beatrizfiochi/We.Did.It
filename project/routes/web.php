@@ -68,14 +68,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // PATCH para aprovar/recusar/categorizar, que mudam um campo; PUT para o
     // update, que substitui o conteúdo do registo.
     Route::get('noticias', [NewsController::class, 'index'])->name('news.index');
-    Route::get('noticias/{news}/editar', [NewsController::class, 'edit'])->name('news.edit');
     Route::put('noticias/{news}', [NewsController::class, 'update'])->name('news.update');
     Route::patch('noticias/{news}/aprovar', [NewsController::class, 'approve'])->name('news.approve');
     Route::patch('noticias/{news}/recusar', [NewsController::class, 'refuse'])->name('news.refuse');
 
     // Gestão da agenda (SCRUM-100), incluindo as newsletters onde cada evento entra
     Route::resource('agenda', CalendarController::class)
-        ->except('show')
+        ->only(['index', 'store', 'update', 'destroy'])
         ->parameters(['agenda' => 'calendar'])
         ->names('calendar');
 

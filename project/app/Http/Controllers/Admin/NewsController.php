@@ -36,17 +36,6 @@ class NewsController extends Controller
     }
 
     /**
-     * Show the edit form for a submitted news article.
-     */
-    public function edit(News $news): Response
-    {
-        return Inertia::render('Admin/News/Edit', [
-            'news' => $news->load('category:id,name'),
-            'categories' => Category::orderBy('name')->get(['id', 'name']),
-        ]);
-    }
-
-    /**
      * Update the content of a submitted news article.
      */
     public function update(UpdateNewsRequest $request, News $news): RedirectResponse
