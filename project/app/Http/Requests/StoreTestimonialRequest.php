@@ -30,7 +30,7 @@ class StoreTestimonialRequest extends FormRequest
             // name e email são NOT NULL na tabela testimonials
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'title' => ['required', 'string', 'min:10', 'max:255'],
+            'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'string', 'min:100', 'max:1050'],
             // a opção "Nenhuma" do formulário envia string vazia
             'category_id' => ['nullable', 'exists:categories,id'],
@@ -59,8 +59,8 @@ class StoreTestimonialRequest extends FormRequest
             'name.required' => 'O nome é obrigatório.',
             'email.required' => 'O email é obrigatório.',
             'email.email' => 'Indica um email válido.',
-            'title.min' => 'O título deve ter entre 10 e 255 caracteres.',
-            'title.max' => 'O título deve ter entre 10 e 255 caracteres.',
+            'title.min' => 'O título deve ter entre 5 e 255 caracteres.',
+            'title.max' => 'O título deve ter entre 5 e 255 caracteres.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'image.max' => 'A imagem deve ter no máximo 5 MB.',

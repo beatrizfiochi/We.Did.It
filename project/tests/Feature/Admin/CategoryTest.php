@@ -84,6 +84,24 @@ class CategoryTest extends TestCase
         $this->assertDatabaseCount('categories', 0);
     }
 
+    public function test_category_name_must_have_at_least_two_characters(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('admin.categories.store'), ['name' => 'a'])
+            ->assertSessionHasErrors('name');
+
+        $this->assertDatabaseCount('categories', 0);
+    }
+
+    public function test_a_category_can_have_a_short_name(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('admin.categories.store'), ['name' => 'TI'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('categories', ['name' => 'TI']);
+    }
+
     public function test_category_name_must_be_unique(): void
     {
         Category::create(['name' => 'Tecnologia']);

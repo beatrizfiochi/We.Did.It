@@ -27,6 +27,7 @@ class UpdateCategoryRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
+                'min:2',
                 'max:255',
                 // sem o ignore(), gravar sem mudar o nome falharia contra a própria linha
                 Rule::unique('categories', 'name')->ignore($this->route('category')),
@@ -41,6 +42,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'O nome da categoria é obrigatório.',
+            'name.min' => 'O nome da categoria deve ter pelo menos 2 caracteres.',
             'name.unique' => 'Já existe uma categoria com este nome.',
         ];
     }

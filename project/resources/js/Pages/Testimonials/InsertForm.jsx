@@ -52,8 +52,8 @@ export default function InsertForm({ categories }) {
         // submeter, não só emails institucionais
 
         // title validation
-        if (title.length < 10 || title.length > 255) {
-            newErrors['title'] = "O Título deve ter entre 10 e 255 caracteres."
+        if (title.length < 5 || title.length > 255) {
+            newErrors['title'] = "O Título deve ter entre 5 e 255 caracteres."
         }
 
         // description validation

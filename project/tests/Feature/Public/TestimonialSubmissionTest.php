@@ -86,7 +86,7 @@ class TestimonialSubmissionTest extends TestCase
     public function test_the_title_and_description_have_length_limits(): void
     {
         $this->post(route('testimonials.store'), $this->validPayload([
-            'title' => 'Curto',
+            'title' => 'Ola',
             'description' => 'Demasiado curta.',
         ]))->assertSessionHasErrors(['title', 'description']);
     }
