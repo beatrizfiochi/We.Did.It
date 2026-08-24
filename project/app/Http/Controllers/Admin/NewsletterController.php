@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreNewsletterRequest;
+use App\Http\Requests\Admin\UpdateNewsletterRequest;
 use App\Http\Requests\UpdateNewsletterCoursesRequest;
+use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\Newsletter;
 use Illuminate\Http\RedirectResponse;
@@ -12,7 +15,6 @@ use Inertia\Response;
 
 class NewsletterController extends Controller
 {
-
     /**
      * Lista as newsletters, da edição mais recente para a mais antiga.
      */
@@ -22,6 +24,50 @@ class NewsletterController extends Controller
             'newsletters' => Newsletter::orderByDesc('edition')
                 ->get(['id', 'title', 'edition', 'date', 'status']),
         ]);
+    }
+
+    /**
+     * Guarda uma nova newsletter.
+     */
+    public function store(StoreNewsletterRequest $request): RedirectResponse
+    {
+        $newsletter = Newsletter::create([
+            ...$request->validated(),
+            'status' => Newsletter::RASCUNHO,
+        ]);
+
+        ActivityLog::record($newsletter, 'created');
+
+        return back()->with('success', 'Newsletter criada com sucesso.');
+    }
+
+    /**
+     * Atualiza uma newsletter existente.
+     *
+     * Não impede a edição de uma newsletter já publicada — esse bloqueio é a
+     * SCRUM-116, na Sprint 5.
+     */
+    public function update(UpdateNewsletterRequest $request, Newsletter $newsletter): RedirectResponse
+    {
+        $data = $request->validated();
+
+        $newsletter->update($data);
+
+        ActivityLog::record($newsletter, 'updated');
+
+        return back()->with('success', 'Newsletter atualizada com sucesso.');
+    }
+
+    /**
+     * Remove uma newsletter.
+     */
+    public function destroy(Newsletter $newsletter): RedirectResponse
+    {
+        $newsletter->delete();
+
+        ActivityLog::record($newsletter, 'removed');
+
+        return back()->with('success', 'Newsletter removida com sucesso.');
     }
 
     /**
