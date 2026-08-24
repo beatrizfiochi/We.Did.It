@@ -71,6 +71,29 @@ class NewsletterController extends Controller
     }
 
     /**
+     * Mostra a newsletter com todos os conteúdos selecionados, para o gestor
+     * poder decidir se está bem antes de finalizar (SCRUM-15, ecrã da SCRUM-114).
+     */
+    public function preview(Newsletter $newsletter): Response
+    {
+        $newsletter->load([
+            'news' => fn ($q) => $q->with('category')->orderByPivot('order'),
+            'testimonials' => fn ($q) => $q->with('category')->orderByPivot('order'),
+            'calendars' => fn ($q) => $q->orderBy('date'),
+            'courses',
+        ]);
+
+        // start_date é string livre vinda da API externa, não dá para ordenar em SQL
+        $newsletter->setRelation('courses', $newsletter->courses
+            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
+            ->values());
+
+        return Inertia::render('Admin/Newsletters/Preview', [
+            'newsletter' => $newsletter,
+        ]);
+    }
+
+    /**
      * Mostra o ecrã de seleção das ofertas formativas para esta newsletter.
      */
     public function editCourses(Newsletter $newsletter): Response

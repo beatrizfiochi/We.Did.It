@@ -37,6 +37,7 @@ class NewsletterCrudTest extends TestCase
         $this->post(route('admin.newsletters.store'), $this->validPayload())->assertRedirect(route('login'));
         $this->put(route('admin.newsletters.update', $newsletter), $this->validPayload())->assertRedirect(route('login'));
         $this->delete(route('admin.newsletters.destroy', $newsletter))->assertRedirect(route('login'));
+        $this->get(route('admin.newsletters.preview', $newsletter))->assertRedirect(route('login'));
 
         $this->assertDatabaseCount('newsletters', 1);
     }

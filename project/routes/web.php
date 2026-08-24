@@ -88,6 +88,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('newsletters/{newsletter}/cursos', [NewsletterController::class, 'editCourses'])->name('newsletters.courses.edit');
     Route::put('newsletters/{newsletter}/cursos', [NewsletterController::class, 'updateCourses'])->name('newsletters.courses.update');
 
+    // Rota da pré-visualização da newsletter
+    Route::get('newsletters/{newsletter}/pre-visualizacao', [NewsletterController::class, 'preview'])
+          ->name('newsletters.preview');
+
     // CRUD da newsletter (SCRUM-102)
     Route::resource('newsletters', NewsletterController::class)
         ->only(['index', 'store', 'update', 'destroy'])
