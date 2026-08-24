@@ -7,7 +7,6 @@ use App\Http\Requests\Admin\StoreCalendarRequest;
 use App\Http\Requests\Admin\UpdateCalendarRequest;
 use App\Models\ActivityLog;
 use App\Models\Calendar;
-use App\Models\Newsletter;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -28,16 +27,6 @@ class CalendarController extends Controller
     }
 
     /**
-     * Show the create form for a new calendar event.
-     */
-    public function create(): Response
-    {
-        return Inertia::render('Admin/Calendar/Create', [
-            'newsletters' => Newsletter::orderByDesc('edition')->get(['id', 'title', 'edition']),
-        ]);
-    }
-
-    /**
      * Store a new calendar event and associate it with the chosen newsletters.
      */
     public function store(StoreCalendarRequest $request): RedirectResponse
@@ -52,22 +41,6 @@ class CalendarController extends Controller
         ActivityLog::record($event, 'created');
 
         return back()->with('success', 'Evento criado com sucesso.');
-    }
-
-    /**
-     * Show the edit form for a calendar event.
-     */
-    public function edit(Calendar $calendar): Response
-    {
-        $calendar->load('newsletters:id');
-
-        return Inertia::render('Admin/Calendar/Edit', [
-            'event' => [
-                ...$calendar->only(['id', 'date', 'title']),
-                'newsletter_ids' => $calendar->newsletters->pluck('id'),
-            ],
-            'newsletters' => Newsletter::orderByDesc('edition')->get(['id', 'title', 'edition']),
-        ]);
     }
 
     /**

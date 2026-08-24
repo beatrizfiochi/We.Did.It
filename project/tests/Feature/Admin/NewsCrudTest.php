@@ -18,7 +18,6 @@ class NewsCrudTest extends TestCase
         $news = News::factory()->create();
 
         $this->get(route('admin.news.index'))->assertRedirect(route('login'));
-        $this->get(route('admin.news.edit', $news))->assertRedirect(route('login'));
         $this->put(route('admin.news.update', $news), ['title' => 'x', 'description' => 'y'])->assertRedirect(route('login'));
         $this->patch(route('admin.news.approve', $news))->assertRedirect(route('login'));
         $this->patch(route('admin.news.refuse', $news))->assertRedirect(route('login'));
@@ -36,21 +35,6 @@ class NewsCrudTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn (Assert $page) => $page->component('Admin/News/Index')
             ->has('news', 3)
-        );
-    }
-
-    public function test_authenticated_users_can_see_the_edit_form_with_categories(): void
-    {
-        $admin = User::factory()->create();
-        $news = News::factory()->create();
-        Category::create(['name' => 'Divulgação']);
-
-        $response = $this->actingAs($admin)->get(route('admin.news.edit', $news));
-
-        $response->assertOk();
-        $response->assertInertia(fn (Assert $page) => $page->component('Admin/News/Edit')
-            ->where('news.id', $news->id)
-            ->has('categories')
         );
     }
 
