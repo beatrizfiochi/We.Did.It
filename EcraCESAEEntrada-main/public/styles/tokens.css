@@ -1,0 +1,68 @@
+:root {
+  /* Paleta institucional escura */
+  --bg: #0a0e14;
+  --bg-deep: #060a10;
+  --surface: #131922;
+  --surface-2: #1c2230;
+  --surface-3: #262d3c;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.12);
+
+  --text: #e8ecf3;
+  --text-muted: #8b94a6;
+  --text-faint: #5a6378;
+
+  /* Accent CESAE Digital (laranja-vermelho) */
+  --accent: #ff4d1a;
+  --accent-2: #ff7849;
+  --accent-soft: rgba(255, 77, 26, 0.14);
+  --accent-glow: rgba(255, 77, 26, 0.35);
+
+  --live: #22c55e;
+  --stale: #f59e0b;
+  --info: #3b82f6;
+
+  /* Cores das linhas do metro */
+  --metro-A: #0070c0;
+  --metro-B: #e10000;
+  --metro-C: #1c8a3a;
+  --metro-D: #f5d300;
+  --metro-E: #7e3f9d;
+  --metro-F: #ef7d00;
+  --metro-G: #69c0d0;
+
+  /* Tipografia */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Escala tipográfica ancorada em 1920px */
+  --fs-xs:   clamp(0.75rem, 0.55vw + 0.5rem, 1.1rem);
+  --fs-sm:   clamp(0.9rem,  0.7vw + 0.6rem, 1.3rem);
+  --fs-md:   clamp(1.05rem, 0.85vw + 0.7rem, 1.6rem);
+  --fs-lg:   clamp(1.4rem,  1.1vw + 0.9rem, 2.2rem);
+  --fs-xl:   clamp(2rem,    1.8vw + 1.1rem, 3.2rem);
+  --fs-2xl:  clamp(2.8rem,  2.8vw + 1.4rem, 5rem);
+  --fs-3xl:  clamp(3.5rem,  4vw + 1.6rem, 7rem);
+
+  /* Espaçamento */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+
+  /* Geometria */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+  --shadow-strong: 0 30px 60px -25px rgba(0, 0, 0, 0.8);
+
+  --gutter: clamp(0.75rem, 1vw, 1.5rem);
+  --gutter-lg: clamp(1rem, 1.4vw, 2rem);
+}

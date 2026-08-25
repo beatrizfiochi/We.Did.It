@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.metrodoporto.pt)",
+      "Bash(curl -sL -A \"Mozilla/5.0\" \"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSza3Csu7rMzHeEM3atgXgCDM3BznnBFcCrg&s\" -o /tmp/cesae-logo.png)",
+      "Read(//tmp/**)",
+      "Bash(/usr/bin/ls -la /tmp/cesae-logo.png)",
+      "Bash(curl -sL \"https://www.cesaedigital.pt/\" -A \"Mozilla/5.0\")",
+      "Bash(/usr/bin/head -30)",
+      "Bash(curl -sL \"https://www.cesaedigital.pt/fldrSite/img/cesae-digital-logo.svg\" -o /Users/brunosantos/Desktop/EcraCESAEEntrada/public/assets/logo-cesae.svg)",
+      "Bash(curl -sL \"https://rsms.me/inter/font-files/Inter-Regular.woff2\" -o Inter-Regular.woff2)",
+      "Bash(curl -sL \"https://rsms.me/inter/font-files/Inter-Medium.woff2\" -o Inter-Medium.woff2)",
+      "Bash(curl -sL \"https://rsms.me/inter/font-files/Inter-SemiBold.woff2\" -o Inter-SemiBold.woff2)",
+      "Bash(curl -sL \"https://rsms.me/inter/font-files/Inter-Bold.woff2\" -o Inter-Bold.woff2)",
+      "Bash(curl -sL \"https://rsms.me/inter/font-files/Inter-ExtraBold.woff2\" -o Inter-ExtraBold.woff2)",
+      "Bash(chmod +x /Users/brunosantos/Desktop/EcraCESAEEntrada/deploy/start-kiosk.sh)",
+      "Bash(/bin/ls -la /Users/brunosantos/Desktop/EcraCESAEEntrada/deploy/)",
+      "Bash(npm install *)",
+      "Bash(node server.js)",
+      "Bash(curl -s http://127.0.0.1:3000/api/health)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s http://127.0.0.1:3000/api/weather)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('stale:',d['stale'],'source:',d['source']\\); print\\('current:',d['data']['current']\\); print\\('daily count:',len\\(d['data']['daily']\\)\\)\")",
+      "Bash(curl -s http://127.0.0.1:3000/api/news)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); items=d['data']['items']; print\\('total items:',len\\(items\\)\\); [print\\(f\\\\\"  {i['source']}: {i['title'][:60]}\\\\\"\\) for i in items[:5]]\")",
+      "Bash(curl -s http://127.0.0.1:3000/api/courses)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); items=d['data']['items']; print\\('total items:',len\\(items\\)\\); [print\\(f\\\\\"  {i['title'][:50]} | {i.get\\('location','-'\\)}/{i.get\\('schedule','-'\\)} | {i.get\\('startDate','-'\\)} | {i.get\\('price','-'\\)}\\\\\"\\) for i in items[:9]]\")",
+      "Bash(curl -s http://127.0.0.1:3000/api/transit/metro)",
+      "Bash(curl -s http://127.0.0.1:3000/api/transit/stcp)",
+      "Bash(curl -sI http://127.0.0.1:3000/)",
+      "Bash(/usr/bin/head -5)",
+      "Bash(curl -sI http://127.0.0.1:3000/styles/components.css)",
+      "Bash(/usr/bin/head -3)",
+      "Bash(curl -sI http://127.0.0.1:3000/scripts/app.js)",
+      "Bash(curl -sI http://127.0.0.1:3000/assets/logo-cesae.svg)",
+      "Bash(curl -sI http://127.0.0.1:3000/assets/fonts/Inter-Regular.woff2)",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"node server.js\")"
+    ]
+  }
+}
