@@ -88,13 +88,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('newsletters/{newsletter}/cursos', [NewsletterController::class, 'editCourses'])->name('newsletters.courses.edit');
     Route::put('newsletters/{newsletter}/cursos', [NewsletterController::class, 'updateCourses'])->name('newsletters.courses.update');
 
-    // Seleção dos eventos da agenda incluídos numa newsletter (SCRUM-69 / SCRUM-111)
-    Route::get('newsletters/{newsletter}/agenda', [NewsletterController::class, 'editCalendars'])->name('newsletters.calendar.edit');
-    Route::put('newsletters/{newsletter}/agenda', [NewsletterController::class, 'updateCalendars'])->name('newsletters.calendar.update');
-
     // Rota da pré-visualização da newsletter
     Route::get('newsletters/{newsletter}/pre-visualizacao', [NewsletterController::class, 'preview'])
-        ->name('newsletters.preview');
+          ->name('newsletters.preview');
 
     // CRUD da newsletter (SCRUM-102)
     Route::resource('newsletters', NewsletterController::class)
