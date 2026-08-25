@@ -19,7 +19,7 @@ export default function Index({ courses = [] }) {
             key: 'actions',
             label: 'Ações',
             render: (course) => (
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <Link
                         href={route('admin.courses.edit', course.id)}
                         className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
@@ -48,7 +48,7 @@ export default function Index({ courses = [] }) {
             <Head title="Ofertas formativas" />
 
             <div className="space-y-6">
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
 
                         <p className="mt-1 text-sm text-gray-600">
