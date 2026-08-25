@@ -90,7 +90,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     // Rota da pré-visualização da newsletter
     Route::get('newsletters/{newsletter}/pre-visualizacao', [NewsletterController::class, 'preview'])
-          ->name('newsletters.preview');
+        ->name('newsletters.preview');
 
     // CRUD da newsletter (SCRUM-102)
     Route::resource('newsletters', NewsletterController::class)
@@ -98,4 +98,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->names('newsletters');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
