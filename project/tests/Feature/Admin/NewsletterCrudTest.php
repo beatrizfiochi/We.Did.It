@@ -95,6 +95,20 @@ class NewsletterCrudTest extends TestCase
         $this->assertDatabaseCount('newsletters', 0);
     }
 
+    public function test_the_title_needs_at_least_five_characters(): void
+    {
+        $admin = User::factory()->create();
+
+        // acompanha as notícias e os testemunhos, que já exigiam min:5;
+        // sem isto passava um título como "a", que não diz nada no arquivo
+        $response = $this->actingAs($admin)->post(route('admin.newsletters.store'), $this->validPayload([
+            'title' => 'abc',
+        ]));
+
+        $response->assertSessionHasErrors('title');
+        $this->assertDatabaseCount('newsletters', 0);
+    }
+
     public function test_the_edition_must_be_unique(): void
     {
         $admin = User::factory()->create();

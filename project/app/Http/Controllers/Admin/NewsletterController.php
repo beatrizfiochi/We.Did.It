@@ -42,7 +42,7 @@ class NewsletterController extends Controller
 
         ActivityLog::record($newsletter, 'created');
 
-        return back()->with('success', 'Newsletter criada com sucesso.');
+        return back()->with('success', 'Newsletter criada como rascunho.');
     }
 
     /**
@@ -59,7 +59,7 @@ class NewsletterController extends Controller
 
         ActivityLog::record($newsletter, 'updated');
 
-        return back()->with('success', 'Newsletter atualizada com sucesso.');
+        return back()->with('success', 'Rascunho guardado com sucesso.');
     }
 
     /**
