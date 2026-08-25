@@ -85,6 +85,26 @@ class NewsletterCrudTest extends TestCase
         $this->assertTrue(Newsletter::firstWhere('edition', 12)->is_draft);
     }
 
+    public function test_the_status_cannot_be_changed_by_whoever_submits_the_form(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create([
+            'status' => Newsletter::RASCUNHO,
+            'edition' => 12,
+        ]);
+
+        // o formulário de edição envia um campo status, mas publicar não é gravar
+        // um campo: tem de bloquear a edição e, na Sprint 5, gerar o PDF. Por isso
+        // a publicação é a SCRUM-116, numa rota própria, e o status nunca entra
+        // por aqui. Se um dia este teste falhar, alguém acrescentou 'status' às
+        // regras do UpdateNewsletterRequest — é o desenho a mudar, não a completar-se.
+        $this->actingAs($admin)->put(route('admin.newsletters.update', $newsletter), $this->validPayload([
+            'status' => Newsletter::PUBLICADA,
+        ]));
+
+        $this->assertTrue($newsletter->fresh()->is_draft);
+    }
+
     public function test_creating_a_newsletter_requires_the_mandatory_fields(): void
     {
         $admin = User::factory()->create();
