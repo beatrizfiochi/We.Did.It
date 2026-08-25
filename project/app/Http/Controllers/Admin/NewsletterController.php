@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreNewsletterRequest;
+use App\Http\Requests\Admin\UpdateNewsletterNewsRequest;
 use App\Http\Requests\Admin\UpdateNewsletterRequest;
-use App\Http\Requests\UpdateNewsletterCoursesRequest;
+use App\Http\Requests\Admin\UpdateNewsletterTestimonialsRequest;
+use App\Http\Requests\Admin\UpdateNewsletterCoursesRequest;
 use App\Models\ActivityLog;
 use App\Models\Course;
+use App\Models\News;
 use App\Models\Newsletter;
+use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -122,5 +126,77 @@ class NewsletterController extends Controller
 
         return redirect()->route('admin.newsletters.courses.edit', $newsletter)
             ->with('success', 'Ofertas formativas da newsletter atualizadas com sucesso.');
+    }
+
+    /**
+     * Mostra o ecrã de seleção das notícias para esta newsletter.
+     */
+    public function editNews(Newsletter $newsletter): Response
+    {
+        $newsletter->load('news:id');
+
+        // só as notícias aprovadas podem entrar na newsletter
+        $news = News::where('status', 'accepted')
+            ->with('category:id,name')
+            ->latest()
+            ->get(['id', 'category_id', 'title', 'created_at']);
+
+        return Inertia::render('Admin/Newsletters/News', [
+            'newsletter' => $newsletter->only(['id', 'title', 'edition']),
+            'news' => $news,
+            'news_ids' => $newsletter->news->pluck('id'),
+        ]);
+    }
+
+    /**
+     * Guarda as notícias selecionadas para esta newsletter.
+     */
+    public function updateNews(UpdateNewsletterNewsRequest $request, Newsletter $newsletter): RedirectResponse
+    {
+        $ids = $request->validated()['news_ids'] ?? [];
+
+        // a ordem de chegada é a ordem em que saem na newsletter; começa em 1
+        // para acompanhar o NewsletterSeeder
+        $newsletter->news()->sync(
+            collect($ids)->mapWithKeys(fn ($id, $i) => [$id => ['order' => $i + 1]])
+        );
+
+        return back()->with('success', 'Notícias da newsletter atualizadas com sucesso.');
+    }
+
+    /**
+     * Mostra o ecrã de seleção dos testemunhos para esta newsletter.
+     */
+    public function editTestimonials(Newsletter $newsletter): Response
+    {
+        $newsletter->load('testimonials:id');
+
+        // só os testemunhos aprovados podem entrar na newsletter
+        $testimonials = Testimonial::where('status', 'accepted')
+            ->with('category:id,name')
+            ->latest()
+            ->get(['id', 'category_id', 'title', 'name', 'created_at']);
+
+        return Inertia::render('Admin/Newsletters/Testimonials', [
+            'newsletter' => $newsletter->only(['id', 'title', 'edition']),
+            'testimonials' => $testimonials,
+            'testimonial_ids' => $newsletter->testimonials->pluck('id'),
+        ]);
+    }
+
+    /**
+     * Guarda os testemunhos selecionados para esta newsletter.
+     */
+    public function updateTestimonials(UpdateNewsletterTestimonialsRequest $request, Newsletter $newsletter): RedirectResponse
+    {
+        $ids = $request->validated()['testimonial_ids'] ?? [];
+
+        // a ordem de chegada é a ordem em que saem na newsletter; começa em 1
+        // para acompanhar o NewsletterSeeder
+        $newsletter->testimonials()->sync(
+            collect($ids)->mapWithKeys(fn ($id, $i) => [$id => ['order' => $i + 1]])
+        );
+
+        return back()->with('success', 'Testemunhos da newsletter atualizados com sucesso.');
     }
 }
