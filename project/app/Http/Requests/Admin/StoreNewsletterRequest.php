@@ -34,4 +34,31 @@ class StoreNewsletterRequest extends FormRequest
             'period_end' => ['required', 'date', 'after_or_equal:period_start'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'O título é obrigatório.',
+            'title.string' => 'O título deve ser um texto.',
+            'title.min' => 'O título deve ter entre 5 e 255 caracteres.',
+            'title.max' => 'O título deve ter entre 5 e 255 caracteres.',
+
+            'edition.required' => 'A edição é obrigatória.',
+            'edition.integer' => 'A edição deve ser um número inteiro.',
+            'edition.unique' => 'A edição escolhida já existe.',
+
+            'date.required' => 'A data é obrigatória.',
+            'date.date' => 'A data informada é inválida.',
+
+            'period_start.required' => 'A data de início do período é obrigatória.',
+            'period_start.date' => 'A data de início do período é inválida.',
+
+            'period_end.required' => 'A data de fim do período é obrigatória.',
+            'period_end.date' => 'A data de fim do período é inválida.',
+            'period_end.after_or_equal' => 'A data de fim do período deve ser igual ou posterior à data de início.',
+
+            'status.required' => 'O status é obrigatório.',
+            'status.boolean' => 'O status deve ser verdadeiro ou falso.',
+        ];
+    }
 }

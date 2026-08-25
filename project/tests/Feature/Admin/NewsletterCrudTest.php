@@ -115,6 +115,17 @@ class NewsletterCrudTest extends TestCase
         $this->assertDatabaseCount('newsletters', 0);
     }
 
+    public function test_updating_a_newsletter_requires_the_mandatory_fields(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+
+        $response = $this->actingAs($admin)->put(route('admin.newsletters.update', $newsletter), []);
+
+        $response->assertSessionHasErrors(['title', 'edition', 'date', 'period_start', 'period_end']);
+    }
+
+
     public function test_the_title_needs_at_least_five_characters(): void
     {
         $admin = User::factory()->create();
@@ -213,6 +224,69 @@ class NewsletterCrudTest extends TestCase
         $response->assertRedirect(route('admin.newsletters.index'));
         $response->assertSessionHas('success');
     }
+
+    public function test_authenticated_users_can_save_an_existing_newsletter_as_draft(): void
+    {
+        $admin = User::factory()->create();
+
+        $newsletter = Newsletter::factory()->create([
+            'status' => false,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->from(route('admin.newsletter.index'))
+            ->put(
+                route('admin.newsletters.update', $newsletter),
+                [
+                    'title' => $newsletter->title,
+                    'date' => $newsletter->date,
+                    'edition' => $newsletter->edition,
+                    'period_start' => $newsletter->period_start,
+                    'period_end' => $newsletter->period_end,
+                    'status' => true,
+                ]
+            );
+
+        $response->assertRedirect(route('admin.newsletters.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('newsletter', [
+            'id' => $newsletter->id,
+            'status' => true,
+        ]);
+    }
+
+    public function test_authenticated_users_can_publish_an_existing_newsletter(): void
+    {
+        $admin = User::factory()->create();
+
+        $newsletter = Newsletter::factory()->create([
+            'status' => true,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->from(route('admin.newsletter.index'))
+            ->put(
+                route('admin.newsletters.update', $newsletter),
+                [
+                    'title' => $newsletter->title,
+                    'date' => $newsletter->date,
+                    'edition' => $newsletter->edition,
+                    'period_start' => $newsletter->period_start,
+                    'period_end' => $newsletter->period_end,
+                    'status' => false,
+                ]
+            );
+
+        $response->assertRedirect(route('admin.newsletters.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('newsletter', [
+            'id' => $newsletter->id,
+            'status' => Newsletter::PUBLICADA,
+        ]);
+    }
+
 
     public function test_the_three_operations_are_written_to_the_activity_log(): void
     {
