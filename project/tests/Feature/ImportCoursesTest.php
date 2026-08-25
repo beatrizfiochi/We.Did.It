@@ -40,7 +40,7 @@ class ImportCoursesTest extends TestCase
             'location' => 'Porto',
             'schedule' => 'Laboral',
             'start_date' => '2026-06-29',
-            'price' => '100,00€',
+            'price' => '100.00',
             'status' => 'received',
         ]);
     }
@@ -99,6 +99,67 @@ class ImportCoursesTest extends TestCase
             'start_date' => 'A anunciar',
             'status' => 'received',
         ]);
+    }
+
+    public function test_price_is_normalized_to_a_decimal_string(): void
+    {
+        $html = <<<'HTML'
+            <article>
+                <a href="/curso/lista/curso-pago">
+                    <figure><img src="/img.jpg" /></figure>
+                    <div class="text-holder">
+                        <span class="label">Online, Laboral</span>
+                        <h1>Curso pago</h1>
+                        <span class="date">A anunciar</span>
+                        <div class="price">100,00€</div>
+                        <div></div>
+                    </div>
+                </a>
+            </article>
+            <article>
+                <a href="/curso/lista/curso-gratuito">
+                    <figure><img src="/img.jpg" /></figure>
+                    <div class="text-holder">
+                        <span class="label">Online, Laboral</span>
+                        <h1>Curso gratuito</h1>
+                        <span class="date">A anunciar</span>
+                        <div class="price">Gratuito</div>
+                        <div></div>
+                    </div>
+                </a>
+            </article>
+            HTML;
+
+        $this->fakeSourceWith($html);
+
+        $this->artisan('courses:import')->assertExitCode(0);
+
+        $this->assertDatabaseHas('courses', ['title' => 'Curso pago', 'price' => '100.00']);
+        $this->assertDatabaseHas('courses', ['title' => 'Curso gratuito', 'price' => '0.00']);
+    }
+
+    public function test_import_fails_cleanly_when_the_source_site_is_unavailable(): void
+    {
+        Http::fake([
+            self::SOURCE_URL => Http::response('Service Unavailable', 503),
+        ]);
+
+        $this->artisan('courses:import')
+            ->expectsOutputToContain('Falha ao importar')
+            ->assertExitCode(1);
+
+        $this->assertDatabaseCount('courses', 0);
+    }
+
+    public function test_import_fails_loudly_when_no_course_is_parsed(): void
+    {
+        $this->fakeSourceWith('<html><body>site fora do ar ou mudou de estrutura</body></html>');
+
+        $this->artisan('courses:import')
+            ->expectsOutputToContain('Falha ao importar')
+            ->assertExitCode(1);
+
+        $this->assertDatabaseCount('courses', 0);
     }
 
     public function test_a_card_with_two_label_elements_does_not_leak_the_price_badge_into_location(): void

@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Symfony\Component\DomCrawler\Crawler;
 use Throwable;
 
@@ -83,9 +84,13 @@ class CesaeCourseScraper
                 'location' => $location,
                 'schedule' => $schedule,
                 'start_date' => $this->normalizeStartDate($this->text($link, '.date')),
-                'price' => $this->text($link, '.price'),
+                'price' => $this->normalizePrice($this->text($link, '.price')),
             ];
         });
+
+        if ($items === []) {
+            throw new RuntimeException('cesae: nenhum curso interpretado — o HTML do site pode ter mudado');
+        }
 
         return $items;
     }
@@ -149,5 +154,26 @@ class CesaeCourseScraper
         } catch (Throwable) {
             return $raw;
         }
+    }
+
+    /**
+     * O site devolve o preço como texto ("100,00€", "Gratuito"), mas price
+     * é numeric na validação do CRUD manual (UpdateCourseRequest). O import
+     * não passa por essa validação — grava direto no model — por isso faz
+     * a normalização aqui, para não deixar o dado inconsistente com o resto.
+     *
+     * Só vírgula conta como separador decimal: é o único que o site usa nos
+     * preços observados. Um ponto (se aparecer) é descartado, não tratado
+     * como separador de milhar.
+     */
+    private function normalizePrice(string $raw): string
+    {
+        $digits = preg_replace('/[^\d,]/', '', $raw);
+
+        if ($digits === '') {
+            return '0.00';
+        }
+
+        return number_format((float) str_replace(',', '.', $digits), 2, '.', '');
     }
 }
