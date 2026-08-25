@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreNewsletterRequest;
+use App\Http\Requests\Admin\UpdateNewsletterCalendarsRequest;
+use App\Http\Requests\Admin\UpdateNewsletterCoursesRequest;
 use App\Http\Requests\Admin\UpdateNewsletterNewsRequest;
 use App\Http\Requests\Admin\UpdateNewsletterRequest;
 use App\Http\Requests\Admin\UpdateNewsletterTestimonialsRequest;
-use App\Http\Requests\Admin\UpdateNewsletterCoursesRequest;
 use App\Models\ActivityLog;
+use App\Models\Calendar;
 use App\Models\Course;
 use App\Models\News;
 use App\Models\Newsletter;
@@ -198,5 +200,32 @@ class NewsletterController extends Controller
         );
 
         return back()->with('success', 'Testemunhos da newsletter atualizados com sucesso.');
+    }
+
+    /**
+     * Mostra o ecrã de seleção dos eventos da agenda para esta newsletter.
+     */
+    public function editCalendars(Newsletter $newsletter): Response
+    {
+        $newsletter->load('calendars:id');
+
+        $calendars = Calendar::orderBy('date')->get(['id', 'date', 'title']);
+
+        return Inertia::render('Admin/Newsletters/Calendars', [
+            'newsletter' => $newsletter->only(['id', 'title', 'edition']),
+            'calendars' => $calendars,
+            'calendar_ids' => $newsletter->calendars->pluck('id'),
+        ]);
+    }
+
+    /**
+     * Guarda os eventos da agenda selecionados para esta newsletter.
+     */
+    public function updateCalendars(UpdateNewsletterCalendarsRequest $request, Newsletter $newsletter): RedirectResponse
+    {
+        $newsletter->calendars()->sync($request->validated()['calendar_ids'] ?? []);
+
+        return redirect()->route('admin.newsletters.calendars.edit', $newsletter)
+            ->with('success', 'Eventos da agenda da newsletter atualizados com sucesso.');
     }
 }
