@@ -21,7 +21,7 @@ class UpdateNewsletterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'min:5', 'max:255'],
             'edition' => ['required', 'integer', 'min:1', Rule::unique('newsletters', 'edition')->ignore($this->route('newsletter'))],
             'date' => ['required', 'date'],
             'period_start' => ['required', 'date'],
