@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cesae.ecra.kiosk</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <!-- AJUSTAR: caminho absoluto para o projeto. -->
+        <string>/Users/ecra/EcraCESAEEntrada/deploy/start-kiosk.sh</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>KIOSK_URL</key>
+        <string>http://localhost:3000</string>
+        <key>PATH</key>
+        <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/ecra/Library/Logs/cesae-ecra/kiosk.out.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/ecra/Library/Logs/cesae-ecra/kiosk.err.log</string>
+
+    <key>ProcessType</key>
+    <string>Interactive</string>
+
+    <key>LimitLoadToSessionType</key>
+    <string>Aqua</string>
+</dict>
+</plist>

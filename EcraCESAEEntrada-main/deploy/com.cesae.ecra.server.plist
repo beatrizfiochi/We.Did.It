@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cesae.ecra.server</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <!-- AJUSTAR: caminho para node. Detetar com `which node`. -->
+        <string>/usr/local/bin/node</string>
+        <!-- AJUSTAR: caminho absoluto para o projeto. -->
+        <string>/Users/ecra/EcraCESAEEntrada/server.js</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/ecra/EcraCESAEEntrada</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PORT</key>
+        <string>3000</string>
+        <key>HOST</key>
+        <string>127.0.0.1</string>
+        <key>NODE_ENV</key>
+        <string>production</string>
+        <!-- garantir PATH para encontrar binários quando lançado pelo launchd -->
+        <key>PATH</key>
+        <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+        <key>Crashed</key>
+        <true/>
+    </dict>
+
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/ecra/Library/Logs/cesae-ecra/server.out.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/ecra/Library/Logs/cesae-ecra/server.err.log</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

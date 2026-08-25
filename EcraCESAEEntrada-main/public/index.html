@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CESAE Digital · Entrada</title>
+  <link rel="icon" href="/assets/logo-cesae.svg" />
+  <link rel="preload" href="/assets/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/assets/fonts/Inter-Bold.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/styles/fonts.css" />
+  <link rel="stylesheet" href="/styles/reset.css" />
+  <link rel="stylesheet" href="/styles/tokens.css" />
+  <link rel="stylesheet" href="/styles/layout.css" />
+  <link rel="stylesheet" href="/styles/components.css" />
+  <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin />
+</head>
+<body>
+  <div class="app">
+
+    <header class="zone zone-header" id="header">
+      <div class="brand">
+        <img src="/assets/logo-cesae.svg" alt="CESAE Digital" class="brand-logo" />
+        <div class="brand-text">
+          <span class="brand-title">CESAE Digital</span>
+          <span class="brand-subtitle">Bem-vindo · Porto</span>
+        </div>
+      </div>
+
+      <div class="clock" id="clock">
+        <div class="clock-time" data-clock-time>—:—</div>
+        <div class="clock-date" data-clock-date>—</div>
+      </div>
+
+      <div class="weather-now" id="weather-now">
+        <div class="weather-now-icon" data-weather-icon>·</div>
+        <div class="weather-now-temp" data-weather-temp>—°</div>
+        <div class="weather-now-meta">
+          <div data-weather-condition>—</div>
+          <div class="muted" data-weather-feels>Sensação —°</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="zone zone-video" id="video">
+      <div class="video-frame">
+        <iframe
+          id="yt-iframe"
+          title="CESAE Digital playlist"
+          loading="eager"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          frameborder="0">
+        </iframe>
+      </div>
+    </section>
+
+    <aside class="zone zone-sidebar" id="sidebar">
+      <div class="panel transit" id="transit">
+        <header class="panel-header">
+          <h2 class="panel-title">Transportes</h2>
+          <div class="transit-tabs">
+            <button class="transit-tab" data-tab="metro" aria-pressed="true">Metro</button>
+            <button class="transit-tab" data-tab="stcp" aria-pressed="false">STCP</button>
+          </div>
+        </header>
+        <div class="transit-panes">
+          <div class="transit-pane is-active" data-pane="metro">
+            <div class="transit-stop-name" data-metro-stop>Casa da Música</div>
+            <div class="transit-mode" data-metro-mode>Horário previsto</div>
+            <ul class="transit-lines" data-metro-lines></ul>
+          </div>
+          <div class="transit-pane" data-pane="stcp">
+            <ul class="transit-stops" data-stcp-stops></ul>
+            <div class="transit-mode" data-stcp-mode>Horário previsto</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel forecast" id="forecast">
+        <header class="panel-header">
+          <h2 class="panel-title">Próximos dias</h2>
+        </header>
+        <ul class="forecast-strip" data-forecast-strip></ul>
+      </div>
+    </aside>
+
+    <section class="zone zone-courses" id="courses">
+      <header class="panel-header courses-header">
+        <h2 class="panel-title">Cursos em destaque</h2>
+        <span class="muted">cesaedigital.pt</span>
+      </header>
+      <div class="courses-viewport">
+        <ol class="courses-strip" data-courses-strip></ol>
+      </div>
+    </section>
+
+    <footer class="zone zone-ticker" id="ticker">
+      <div class="ticker-label">Notícias</div>
+      <div class="ticker-viewport">
+        <div class="ticker-track" data-news-track></div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script type="module" src="/scripts/app.js"></script>
+</body>
+</html>
