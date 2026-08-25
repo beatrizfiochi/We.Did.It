@@ -39,7 +39,11 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route('admin.calendar.index'),
             active: route().current('admin.calendar.*'),
         },
-        { label: 'Newsletters', disabled: true },
+        {
+            label: 'Newsletters',
+            href: route('admin.newsletters.index'),
+            active: route().current('admin.newsletters.*'),
+        },
         { label: 'Administradores', disabled: true },
     ];
 
