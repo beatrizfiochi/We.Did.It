@@ -27,7 +27,7 @@ class UpdateNewsletterRequest extends FormRequest
             'date' => ['required', 'date'],
             'period_start' => ['required', 'date'],
             'period_end' => ['required', 'date', 'after_or_equal:period_start'],
-            'status' => ['required', 'boolean'], // permite mudar estado
+            'status' => ['sometimes', 'boolean'], // permite mudar estado
         ];
     }
 

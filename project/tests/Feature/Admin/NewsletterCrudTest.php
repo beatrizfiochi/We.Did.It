@@ -236,17 +236,18 @@ class NewsletterCrudTest extends TestCase
         $response = $this->actingAs($admin)
             ->from(route('admin.newsletter.index'))
             ->put(
-                route('admin.newsletter.update', $newsletter),
+                route('admin.newsletters.update', $newsletter),
                 [
                     'title' => $newsletter->title,
-                    'description' => $newsletter->description,
                     'date' => $newsletter->date,
                     'edition' => $newsletter->edition,
+                    'period_start' => $newsletter->period_start,
+                    'period_end' => $newsletter->period_end,
                     'status' => true,
                 ]
             );
 
-        $response->assertRedirect(route('admin.newsletter.index'));
+        $response->assertRedirect(route('admin.newsletters.index'));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('newsletter', [
@@ -266,17 +267,18 @@ class NewsletterCrudTest extends TestCase
         $response = $this->actingAs($admin)
             ->from(route('admin.newsletter.index'))
             ->put(
-                route('admin.newsletter.update', $newsletter),
+                route('admin.newsletters.update', $newsletter),
                 [
                     'title' => $newsletter->title,
-                    'description' => $newsletter->description,
                     'date' => $newsletter->date,
                     'edition' => $newsletter->edition,
+                    'period_start' => $newsletter->period_start,
+                    'period_end' => $newsletter->period_end,
                     'status' => false,
                 ]
             );
 
-        $response->assertRedirect(route('admin.newsletter.index'));
+        $response->assertRedirect(route('admin.newsletters.index'));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('newsletter', [

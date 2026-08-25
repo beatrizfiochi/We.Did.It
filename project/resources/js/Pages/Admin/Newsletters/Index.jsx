@@ -123,10 +123,10 @@ export default function Index({ newsletters }) {
                     <SecondaryButton onClick={() => openEdit(row)}>
                         Editar
                     </SecondaryButton>
-                    {/* 
+
                     <DangerButton onClick={() => setDeleting(row)}>
                         Remover
-                    </DangerButton> */}
+                    </DangerButton>
                 </div>
             ),
         },
