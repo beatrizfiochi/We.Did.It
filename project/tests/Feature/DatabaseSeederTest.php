@@ -16,7 +16,9 @@ class DatabaseSeederTest extends TestCase
 
         $this->assertDatabaseCount('users', 1);
         $this->assertDatabaseCount('categories', 14);
-        $this->assertDatabaseHas('users', ['email' => 'admin@wedidit.pt']);
+        // o email vem do ADMIN_EMAIL do .env, com este valor por omissão;
+        // o AdminUserSeeder substituiu o UserSeeder, que o tinha fixo em código
+        $this->assertDatabaseHas('users', ['email' => env('ADMIN_EMAIL', 'admin@example.com')]);
 
         $newsCount = DB::table('news')->count();
         $this->assertGreaterThanOrEqual(6, $newsCount);
