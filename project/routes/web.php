@@ -88,6 +88,18 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('newsletters/{newsletter}/cursos', [NewsletterController::class, 'editCourses'])->name('newsletters.courses.edit');
     Route::put('newsletters/{newsletter}/cursos', [NewsletterController::class, 'updateCourses'])->name('newsletters.courses.update');
 
+    // Seleção das notícias incluídas numa newsletter
+    Route::get('newsletters/{newsletter}/noticias', [NewsletterController::class, 'editNews'])->name('newsletters.news.edit');
+    Route::put('newsletters/{newsletter}/noticias', [NewsletterController::class, 'updateNews'])->name('newsletters.news.update');
+
+    // Seleção dos testemunhos incluídos numa newsletter
+    Route::get('newsletters/{newsletter}/testemunhos', [NewsletterController::class, 'editTestimonials'])->name('newsletters.testimonials.edit');
+    Route::put('newsletters/{newsletter}/testemunhos', [NewsletterController::class, 'updateTestimonials'])->name('newsletters.testimonials.update');
+
+    // Seleção dos eventos da agenda incluídos numa newsletter
+    Route::get('newsletters/{newsletter}/agenda', [NewsletterController::class, 'editCalendars'])->name('newsletters.calendars.edit');
+    Route::put('newsletters/{newsletter}/agenda', [NewsletterController::class, 'updateCalendars'])->name('newsletters.calendars.update');
+
     // Rota da pré-visualização da newsletter
     Route::get('newsletters/{newsletter}/pre-visualizacao', [NewsletterController::class, 'preview'])
         ->name('newsletters.preview');
