@@ -28,7 +28,15 @@ class NewsletterController extends Controller
     {
         return Inertia::render('Admin/Newsletters/Index', [
             'newsletters' => Newsletter::orderByDesc('edition')
-                ->get(['id', 'title', 'edition', 'date', 'status']),
+                ->get([
+                    'id',
+                    'title',
+                    'edition',
+                    'date',
+                    'period_start',
+                    'period_end',
+                    'status'
+                ]),
         ]);
     }
 
@@ -61,8 +69,13 @@ class NewsletterController extends Controller
 
         ActivityLog::record($newsletter, 'updated');
 
-        return back()->with('success', 'Rascunho guardado com sucesso.');
+        $message = $newsletter->status
+            ? 'Rascunho guardado com sucesso.'
+            : 'Newsletter atualizada com sucesso.'; //status = false -> atualizada 
+
+        return back()->with('success', $message);
     }
+
 
     /**
      * Remove uma newsletter.
@@ -83,15 +96,15 @@ class NewsletterController extends Controller
     public function preview(Newsletter $newsletter): Response
     {
         $newsletter->load([
-            'news' => fn ($q) => $q->with('category')->orderByPivot('order'),
-            'testimonials' => fn ($q) => $q->with('category')->orderByPivot('order'),
-            'calendars' => fn ($q) => $q->orderBy('date'),
+            'news' => fn($q) => $q->with('category')->orderByPivot('order'),
+            'testimonials' => fn($q) => $q->with('category')->orderByPivot('order'),
+            'calendars' => fn($q) => $q->orderBy('date'),
             'courses',
         ]);
 
         // start_date é string livre vinda da API externa, não dá para ordenar em SQL
         $newsletter->setRelation('courses', $newsletter->courses
-            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
+            ->sortBy(fn(Course $course) => $course->start_date_for_sorting)
             ->values());
 
         return Inertia::render('Admin/Newsletters/Preview', [
@@ -109,7 +122,7 @@ class NewsletterController extends Controller
         // start_date é uma string vinda da API externa, não uma coluna de data,
         // por isso ordenamos em PHP (start_date_for_sorting) em vez de orderBy() no banco.
         $courses = Course::get(['id', 'title', 'start_date'])
-            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
+            ->sortBy(fn(Course $course) => $course->start_date_for_sorting)
             ->values();
 
         return Inertia::render('Admin/Newsletters/Courses', [
