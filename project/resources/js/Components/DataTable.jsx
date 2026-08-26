@@ -25,7 +25,7 @@ export default function DataTable({
                                 <th
                                     key={column.key}
                                     scope="col"
-                                    className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"
+                                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:px-6"
                                 >
                                     {column.label}
                                 </th>
@@ -39,7 +39,7 @@ export default function DataTable({
                                 {columns.map((column) => (
                                     <td
                                         key={column.key}
-                                        className="whitespace-nowrap px-6 py-4 text-sm text-gray-700"
+                                        className="max-w-xs break-words px-4 py-4 align-top text-sm text-gray-700 sm:px-6"
                                     >
                                         {column.render
                                             ? column.render(row)

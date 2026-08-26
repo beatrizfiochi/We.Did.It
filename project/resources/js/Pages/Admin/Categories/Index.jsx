@@ -149,7 +149,7 @@ export default function Index({ categories = [] }) {
                             <InputError message={createForm.errors.name} className="mt-2" />
                         </div>
 
-                        <PrimaryButton disabled={createForm.processing}>
+                        <PrimaryButton className="justify-center" disabled={createForm.processing}>
                             Criar categoria
                         </PrimaryButton>
                     </form>
@@ -174,7 +174,7 @@ export default function Index({ categories = [] }) {
                                 <InputError message={editForm.errors.name} className="mt-2" />
                             </div>
 
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-wrap items-center gap-3">
                                 <SecondaryButton type="button" onClick={cancelEdit}>
                                     Cancelar
                                 </SecondaryButton>

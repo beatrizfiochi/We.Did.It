@@ -25,10 +25,10 @@ export default function Index({ news, categories }) {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="d-flex gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <button
                         type="button"
-                        className="btn btn-success btn-sm"
+                        className="text-sm font-semibold text-green-600 hover:text-green-900 disabled:cursor-not-allowed disabled:text-gray-400"
                         disabled={row.status === 'accepted'}
                         onClick={() => router.patch(route('admin.news.approve', row.id), {}, { preserveScroll: true })}
                     >
@@ -36,7 +36,7 @@ export default function Index({ news, categories }) {
                     </button>
                     <button
                         type="button"
-                        className="btn btn-danger btn-sm"
+                        className="text-sm font-semibold text-red-600 hover:text-red-900 disabled:cursor-not-allowed disabled:text-gray-400"
                         disabled={row.status === 'refused'}
                         onClick={() => router.patch(route('admin.news.refuse', row.id), {}, { preserveScroll: true })}
                     >
@@ -50,10 +50,10 @@ export default function Index({ news, categories }) {
             key: 'view', label: '', render: (row) => (
                 <button
                     type="button"
-                    className="btn btn-outline-secondary btn-sm"
+                    className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
                     onClick={() => handleViewNews(row)}
                 >
-                    <i className="bi bi-eye"></i> Ver
+                    Ver
                 </button>
             )
         }
@@ -171,33 +171,32 @@ export default function Index({ news, categories }) {
 
             <FlashMessage />
 
-            <div className="row ">
+            <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
 
-                <div className=" mt-5 col-2 py-4 pe-4">
-                    <div className="fw-bold mb-2">Filtrar por</div>
+                <aside className="rounded-lg bg-white p-4 shadow-sm">
+                    <div className="mb-2 font-semibold text-gray-900">Filtrar por</div>
 
                     <div
-                        className="d-flex justify-content-between align-items-center"
-                        style={{ cursor: 'pointer' }}
+                        className="flex cursor-pointer items-center justify-between text-sm font-medium text-gray-700"
                         onClick={() => setIsCategoryOpen((prev) => !prev)}
                     >
                         <span>Categoria</span>
-                        <i className={`bi ${isCategoryOpen ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                        <span aria-hidden="true">{isCategoryOpen ? '⌃' : '⌄'}</span>
                     </div>
 
                     {isCategoryOpen && (
-                        <div className="mt-2">
+                        <div className="mt-2 space-y-2">
                             {categories.map((item) => (
-                                <div className="form-check" key={item.id}>
+                                <div className="flex items-center gap-2" key={item.id}>
                                     <input
-                                        className="form-check-input"
+                                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                         type="checkbox"
                                         value={item.id}
                                         id={`category-${item.id}`}
                                         checked={selectedCategories.includes(item.id)}
                                         onChange={() => toggleCategory(item.id)}
                                     />
-                                    <label className="form-check-label" htmlFor={`category-${item.id}`}>
+                                    <label className="text-sm text-gray-700" htmlFor={`category-${item.id}`}>
                                         {item.name}
                                     </label>
                                 </div>
@@ -205,19 +204,19 @@ export default function Index({ news, categories }) {
 
                             <button
                                 type="button"
-                                className="btn btn-link btn-sm p-0 text-decoration-none"
+                                className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
                                 onClick={clearCategories}
                             >
                                 Limpar
                             </button>
                         </div>
                     )}
-                </div>
+                </aside>
 
 
-                <div className="col-10 p-4">
-                    <div className="col-3 mb-2 ml-auto">
-                        <input className="form-control mr-sm-2"
+                <section className="min-w-0 space-y-4">
+                    <div className="max-w-sm lg:ml-auto">
+                        <input className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             type="search" placeholder="Pesquisar por estado..."
                             aria-label="Search"
                             value={searchTerm}
@@ -229,7 +228,7 @@ export default function Index({ news, categories }) {
                         columns={columns}
                         rows={filteredNews} // shows according to what is set in the filter areas
                     />
-                </div>
+                </section>
 
             </div>
 
@@ -260,10 +259,10 @@ export default function Index({ news, categories }) {
                                 className="w-full h-auto rounded-lg mb-4" />
                         )}
 
-                        <div className="mt-6 flex justify-end">
+                        <div className="mt-6 flex flex-wrap justify-end gap-3">
                             <button
                                 type="button"
-                                className="btn btn-primary btn-sm mr-3"
+                                className="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700"
                                 onClick={() => {
                                     handleEditClick(selectedNews);
                                     closeViewModal();
@@ -274,7 +273,7 @@ export default function Index({ news, categories }) {
 
                             <button
                                 type="button"
-                                className="btn btn-secondary btn-sm"
+                                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm hover:bg-gray-50"
                                 onClick={closeViewModal}
                             >
                                 Fechar
@@ -295,10 +294,10 @@ export default function Index({ news, categories }) {
                         </h2>
 
                         <div className="mb-3">
-                            <label className="form-label">Título</label>
+                            <label className="block text-sm font-medium text-gray-700">Título</label>
                             <input
                                 type="text"
-                                className={`form-control ${editErrors.title ? 'is-invalid' : ''}`}
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${editErrors.title ? 'border-red-500' : ''}`}
                                 value={editingNews.title}
                                 onChange={(e) =>
                                     setEditingNews({ ...editingNews, title: e.target.value })
@@ -306,16 +305,16 @@ export default function Index({ news, categories }) {
                             />
 
                             {editErrors.title && (
-                                <div className="invalid-feedback">
+                                <div className="mt-2 text-sm text-red-600">
                                     {editErrors.title}
                                 </div>
                             )}
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label">Descrição</label>
+                            <label className="block text-sm font-medium text-gray-700">Descrição</label>
                             <textarea
-                                className={`form-control ${editErrors.description ? 'is-invalid' : ''}`}
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${editErrors.description ? 'border-red-500' : ''}`}
                                 rows={4}
                                 value={editingNews.description}
                                 onChange={(e) =>
@@ -324,16 +323,16 @@ export default function Index({ news, categories }) {
                             />
 
                             {editErrors.description && (
-                                <div className="invalid-feedback">
+                                <div className="mt-2 text-sm text-red-600">
                                     {editErrors.description}
                                 </div>
                             )}
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label">Categoria</label>
+                            <label className="block text-sm font-medium text-gray-700">Categoria</label>
                             <select
-                                className={`form-select ${editErrors.category_id ? 'is-invalid' : ''}`}
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${editErrors.category_id ? 'border-red-500' : ''}`}
                                 value={editingNews.category_id ?? ""}
                                 onChange={(e) =>
                                     setEditingNews({ ...editingNews, category_id: e.target.value || null })
@@ -348,18 +347,18 @@ export default function Index({ news, categories }) {
                             </select>
 
                             {editErrors.category_id && (
-                                <div className="invalid-feedback">
+                                <div className="mt-2 text-sm text-red-600">
                                     {editErrors.category_id}
                                 </div>
                             )}
                         </div>
 
                         <div className="mb-3">
-                            <label className="form-label">Imagem</label>
+                            <label className="block text-sm font-medium text-gray-700">Imagem</label>
 
                             <input
                                 type="file"
-                                className={editErrors.image ? 'is-invalid' : ''}
+                                className={`mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-gray-800 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-widest file:text-white hover:file:bg-gray-700 ${editErrors.image ? 'text-red-600' : ''}`}
                                 accept="image/jpg,image/jpeg,image/png"
                                 onChange={(e) => {
                                     const file = e.target.files[0];
@@ -413,24 +412,24 @@ export default function Index({ news, categories }) {
                             ) : null}
 
                             {editErrors.image && (
-                                <div className="invalid-feedback">
+                                <div className="mt-2 text-sm text-red-600">
                                     {editErrors.image}
                                 </div>
                             )}
                         </div>
 
 
-                        <div className="d-flex justify-content-end gap-2 mt-4">
+                        <div className="mt-4 flex flex-wrap justify-end gap-3">
                             <button
                                 type="button"
-                                className="btn btn-secondary btn-sm"
+                                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm hover:bg-gray-50"
                                 onClick={closeEditModal}
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="button"
-                                className="btn btn-primary btn-sm"
+                                className="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700"
                                 onClick={handleSaveEdit}
                             >
                                 Guardar

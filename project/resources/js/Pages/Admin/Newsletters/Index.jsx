@@ -9,7 +9,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import StatusBadge from '@/Components/StatusBadge';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
 
@@ -19,9 +19,7 @@ export default function Index({ newsletters }) {
     const [showForm, setShowForm] = useState(false);
     const [deleting, setDeleting] = useState(null);
 
-
-
-    // obtem a data atual do utilizador de acordo com o timezone, sem depender do UTC - referencia universal 
+    // obtem a data atual do utilizador de acordo com o timezone, sem depender do UTC - referencia universal
     const getToday = () => {
         const today = new Date();
         return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -73,7 +71,7 @@ export default function Index({ newsletters }) {
         // adiciona o status no formulario a partir do respetivo botão que chama esta função
         transform((formData) => ({ ...formData, status }));
 
-        // ações possiveis: atualizar e publicar 
+        // ações possiveis: atualizar e publicar
         const action = editing ? put : post;
 
         // route de acordo com a ação escolhida
@@ -120,6 +118,13 @@ export default function Index({ newsletters }) {
             label: 'Ações',
             render: (row) => (
                 <div className="flex gap-2">
+                    <Link
+                        href={route('admin.newsletters.preview', row.id)}
+                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Pré-visualizar
+                    </Link>
+
                     <SecondaryButton onClick={() => openEdit(row)}>
                         Editar
                     </SecondaryButton>
@@ -131,7 +136,6 @@ export default function Index({ newsletters }) {
             ),
         },
     ];
-
 
 
     return (
@@ -181,7 +185,6 @@ export default function Index({ newsletters }) {
                         <InputError message={errors.title} className="mt-2" />
                     </div>
 
-
                     <div>
                         <InputLabel htmlFor="edition" value="Edição" />
                         <TextInput
@@ -194,7 +197,6 @@ export default function Index({ newsletters }) {
                         <InputError message={errors.edition} className="mt-2" />
                     </div>
 
-
                     <div>
                         <InputLabel htmlFor="date" value="Data de criação" />
                         <TextInput
@@ -204,7 +206,7 @@ export default function Index({ newsletters }) {
                             min={editing ? undefined : todayDate} //if user is editing, min and max is undefined(free to choose)
                             max={todayDate}
                             disabled={!editing}
-                            className={`mt-1 block w-full 
+                            className={`mt-1 block w-full
                                 ${!editing ? 'cursor-not-allowed bg-gray-100 text-gray-500' : ''
                                 }`}
                             onChange={(e) => setData('date', e.target.value)}
@@ -254,7 +256,6 @@ export default function Index({ newsletters }) {
                             Cancelar
                         </SecondaryButton>
 
-
                         < PrimaryButton
                             type="button"
                             disabled={processing}
@@ -295,6 +296,7 @@ export default function Index({ newsletters }) {
                     </div>
                 </div>
             </Modal>
+
         </AuthenticatedLayout >
     );
 }

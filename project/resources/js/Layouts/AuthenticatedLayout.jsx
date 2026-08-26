@@ -89,7 +89,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="flex min-w-0 flex-1 flex-col">
                     <header className="border-b border-gray-200 bg-white">
                         <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-                            <div className="flex items-center gap-4">
+                            <div className="flex min-w-0 flex-1 items-center gap-4">
                                 <button
                                     type="button"
                                     onClick={() =>
@@ -120,18 +120,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </svg>
                                 </button>
 
-                                <div>
+                                <div className="min-w-0">
                                     <p className="text-sm font-medium text-gray-500">
                                         Área de administração
                                     </p>
 
-                                    <div className="text-lg font-semibold text-gray-900">
+                                    <div className="truncate text-lg font-semibold text-gray-900">
                                         {header ?? 'Painel Administrativo'}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="relative">
+                            <div className="relative shrink-0">
                                 <Dropdown>
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">
@@ -139,11 +139,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none"
                                             >
-                                                <span className="text-left">
-                                                    <span className="block text-sm font-semibold text-gray-900">
+                                                <span className="min-w-0 text-left">
+                                                    <span className="block max-w-28 truncate text-sm font-semibold text-gray-900 sm:max-w-44">
                                                         {user.name}
                                                     </span>
-                                                    <span className="block text-xs text-gray-500">
+                                                    <span className="hidden max-w-44 truncate text-xs text-gray-500 sm:block">
                                                         {user.email}
                                                     </span>
                                                 </span>

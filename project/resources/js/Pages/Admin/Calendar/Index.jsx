@@ -71,7 +71,7 @@ export default function Index({ events }) {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <SecondaryButton onClick={() => openEdit(row)}>
                         Editar
                     </SecondaryButton>
@@ -94,23 +94,21 @@ export default function Index({ events }) {
         >
             <Head title="Agenda" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <FlashMessage />
+            <div className="space-y-6">
+                <FlashMessage />
 
-                    <div className="flex justify-end">
-                        <PrimaryButton onClick={openCreate}>
-                            Novo evento
-                        </PrimaryButton>
-                    </div>
-
-                    <DataTable
-                        columns={columns}
-                        rows={events}
-                        emptyTitle="Ainda não há eventos na agenda"
-                        emptyDescription="Cria o primeiro evento no botão acima."
-                    />
+                <div className="flex justify-end">
+                    <PrimaryButton onClick={openCreate}>
+                        Novo evento
+                    </PrimaryButton>
                 </div>
+
+                <DataTable
+                    columns={columns}
+                    rows={events}
+                    emptyTitle="Ainda não há eventos na agenda"
+                    emptyDescription="Cria o primeiro evento no botão acima."
+                />
             </div>
 
             <Modal show={showForm} onClose={closeForm} maxWidth="md">
@@ -143,7 +141,7 @@ export default function Index({ events }) {
                         <InputError message={errors.date} className="mt-2" />
                     </div>
 
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-wrap justify-end gap-3">
                         <SecondaryButton type="button" onClick={closeForm}>
                             Cancelar
                         </SecondaryButton>
@@ -166,7 +164,7 @@ export default function Index({ events }) {
                         {deleting?.title} — esta ação não pode ser anulada.
                     </p>
 
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-wrap justify-end gap-3">
                         <SecondaryButton onClick={() => setDeleting(null)}>
                             Cancelar
                         </SecondaryButton>
