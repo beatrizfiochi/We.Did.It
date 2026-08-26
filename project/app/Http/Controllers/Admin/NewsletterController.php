@@ -157,7 +157,7 @@ class NewsletterController extends Controller
         $news = News::where('status', 'accepted')
             ->with('category:id,name')
             ->latest()
-            ->get(['id', 'category_id', 'title', 'created_at']);
+            ->get(['id', 'category_id', 'title', 'image', 'created_at']);
 
         return Inertia::render('Admin/Newsletters/News', [
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
@@ -193,7 +193,7 @@ class NewsletterController extends Controller
         $testimonials = Testimonial::where('status', 'accepted')
             ->with('category:id,name')
             ->latest()
-            ->get(['id', 'category_id', 'title', 'name', 'created_at']);
+            ->get(['id', 'category_id', 'title', 'name', 'image', 'created_at']);
 
         return Inertia::render('Admin/Newsletters/Testimonials', [
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
