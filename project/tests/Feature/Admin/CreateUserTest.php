@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Mail\AdminWelcome;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -106,6 +108,57 @@ class CreateUserTest extends TestCase
 
             $this->assertDatabaseHas('users', ['email' => $email]);
         }
+    }
+
+    public function test_creating_an_administrator_sends_the_welcome_email(): void
+    {
+        Mail::fake();
+        $admin = User::factory()->create(['name' => 'Beatriz']);
+
+        $this->actingAs($admin)->post(route('admin.users.store'), [
+            'name' => 'Ana Silva',
+            'email' => 'ana@cesae.pt',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        Mail::assertSent(AdminWelcome::class, function (AdminWelcome $mail) {
+            // vai para o administrador novo, não para quem o criou
+            return $mail->hasTo('ana@cesae.pt')
+                && $mail->name === 'Ana Silva'
+                && $mail->createdBy === 'Beatriz';
+        });
+    }
+
+    public function test_the_welcome_email_does_not_contain_the_password(): void
+    {
+        $mail = new AdminWelcome('Ana Silva', 'Beatriz');
+
+        // a palavra-passe é comunicada por quem cria a conta; num email ficava
+        // numa caixa de correio para sempre. Se este teste falhar, alguém a
+        // acrescentou ao template por conveniência
+        $this->assertStringNotContainsString('palavra-passe-secreta', $mail->render());
+        $this->assertStringContainsString(route('login'), $mail->render());
+    }
+
+    public function test_a_failure_sending_the_email_does_not_lose_the_account(): void
+    {
+        $admin = User::factory()->create();
+
+        // o registo já está gravado quando o email é enviado: um erro de SMTP não
+        // pode devolver 500 a quem acabou de criar a conta
+        Mail::shouldReceive('to')->andThrow(new \RuntimeException('SMTP em baixo'));
+
+        $response = $this->actingAs($admin)->post(route('admin.users.store'), [
+            'name' => 'Ana Silva',
+            'email' => 'ana@cesae.pt',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $this->assertDatabaseHas('users', ['email' => 'ana@cesae.pt']);
+        $response->assertRedirect(route('dashboard'));
+        $response->assertSessionHas('success');
     }
 
     public function test_email_must_be_unique(): void
