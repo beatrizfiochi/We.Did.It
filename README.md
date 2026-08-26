@@ -11,7 +11,7 @@ A aplicação Laravel vive na pasta `project/`. A raiz do repositório tem tamb�
 
 ## Requisitos
 
-- PHP 8.3 ou superior, com as extensões `pdo_mysql` e `fileinfo`
+- PHP 8.3 ou superior, com as extensões `pdo_mysql`, `fileinfo` e `gd`
 - Composer
 - MySQL 8
 - Node.js 20 e npm
@@ -40,11 +40,16 @@ projeto. Antes de continuar, altera estas quatro coisas:
 ```dotenv
 APP_NAME="We Did It"
 
-| Member | Responsibility |
-| Beatriz Fiocchi (Team Lead) | Backend routes |
-| Jéssica Amorim | Frontend layout & visual identity |
-| Leida Dupret | Backend config, protected routes, UX logic |
-| Luana Santos | Database configuration & migrations |
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project
+DB_USERNAME=<o teu utilizador>
+DB_PASSWORD=<a tua password>
+
+ADMIN_EMAIL=admin@cesae.pt
+ADMIN_PASSWORD=<uma password à tua escolha>
+```
 
 > O `AdminUserSeeder` lê os valores de `ADMIN_EMAIL`, `ADMIN_NAME` e `ADMIN_PASSWORD` do
 > `.env`, com `admin@example.com` / `password` por defeito. Enquanto essas credenciais não
@@ -62,6 +67,87 @@ npm run build                      # build de produção
 
 O `migrate:fresh --seed` **apaga todos os dados**. Em desenvolvimento é o que se usa; nunca
 o corras contra dados que interesse guardar.
+
+## Deploy
+
+A aplicação corre em qualquer alojamento com PHP, MySQL e acesso a linha de comandos.
+
+### Requisitos do servidor
+
+- PHP 8.3 ou superior, com a extensão **`gd`** — sem ela o upload de imagens falha
+- MySQL 8
+- Acesso a linha de comandos, para correr o Composer e o artisan
+- **O document root tem de apontar para `project/public`**, nunca para a raiz do
+  projeto: só a pasta `public` deve ser acessível pela web. Se apontar para a raiz,
+  o ficheiro `.env` — com as credenciais da base de dados — fica exposto na internet
+
+O Node é preciso apenas para construir os assets, o que se faz **antes** de enviar
+para o servidor: a pasta `node_modules` ronda os 200 MB e não tem de lá estar.
+
+### Primeira instalação
+
+No computador de quem faz o deploy:
+
+```bash
+npm ci && npm run build     # gera project/public/build
+```
+
+No servidor, depois de lá pôr o código e a pasta `public/build`:
+
+```bash
+cd project
+composer install --no-dev --optimize-autoloader
+
+cp .env.example .env        # e preencher — ver abaixo
+php artisan key:generate
+php artisan migrate --force
+php artisan storage:link
+php artisan db:seed --class=AdminUserSeeder
+php artisan config:cache
+php artisan route:cache
+```
+
+### O `.env` em produção
+
+Além da base de dados, mudar pelo menos:
+
+```dotenv
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://o-dominio-real
+```
+
+O `APP_DEBUG=false` é crítico: com `true`, qualquer erro mostra o código-fonte e o
+conteúdo do `.env` a quem abrir a página.
+
+### Atualizar
+
+```bash
+git pull
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+```
+
+Mais o `npm run build` e o envio da pasta `public/build` atualizada.
+
+### Comandos que se esquecem
+
+- **`--force` no migrate** — sem ele o Laravel recusa-se a migrar em produção
+- **`config:cache` depois de mexer no `.env`** — sem ele a aplicação continua a ler
+  a configuração antiga e parece que nada mudou
+- **`storage:link`** — as imagens das notícias e testemunhos são servidas de
+  `public/storage`; sem o link simbólico dão todas 404
+
+### Dados iniciais
+
+Correr apenas o `AdminUserSeeder`, que cria a conta de administrador a partir do
+`ADMIN_EMAIL` e `ADMIN_PASSWORD` do `.env`. Não há registo público: sem essa conta
+não há como entrar na aplicação.
+
+**Não correr o `php artisan db:seed` completo em produção** — ele cria notícias e
+testemunhos de exemplo com texto gerado, que podem ser confundidos com conteúdo real.
 
 ## Stack
 
