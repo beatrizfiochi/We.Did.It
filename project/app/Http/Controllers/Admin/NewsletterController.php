@@ -148,6 +148,13 @@ class NewsletterController extends Controller
 
     /**
      * Mostra o ecrã de seleção das notícias para esta newsletter.
+     *
+     * Não confundir com o Admin/News/Index, que é a moderação: lá aprovam-se e
+     * editam-se notícias; aqui escolhem-se, de entre as já aprovadas, as que
+     * entram nesta edição. São dois ecrãs distintos e ambos ficam.
+     *
+     * A image vai como caminho relativo ("news/abc.jpg"): no .jsx é
+     * /storage/{image}, como o Admin/News/Index.jsx já faz.
      */
     public function editNews(Newsletter $newsletter): Response
     {
@@ -184,6 +191,10 @@ class NewsletterController extends Controller
 
     /**
      * Mostra o ecrã de seleção dos testemunhos para esta newsletter.
+     *
+     * Como no editNews: isto não substitui o Admin/Testimonials/Index, que é a
+     * moderação. A description fica de fora de propósito — são até 1050
+     * caracteres por testemunho e o conteúdo vê-se na pré-visualização.
      */
     public function editTestimonials(Newsletter $newsletter): Response
     {
