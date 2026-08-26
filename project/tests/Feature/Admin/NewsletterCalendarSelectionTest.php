@@ -6,14 +6,11 @@ use App\Models\Calendar;
 use App\Models\Newsletter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
  * Seleção dos eventos da agenda para a newsletter (SCRUM-132).
- *
- * Não há teste de 200 ao ecrã: o editCalendars renderiza Admin/Newsletters/Calendars,
- * que é a SCRUM-111 da Leida e ainda não existe. Testá-lo agora daria 500. Fica do
- * lado de quem faz o ecrã.
  *
  * Ao contrário das notícias e dos testemunhos, não há teste de moderação — os eventos
  * não têm estado — nem de ordem: o pivot calendar_newsletter não tem coluna order, e a
@@ -30,6 +27,20 @@ class NewsletterCalendarSelectionTest extends TestCase
         $this->get(route('admin.newsletters.calendars.edit', $newsletter))->assertRedirect(route('login'));
         $this->put(route('admin.newsletters.calendars.update', $newsletter), ['calendar_ids' => []])
             ->assertRedirect(route('login'));
+    }
+
+    public function test_authenticated_users_can_see_the_calendar_selection_screen(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        Calendar::factory()->count(3)->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.calendars.edit', $newsletter));
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/Calendars')
+            ->has('calendars', 3)
+        );
     }
 
     public function test_authenticated_users_can_select_events_for_a_newsletter(): void
