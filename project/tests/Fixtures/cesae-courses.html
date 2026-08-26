@@ -1,0 +1,1041 @@
+
+
+<!DOCTYPE html>
+
+<html>
+<head><link rel="stylesheet" href="/DXR.axd?r=23_80,23_88-J34Ht&p=ca4a885f" /><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>
+	CESAE Digital - Cursos
+</title><link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" /><link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" /><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum/build/pannellum.css" />
+        <!-- CSS here -->
+        <link rel="stylesheet" href="/fldrSite/styles/css/main.min.css" />
+        <link rel="stylesheet" href="/fldrSite/styles/css/cesaeProper.css" />
+    
+    <!-- CONTAINERS -->
+    
+    <meta name="keywords" content="cursos,Development,IT Network, Media Design, People">
+    <meta name="description" content="Temos uma oferta variada de cursos, para que possa escolher aquele que mais se adapta aos seus interesses." />
+
+    <!-- /CONTAINERS -->
+
+
+    <meta id="metaOgTitle" property="og:title" /><meta property="og:type" /><meta property="og:url" content="&lt;%= Request.Url.AbsoluteUri %>" /><meta id="metaOgImage" property="og:image" /><meta property="og:image:alt" /><link rel="icon" href="/fldrSite/favicon.ico" sizes="any" /><link rel="icon" href="/icon.svg" type="image/svg+xml" /><link rel="apple-touch-icon" href="../_Layouts/icon.png" />
+
+    <!-- <link rel="manifest" href="../_Layouts/site.webmanifest" /> -->
+    <meta name="theme-color" content="#fafafa" />
+
+    <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=67c0f2b9f80bb90012167dd9&product=inline-share-buttons&source=platform" async="async"></script>
+
+
+
+</head>
+<body>
+    
+
+    <!-- header-start -->
+    <header>
+        <!-- Top NAV -->
+
+        
+
+<script>
+    function allowEnter(event) {
+        if (event.key === "Enter") { // Verifica se a tecla pressionada é Enter
+            event.preventDefault(); // Evita o comportamento padrão
+            console.log("allowEnter")
+            document.getElementById("btnSearch").click(); // Simula o clique no botão
+
+        }
+    }
+</script>
+<script>
+    function handleSearch(event) {
+        event.preventDefault(); // Evita o comportamento padrão de formulário
+        var searchBoxBig = document.getElementById('ucSiteTopNavMain_txtSearch');
+        var searchBoxSM = document.getElementById('ucSiteTopNavMain_txtSearchSM');
+        var searchContentBig = searchBoxBig.value.trim();
+        var searchContentSmall = searchBoxSM.value.trim();
+        var finalSearch = (searchContentBig != "") ? searchContentBig : searchContentSmall;
+        //if (searchBox.value.trim() !== "") {
+        if (finalSearch != "") {
+            // Redireciona para a página de destino com o parâmetro de consulta
+            window.location.href = '/fldrSite/pages/drivers/searchDriver.aspx?query=' + encodeURIComponent(finalSearch);
+        }
+    }
+</script>
+<div id="consentimentoCookie">
+    Este portal utiliza cookies para garantir a melhor experiência de utilizador. 
+    <button class="btn btn-success btn-sm ms-2" onclick="acceptCookies()">Aceitar</button>
+    <button class="btn btn-danger btn-sm ms-2" onclick="declineCookies()">Recusar</button>
+</div>
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand mr-0" href="/fldrSite/default.aspx">
+            <img src="/fldrSite/img/cesae-digital-logo.svg" alt="Cesae Digital" />
+        </a>
+
+
+        <form class="flex-grow-1 mx-1 mx-lg-3 position-relative d-none d-sm-none d-md-block">
+
+
+            <input name="ctl00$ucSiteTopNavMain$txtSearch" type="text" id="ucSiteTopNavMain_txtSearch" class="form-control rounded-pill border-dark d-none d-sm-block" placeholder="Encontre o Curso que procura" aria-label="Encontre o Curso que procura" onkeydown="if (event.key === &#39;Enter&#39;) handleSearch(event)" />
+
+            <button id="ucSiteTopNavMain_btnSearch" class="bg-none p-0 d-none d-sm-block" type="submit" onclick="handleSearch(event)">
+                <i class="fa-solid fa-share"></i>
+            </button>
+
+        </form>
+
+        <a class="nav-link btn rounded-pill btn-primary text-light courses d-lg-none" href="/fldrSite/pages/coursesList.aspx">Cursos</a>
+        <a href="/fldrSysOps/doLogin.aspx" id="ucSiteTopNavMain_loginIconSmall" class="nav-link btn rounded-circle bg-white border-dark person mx-0 d-lg-none d-lg-flex justify-content-center align-items-center" target="_blank">
+            <i class="fa-regular fa-user"></i></a>
+
+        
+
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <form class="flex-grow-1 m-3 position-relative d-md-none">
+
+            <input name="ctl00$ucSiteTopNavMain$txtSearchSM" type="text" id="ucSiteTopNavMain_txtSearchSM" class="form-control rounded-pill border-dark" placeholder="Encontre o Curso que procura" aria-label="Encontre o Curso que procura" onkeydown="if (event.key === &#39;Enter&#39;) handleSearch(event)" />
+
+            <button id="ucSiteTopNavMain_btnSearchSM" class="bg-none p-0" type="submit" onclick="handleSearch(event)">
+                <i class="fa-solid fa-share"></i>
+            </button>
+        </form>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link " href="/fldrSite/pages/projectsList.aspx">Projetos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/fldrSite/pages/servicesList.aspx">Serviços</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" aria-current="page" href="/fldrSite/pages/aboutUs.aspx">Cesae&nbsp;digital</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/fldrSite/pages/contact.aspx">Contactos</a>
+                </li>
+            </ul>
+        </div>
+        <a class="nav-link btn rounded-pill btn-primary text-light courses d-none d-lg-inline-block"
+            href="/fldrSite/pages/coursesList.aspx">Cursos</a>
+        <a href="/fldrSysOps/doLogin.aspx" id="ucSiteTopNavMain_loginIconBig" class="nav-link btn rounded-circle bg-white border-dark person d-none d-lg-flex justify-content-center align-items-center" target="_blank"><i
+            class="fa-regular fa-user"></i></a>
+
+        
+    </div>
+</nav>
+
+
+
+
+        <!-- /Top NAV -->
+    </header>
+
+    <main>
+		<div class="d-block d-sm-none d-md-none" style="height:68px;"></div>
+        
+    <form method="post" action="./coursesList.aspx" id="coursesForm">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+
+
+<script src="/ScriptResource.axd?d=nnHyWnZ5bTPuYszCeiYmK8L2bXSh8nwlNujeVwFdJ0EffxtdgjP0qvC2dPDlSjzQMBDF_WjYRTrFUYrLLIBstZwcy3Xvfpn5JBHJ1pdxrLZ5duqZfdjWP2aZw0UmV430VAQ33i_gmwO2uejZgQ8WldPGlBQ-QvFCZX4E-S0W5941&amp;t=2a9d95e3" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="EB639CC8" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="g4Wn3ZdKWg/R+XS0IBU4R83BebeTB1OX+Uwt9yskhoWR4tn0j0Ly6HuncihjwXQ6lLm2BwZXBGUww6FZqOcxwTwBxh2IGxKnpC61NdCtRKu7lt+V59Tskz4kOxle07djujTBoFcI8UGzPgXOGgehU6bWf1z7Tw/B5qYOm3bPHTj9aixCOgg+/XVtOyl9MwI9KmbWiHa63ohUHIjor3yJN9HaXPJ4gWzo5FaleWQNUdyk4n6XIvMBFTiMSRO6S6eGUKkw9jsXEyusJUfTahcfWWPQAt72U2SbLbHIBoFOoprzxzAwMGJgZcI+tV58CAWt" />
+        <section class="cta-block inner-page-header bg-primary text-light container-fluid">
+            <div class="container-xl">
+                <div class="row">
+                    <div
+                        class="col-12 col-lg-7 justify-content-start d-flex flex-wrap align-content-center">
+                        <h2 class="w-100" data-aos="fade-up">Cursos</h2>
+                        <p class="w-100">Temos uma oferta variada de cursos, para que possa escolher aquele que mais se adapta aos seus interesses.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div id="mainSection_upnlCurses">
+	
+                <div class="container-xl filters-block">
+                    <div class="row pb-72">
+                        <!-- Filtro-->
+                        <div class="d-none d-lg-block col-3 filters-vertical-block">
+                            <div class="sticky-lg-top">
+                                <div class="accordion">
+                                    <div class="close d-lg-none "><i class="fa-solid fa-xmark"></i></div>
+                                    <div class="title">
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0 14L0 16H6V14H0ZM0 2L0 4L10 4V2L0 2ZM10 18V16H18L18 14H10V12H8V18H10ZM4 6V8L0 8L0 10H4L4 12H6L6 6H4ZM18 10V8L8 8V10H18ZM12 6H14V4L18 4V2L14 2V0L12 0V6Z" fill="#2D2F31" />
+                                        </svg>
+                                        Filtros
+            
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="recipients">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterRecipients" aria-expanded="false" aria-controls="filterRecipients">
+                                                Destinatários
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterRecipients" class="accordion-collapse collapse  " aria-labelledby="recipients">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <script id="dxss_1594992262">
+<!--
+var ASPx,dx,DevExpress;!function n(t,o,e,r,i,a,c){var u=[],l=[],d=0,f=[],s=[],h=!1;function C(n,r,i){n[i]=function(){r(t,o,e)}}function v(){return r==d}function m(){return!0}function E(n){return function(){throw new Error(n)}}function x(n){n()}var S=-1;function b(n,t,o,e){var r=++S;return function(){i(function(){r==S&&o()&&(S--,function(n){for(var t=n.length,o=0,e=null;(e=n[o])&&o<t;o++)e&&e();n.length=0}(t),e())})}}var p=b(0,f,function(){return h&&v()},function(){t.attachToReady=x}),T=b(0,s,m,function(){t.attachToLoad=x,p()}),w=b(0,l,m,function(){t.SS=function(n){n(t,o,e)},T()}),A=b(0,u,v,function(){t.IS=E("Too late"),w()}),y=0;t.SS=function(n){var t=y++;i(function(){C(l,n,t)})};var P=0;t.IS=function(n,t){i(function(){for(C(u,n,t),d++;P<d&&u[P];)u[P]=u[P]()&&null,P++;A()})},t.attachToReady=f.push.bind(f),t.attachToLoad=s.push.bind(s),t.initResourceLoader=n,c.addEventListener("DOMContentLoaded",function(){r=c.querySelectorAll("script[id^=dxis_][defer]").length,A()}),a.addEventListener("load",function(){h=!0,p()});var L=["BeginCallback","BrowserWindowResized","CallbackError","ControlsInitialized","EndCallback","ValidationCompleted"],B=["ForEachControl","Get","GetByName","GetControlsByPredicate","GetControlsByType"],G=[];var g=L.reduce(function(n,t){return((n[t]={}).AddHandler=function(n){G.push({e:t,h:n})})&&n},{});g=B.reduce(function(n,t){return(n[t]=E("The environment has not been initialized. To access the "+t+" member, call the member from the ControlsInitialized event's handler."))&&n},g),t.loadControlCollectionPreloadHandlers=function(n){G.forEach(function(t){n[t.e].AddHandler(t.h)}),L.forEach(function(t){g[t]=n[t]}),B.forEach(function(t){g[t]=n[t].bind(n)}),t.loadControlCollectionPreloadHandlers=G=g=null},a.ASPxClientControl={GetControlCollection:function(){return g}}}(ASPx||(ASPx={}),dx||(dx={}),DevExpress||(DevExpress={}),-1,window.requestAnimationFrame||setTimeout,window,document);
+
+//-->
+</script><script id="dxis_1932785571" src="/DXR.axd?r=1_9,1_62-J34Ht"></script><script id="dxis_569590023" src="/DXR.axd?r=1_10,1_253,1_11,1_12,1_13,1_181,1_184,23_0,23_1,23_37-J34Ht&amp;order=0" defer></script><div class="dxbs-cbl" id="mainSection_rblRecipients">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_rblRecipients_RB0">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$rblRecipients$RB0$ctl00" /><label class="form-check-label"><span>Empregados (39)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_rblRecipients_RB1">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$rblRecipients$RB0$ctl00" /><label class="form-check-label"><span>Desempregados (36)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_rblRecipients_VI" type="hidden" name="ctl00$mainSection$rblRecipients" />
+	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="qualifications">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterQualifications" aria-expanded="false" aria-controls="filterQualifications">
+                                                Habilitações literárias
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterQualifications" class="accordion-collapse collapse " aria-labelledby="qualifications">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbQualifications">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbQualifications_RB0">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$chbQualifications$RB0$ctl00" /><label class="form-check-label"><span>2&#186; ciclo (6&#186; ano) (1)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbQualifications_RB1">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$chbQualifications$RB0$ctl00" /><label class="form-check-label"><span>3&#186; ciclo (9&#186; ano) (2)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbQualifications_RB2">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$chbQualifications$RB0$ctl00" /><label class="form-check-label"><span>Ensino Secund&#225;rio (66)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbQualifications_RB3">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$chbQualifications$RB0$ctl00" /><label class="form-check-label"><span>Bacharelato (11)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbQualifications_VI" type="hidden" name="ctl00$mainSection$chbQualifications" />
+	</div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="location">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterLocation" aria-expanded="false" aria-controls="filterLocation">
+                                                Local
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterLocation" class="accordion-collapse collapse " aria-labelledby="location">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbLocation">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbLocation_RB0">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Braga (2)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB1">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Le&#231;a da Palmeira (5)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB2">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Lisboa (3)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB3">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Marco de Canaveses (4)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB4">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Oliveira de Azem&#233;is (1)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB5">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Online (57)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB6">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Porto (9)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB7">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>S. Jo&#227;o da Madeira (6)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB8">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Santo Tirso (1)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB9">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Vila do Conde (2)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbLocation_RB10">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Viseu (5)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbLocation_VI" type="hidden" name="ctl00$mainSection$chbLocation" />
+	</div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="area">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterAreas" aria-expanded="false" aria-controls="filterAreas">
+                                                Áreas de Formação
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterAreas" class="accordion-collapse collapse " aria-labelledby="area">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbArea">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbArea_RB0">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Development (8)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbArea_RB1">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>IT Network (4)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbArea_RB2">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Media Design (16)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbArea_RB3">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>People (5)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbArea_VI" type="hidden" name="ctl00$mainSection$chbArea" />
+	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="duration">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterDuration" aria-expanded="false" aria-controls="filterDuration">
+                                                Duração
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterDuration" class="accordion-collapse collapse " aria-labelledby="duration">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbDuration">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbDuration_RB0">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Curta (39)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbDuration_RB1">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>M&#233;dia (26)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbDuration_RB2">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Longa (30)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbDuration_VI" type="hidden" name="ctl00$mainSection$chbDuration" />
+	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="regime">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterRegime" aria-expanded="false" aria-controls="filterRegime">
+                                                Horário                
+                                            </button>
+                                        </h2>
+                                        <div id="filterRegime" class="accordion-collapse collapse " aria-labelledby="regime">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbRegime">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbRegime_RB0">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Laboral (38)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbRegime_RB1">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Misto (3)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbRegime_RB2">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>P&#243;s Laboral (54)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbRegime_VI" type="hidden" name="ctl00$mainSection$chbRegime" />
+	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="mode">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterMode" aria-expanded="false" aria-controls="filterMode">
+                                                Regime                
+                                            </button>
+                                        </h2>
+                                        <div id="filterMode" class="accordion-collapse collapse  " aria-labelledby="mode">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbMode">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbMode_RB0">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>A Dist&#226;ncia (5)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbMode_RB1">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>B Learning (10)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbMode_RB2">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>E Learning (20)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbMode_RB3">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Online (32)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbMode_RB4">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Presencial (28)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbMode_VI" type="hidden" name="ctl00$mainSection$chbMode" />
+	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="price">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterPrice" aria-expanded="false" aria-controls="filterPrice">
+                                                Preço
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterPrice" class="accordion-collapse collapse " aria-labelledby="price">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_rblPrice">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_rblPrice_RB0">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$rblPrice$RB0$ctl00" /><label class="form-check-label"><span>Gratuito (83)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_rblPrice_RB1">
+						<input class="form-check-input" type="radio" name="ctl00$mainSection$rblPrice$RB0$ctl00" /><label class="form-check-label"><span>Pago (12)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_rblPrice_VI" type="hidden" name="ctl00$mainSection$rblPrice" />
+	</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-filter">
+                                        <h2 class="accordion-header" id="project">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterProject" aria-expanded="false" aria-controls="filterProject">
+                                                Projeto
+                
+                                            </button>
+                                        </h2>
+                                        <div id="filterProject" class="accordion-collapse collapse " aria-labelledby="project">
+                                            <div class="accordion-body">
+                                                <div class="form-check">
+                                                    <div class="dxbs-cbl" id="mainSection_chbProject">
+		<div>
+			<div class="column-element">
+				<div>
+					<div class="form-check" id="mainSection_chbProject_RB0">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>#Digital Reskilling (16)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB1">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Aprendizagem + (5)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB2">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Cursos de Especializa&#231;&#227;o Tecnol&#243;gica (CET) (2)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB3">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Educa&#231;&#227;o e Forma&#231;&#227;o de Adultos - Profissional (3)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB4">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Forma&#231;&#227;o de Formadores (9)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB5">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Forma&#231;&#227;o in-company (9)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB6">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Forma&#231;&#245;es Modulares (38)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB7">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Jovem +Digital (5)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB8">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Portugu&#234;s L&#237;ngua de Acolhimento (1)</span></label>
+					</div>
+				</div><div>
+					<div class="form-check" id="mainSection_chbProject_RB9">
+						<input class="form-check-input" type="checkbox" /><label class="form-check-label"><span>Reskilling 4 Employment (6)</span></label>
+					</div>
+				</div>
+			</div>
+		</div><input id="mainSection_chbProject_VI" type="hidden" name="ctl00$mainSection$chbProject" />
+	</div><script id="dxss_1552000677">
+<!--
+ASPx.SS(function(ASPx, dx) {
+ASPx.FillDocumentElementDXThemeCssClassName("Office365");
+ASPx.createControl(dx.BootstrapClientRadioButtonList,'mainSection_rblRecipients','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$rblRecipients'},null,null,{'items':[['Empregados (39)','Empregados',''],['Desempregados (36)','Desempregados','']]});
+
+ASPx.createControl(dx.BootstrapClientRadioButtonList,'mainSection_chbQualifications','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbQualifications'},null,null,{'items':[['2º ciclo (6º ano) (1)','2º ciclo (6º ano)',''],['3º ciclo (9º ano) (2)','3º ciclo (9º ano)',''],['Ensino Secundário (66)','Ensino Secundário',''],['Bacharelato (11)','Bacharelato','']]});
+
+ASPx.createControl(dx.BootstrapClientCheckBoxList,'mainSection_chbLocation','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbLocation','initSelectedIndices':[]},null,null,{'items':[['Braga (2)','Braga',''],['Leça da Palmeira (5)','Leça da Palmeira',''],['Lisboa (3)','Lisboa',''],['Marco de Canaveses (4)','Marco de Canaveses',''],['Oliveira de Azeméis (1)','Oliveira de Azeméis',''],['Online (57)','Online',''],['Porto (9)','Porto',''],['S. João da Madeira (6)','S. João da Madeira',''],['Santo Tirso (1)','Santo Tirso',''],['Vila do Conde (2)','Vila do Conde',''],['Viseu (5)','Viseu','']]});
+
+ASPx.createControl(dx.BootstrapClientCheckBoxList,'mainSection_chbArea','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbArea','initSelectedIndices':[]},null,null,{'items':[['Development (8)','Development',''],['IT Network (4)','IT Network',''],['Media Design (16)','Media Design',''],['People (5)','People','']]});
+
+ASPx.createControl(dx.BootstrapClientCheckBoxList,'mainSection_chbDuration','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbDuration','initSelectedIndices':[]},null,null,{'items':[['Curta (39)','Curta',''],['Média (26)','Média',''],['Longa (30)','Longa','']]});
+
+ASPx.createControl(dx.BootstrapClientCheckBoxList,'mainSection_chbRegime','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbRegime','initSelectedIndices':[]},null,null,{'items':[['Laboral (38)','Laboral',''],['Misto (3)','Misto',''],['Pós Laboral (54)','Pós Laboral','']]});
+
+ASPx.createControl(dx.BootstrapClientCheckBoxList,'mainSection_chbMode','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbMode','initSelectedIndices':[]},null,null,{'items':[['A Distância (5)','A Distância',''],['B Learning (10)','B Learning',''],['E Learning (20)','E Learning',''],['Online (32)','Online',''],['Presencial (28)','Presencial','']]});
+
+ASPx.createControl(dx.BootstrapClientRadioButtonList,'mainSection_rblPrice','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$rblPrice'},null,null,{'items':[['Gratuito (83)','Gratuito',''],['Pago (12)','Pago','']]});
+
+ASPx.createControl(dx.BootstrapClientCheckBoxList,'mainSection_chbProject','',{'autoPostBack':true,'uniqueID':'ctl00$mainSection$chbProject','initSelectedIndices':[]},null,null,{'items':[['#Digital Reskilling (16)','#Digital Reskilling',''],['Aprendizagem + (5)','Aprendizagem +',''],['Cursos de Especialização Tecnológica (CET) (2)','Cursos de Especialização Tecnológica (CET)',''],['Educação e Formação de Adultos - Profissional (3)','Educação e Formação de Adultos - Profissional',''],['Formação de Formadores (9)','Formação de Formadores',''],['Formação in-company (9)','Formação in-company',''],['Formações Modulares (38)','Formações Modulares',''],['Jovem +Digital (5)','Jovem +Digital',''],['Português Língua de Acolhimento (1)','Português Língua de Acolhimento',''],['Reskilling 4 Employment (6)','Reskilling 4 Employment','']]});
+
+
+});
+//-->
+</script>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="cta text-center text-lg-start" style="background-color: #fafafa;">
+                                        <h3>Plano de formação 2026</h3>
+                                        <p>Tenha acesso ao plano de formação completo para 2026</p>
+                                        <a href="/content/media/planoFormacao2026.pdf" target="_blank" class="btn rounded-pill btn-primary">Ver plano de formação 2026</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Filtro-->
+
+                        <div class="col-sm-12 col-lg-9 filtered-articles">
+                            <!-- TAGS FILTRAGEM -->
+                            <div class="row tags-list">
+                                <div class="col-12 col-lg-8 d-flex align-items-center">
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                    
+
+                                </div>
+                                <div class="short col-12 col-lg-4 text-end d-flex justify-content-lg-end">
+                                    <div class="title d-lg-none text-start">
+                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0 14L0 16H6V14H0ZM0 2L0 4L10 4V2L0 2ZM10 18V16H18L18 14H10V12H8V18H10ZM4 6V8L0 8L0 10H4L4 12H6L6 6H4ZM18 10V8L8 8V10H18ZM12 6H14V4L18 4V2L14 2V0L12 0V6Z" fill="#2D2F31" />
+                                        </svg>
+                                        Filtros       
+                                    </div>
+                                    <div>
+                                        Ordenar por         
+                                        <select name="ctl00$mainSection$cmbOrderBy" id="mainSection_cmbOrderBy" class="form-select d-inline rounded-pill border-1 border-dark">
+		<option selected="selected" value="">Selecionar</option>
+		<option value="dtInicio|A">Data In&#237;cio (asc)</option>
+		<option value="dtInicio|D">Data In&#237;cio (desc)</option>
+		<option value="preco|A">Pre&#231;o (mais baixo)</option>
+		<option value="preco|D">Pre&#231;o (mais alto)</option>
+		<option value="designacao|A">Nome (asc)</option>
+		<option value="designacao|D">Nome (desc)</option>
+
+	</select>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- TAGS FILTRAGEM -->
+
+                            <!-- Div Sem Resultado -->
+                            
+                            <!-- Div Sem Resultado -->
+
+                            <!-- Nº TOTAL CURSOS -->
+                            <div class="row results">
+                                <div class="col-12">
+                                    95 resultados 
+                                </div>
+                            </div>
+                            <!-- Nº TOTAL CURSOS -->
+
+                            <!-- LISTA CURSOS -->
+                            
+                                    <div class="row articles-list">
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/cesae_junior_prt_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                <span class="label bg-primary text-light">Valor por semana</span>
+                                                <img src="https://www.cesaedigital.pt/content/courses/9239ad1b-8183-4eed-914b-5d04aed9857e.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Porto, Laboral</span>
+                                                <h1>CESAE Júnior</h1>
+                                                <span class="date">29 de junho de 2026</span>
+                                                <div class="price ">100,00€</div>
+                                                <div></div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/visualizacao_e_storytelling_online_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/37faad79-6e7d-43ef-b973-ba34b9a4c7b9.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Online, Pós Laboral</span>
+                                                <h1>Power BI - Visualização e Storytelling</h1>
+                                                <span class="date">11 de setembro de 2026</span>
+                                                <div class="price ">95,00€</div>
+                                                <div>Inscrições Abertas</div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/labmaker_cesae_arduino_para_nao_programadores_prt_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/6201d30e-5927-4216-8a0f-cebd3286d1d9.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Porto, Laboral</span>
+                                                <h1>LabMaker CESAE: Arduino para Não-Programadores</h1>
+                                                <span class="date">12 de setembro de 2026</span>
+                                                <div class="price ">35,00€</div>
+                                                <div>Inscrições Abertas</div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/digital_office_mcv_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/795b71f7-3900-43ed-9b03-2d2754f0eb40.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Marco de Canaveses, Laboral</span>
+                                                <h1>Digital Office </h1>
+                                                <span class="date">14 de setembro de 2026</span>
+                                                <div class="price text-secondary">Gratuito</div>
+                                                <div>Inscrições Abertas</div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/formacao_pedagogica_inicial_de_formadores_2_ed_sjm_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/93ec14e7-a6dc-45b1-aab8-03373d8c0e3b.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">S. João da Madeira, Pós Laboral</span>
+                                                <h1>Formação Pedagógica Inicial de Formadores - (2 ed)</h1>
+                                                <span class="date">15 de setembro de 2026</span>
+                                                <div class="price text-secondary">Gratuito</div>
+                                                <div></div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/publicitar_nas_redes_sociais_online_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/ace29d85-5756-4ecd-8259-3dc53543c0f2.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Online, Pós Laboral</span>
+                                                <h1>Publicitar nas redes sociais</h1>
+                                                <span class="date">14 de setembro de 2026</span>
+                                                <div class="price text-secondary">Gratuito</div>
+                                                <div>Inscrições Abertas</div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/labmaker_cesae_eletronica_do_zero_do_primeiro_circuito_ao_primeiro_projeto_prt_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/631cfd06-f9c8-4a95-80dc-7d546c4a7438.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Porto, Laboral</span>
+                                                <h1>LabMaker CESAE: Eletrónica do Zero — Do Primeiro Circuito ao Primeiro Projeto</h1>
+                                                <span class="date">19 de setembro de 2026</span>
+                                                <div class="price ">35,00€</div>
+                                                <div>Inscrições Abertas</div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/cybersecurity_cloud_security_technician_online_v2" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/2db5cb78-3963-4b92-b61b-67b063caa61c.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Online, Pós Laboral</span>
+                                                <h1>Cybersecurity & Cloud Security Technician</h1>
+                                                <span class="date">21 de setembro de 2026</span>
+                                                <div class="price text-secondary">Gratuito</div>
+                                                <div></div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    
+                                    <article class="col-6 col-md-4">
+                                        <a href="/curso/lista/efetuar_a_programacao_de_microcontroladores_uc00670_online_v1" class="w-100 bg-secondary">
+                                            <figure class="p-0 m-0">
+                                                
+                                                <img src="https://www.cesaedigital.pt/content/courses/2b53f0e1-54b7-43c2-919b-ddaf8d08a36e.jpg"
+                                                    class="w-100" alt="..." />
+                                            </figure>
+                                            <div class="bg-secondary text-holder">
+                                                <span class="label">Online, Pós Laboral</span>
+                                                <h1>Efetuar a programação de microcontroladores</h1>
+                                                <span class="date">22 de setembro de 2026</span>
+                                                <div class="price text-secondary">Gratuito</div>
+                                                <div>Inscrições Abertas</div>
+                                            </div>
+                                        </a>
+                                    </article>
+                                
+                                    </div>
+                                
+
+                            <!-- LISTA CURSOS -->
+
+                            <!-- BTN MOSTRAR MAIS CURSOS -->
+                            <div class="row d-flex justify-content-start align-content-center">
+                                <div class="w-100 text-center counting">
+                                    9 de  95 resultados
+       
+                                    <div class="line d-block"><span id="mainSection_spanRange" style="width:9%;"></span></div>
+                                </div>
+
+                                <input type="submit" name="ctl00$mainSection$btnShowMore" value="Mostrar mais" id="mainSection_btnShowMore" class="btn rounded-pill btn-secondary bg-white border-dark text-dark w-auto m-auto" />
+                                
+                                <div id="upgsCourses" style="display:none;">
+		
+                                        <img src="/fldrBO/images/spinner.gif" alt="wait" style="width: 80px; height: 80px;" />
+                                    
+	</div>
+                            </div>
+                            <!-- BTN MOSTRAR MAIS CURSOS -->
+                        </div>
+                    </div>
+                </div>
+            
+</div>
+    </form>
+
+
+    </main>
+
+    <!-- footer start -->
+    <footer class="text-light">
+        
+
+<div class="container-xl">
+    <div class="row">
+        <div
+            class="col-12 justify-content-center justify-content-lg-start col-lg-7 d-flex flex-wrap align-content-center text-center text-lg-start">
+            <h1 data-aos="fade-up" style="visibility: visible; animation-name: fadeInUp;">Quer estar sempre a par das últimas novidades?</h1>
+            <p class="m-0 p-0 w-100 text-center text-lg-start">
+                Subscreva a nossa newsletter e receba regularmente as nossas notícias e plano de formação. A inscrição é gratuita!            
+            </p>
+        </div>
+        <div class="col-12 col-lg-5 flex-wrap align-content-center text-center text-lg-end flex-row-reverse mt-3 mt-lg-0">
+            <a href="#" class="btn rounded-pill btn-secondary bg-white border-dark text-dark modalOpen" data-modal="newsletter.aspx">Subscrever newsletter</a>
+        </div>
+    </div>
+
+    <div class="border-bottom w-100"></div>
+
+    <div class="row">
+        <div class="col-md-12 col-4 mb-lg-3 special text-center text-lg-start">
+            <div class="row mb-3">
+                <img src="/fldrSite/img/cesae-digital-centro-para-o-desenvolvimento.svg" alt="CESAE DIGITAL" />
+            </div>
+            <div class="row mb-3">
+                <span>Somos, há 40 anos, o parceiro das empresas para a formação e qualificação.</span>
+            </div>
+            <div class="row">
+                <span>Telefone <a href="tel:+351226195200" class="d-inline">226 195 200</a></span>
+                <span>Email <a href="mailto:geral@cesae.pt">geral@cesae.pt</a></span>
+            </div>
+            <div class="row partners">
+                <span class="mb-1">Associados</span>
+                <img src="/fldrSite/img/IEFP.svg" alt="IEFP" />
+                <img src="/fldrSite/img/AEP.svg" alt="CESAE DIGITAL" />
+            </div>
+            <ul class="social-links p-0 mb-0">
+                <li><a href="https://www.instagram.com/cesae.digital/" target="_blank"
+                    class="d-flex justify-content-center align-items-center border rounded-circle"
+                    title="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
+                <li><a href="https://www.facebook.com/CesaeDigital" target="_blank"
+                    class="d-flex justify-content-center align-items-center border rounded-circle"
+                    title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <li><a href="https://www.youtube.com/@cesaedigital" target="_blank"
+                        class="d-flex justify-content-center align-items-center border rounded-circle"
+                        title="Youtube"><i class="fa-brands fa-youtube"></i></a>
+                        <li><a href="https://pt.linkedin.com/school/cesae-digital/" target="_blank"
+                            class="d-flex justify-content-center align-items-center border rounded-circle"
+                            title="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a>
+            </ul>
+        </div>
+
+        <div class="col-sm-6 col-md mb-3 d-none d-lg-block"></div>
+        <div class="col-sm-4 col-md mb-3 pt-5 pt-lg-0 text-center text-sm-start d-none d-sm-block">
+            <h5>CESAE Digital</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/coursesList.aspx" class="nav-link p-0">Cursos</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/projectsList.aspx" class="nav-link p-0">Projetos</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/servicesList.aspx" class="nav-link p-0">Serviços</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/comingEventsList.aspx" class="nav-link p-0">Agenda</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/newsList.aspx" class="nav-link p-0">Notícias</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/aboutUs.aspx" class="nav-link p-0">O Centro</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/contact.aspx" class="nav-link p-0">Onde estamos</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/contact.aspx#contacto" class="nav-link p-0">Contactar</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-4 col-md mb-3 pt-5 pt-lg-0 text-center text-sm-start">
+            <h5>Ajuda</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/faqs.aspx" class="nav-link p-0">Perguntas frequentes</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/dynamics/cert2Via.aspx" class="nav-link p-0">2ª via Certificado</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/trainersApply.aspx" class="nav-link p-0">Bolsa de formadores</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/companyInternships.aspx" class="nav-link p-0">Estágios</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/employment.aspx" class="nav-link p-0">Empregabilidade</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-4 col-md mb-3 pt-sm-5 pt-lg-0 text-center text-sm-start">
+            <h5>Links úteis</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/cookies.aspx" class="nav-link p-0">Política de Cookies</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/privacyPolicy.aspx" class="nav-link p-0">Política de Privacidade</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/personalDataPolicy.aspx" class="nav-link p-0">Política de Dados Pessoais</a></li>
+                <li class="nav-item mb-3"><a href="/fldrSite/pages/termsAndConditions.aspx" class="nav-link p-0">Termos & Condições</a></li>
+                <li class="nav-item mb-3"><a href="https://www.livroreclamacoes.pt/Inicio/" target="_blank" class="nav-link p-0">Livro de Reclamações</a></li>
+                <li class="nav-item mb-3"><a href="http://www.cniacc.pt/pt/" target="_blank" class="nav-link p-0">Resolução de Litígios</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="border-bottom w-100"></div>
+    <div class="row sponsors d-flex flex-wrap justify-content-center">
+        <img src="/fldrSite/img/logo-Pessoas2030.svg" alt="" />
+        <img src="/fldrSite/img/logo-PRR.svg" alt="" class="border-start border-end" />
+        <img src="/fldrSite/img/logo-Anqep.svg" alt="" />
+    </div>
+    <div class="border-bottom w-100 mb-3"></div>
+    <div class="copyright text-center pb-3">
+        Copyright©2025 CESAE. Todos os direitos reservados
+    </div>
+    <div class="d-block d-md-none my-3" style="height: 50px;"></div>
+</div>
+<!-- Connected Sites -->
+<script>
+    if (window._mtmReady) {
+        console.error('Connected sites script already loaded. You might have it dupplicated.');
+    } else {
+        window._mtmReady = true;
+        var _mtm = window._mtm = window._mtm || [];
+        _mtm.push({ 'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start' });
+        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+        g.async = true; g.src = 'https://egoi.site/191739_cesaedigital.pt.js?v=' + new Date().getTime();
+        s.parentNode.insertBefore(g, s);
+    }
+</script>
+<!-- End Connected Sites -->
+
+
+
+
+    </footer>
+
+    <div id="overlay"></div>
+    <section id="modal-cesae">
+        <button class="close-btn close p-0 m-0"><i class="fa-regular fa-x"></i></button>
+        <div id="modal-html"></div>
+
+    </section>
+
+    
+
+
+    
+
+
+    
+
+    
+
+    <form name="frmDown" id="frmDown" method="post" action="/ifldr/guestDownloader.aspx">
+        <input type="hidden" id="idDoc" name="idDoc" />
+        <input type="hidden" id="DownMode" name="DownMode" value="TIMED" />
+    </form>
+
+    <!-- script start -->
+
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"
+        integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous"
+        async></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"
+        integrity="sha512-A7AYk1fGKX6S2SsHywmPkrnzTZHrgiVT7GcQkLGDe2ev0aWb8zejytzS8wjo7PGEXKqJOrjQ4oORtnimIRZBtw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/4.2.0/apexcharts.min.js"
+        integrity="sha512-3+Gl3bmoEkUSCMsEZARlhT4bnq4/MD78aCvs07GULmDOEBpdHYVQF6bz8pIpEg+luEww2gXsOwuhvXUl0i+N4g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="/fldrSite/js/app.js"></script>
+    <script src="/fldrSite/js/modal.js"></script>
+    <script src="/fldrSite/js/cesaeProper.js"></script>
+    
+    <script>
+        function countHit() {
+            window.location.href = "drivers/trainingProgramDriver.aspx";
+        }
+    </script>
+
+</body>
+</html>
