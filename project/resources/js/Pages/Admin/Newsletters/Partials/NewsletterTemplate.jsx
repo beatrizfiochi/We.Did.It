@@ -45,7 +45,7 @@ function imageUrl(path) {
         return path;
     }
 
-    return null;
+    return `/storage/${path}`;
 }
 
 export default function NewsletterTemplate({ newsletter }) {
