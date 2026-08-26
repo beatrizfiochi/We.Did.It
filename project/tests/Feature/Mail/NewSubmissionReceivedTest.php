@@ -61,6 +61,25 @@ class NewSubmissionReceivedTest extends TestCase
         $this->assertStringContainsString('Nenhuma', $rendered);
     }
 
+    public function test_the_button_points_to_the_matching_moderation_screen(): void
+    {
+        $noticia = new NewSubmissionReceived(
+            type: 'Notícia',
+            title: 'Abertura das inscrições',
+        );
+
+        $testemunho = new NewSubmissionReceived(
+            type: 'Testemunho',
+            title: 'A formação mudou-me a vida',
+            authorName: 'Ana',
+        );
+
+        // enquanto os ecrãs de moderação não existiam, o botão apontava ao
+        // dashboard e o gestor tinha de lá chegar à mão (SCRUM-88 → SCRUM-86)
+        $this->assertStringContainsString(route('admin.news.index'), $noticia->render());
+        $this->assertStringContainsString(route('admin.testimonials.index'), $testemunho->render());
+    }
+
     public function test_the_submitted_content_is_not_included(): void
     {
         // o email avisa; a moderação faz-se no painel

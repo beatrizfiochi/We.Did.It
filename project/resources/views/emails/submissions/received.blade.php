@@ -13,9 +13,8 @@ Categoria: {{ $categoryName ?? 'Nenhuma' }}
 Recebido em: {{ now()->format('d/m/Y \à\s H:i') }}
 </x-mail::panel>
 
-{{-- TODO SCRUM-86: apontar para o ecrã de moderação quando existir --}}
-<x-mail::button :url="route('dashboard')">
-Abrir o painel
+<x-mail::button :url="$type === 'Notícia' ? route('admin.news.index') : route('admin.testimonials.index')">
+Abrir a moderação
 </x-mail::button>
 
 O conteúdo submetido não vai neste email de propósito: ainda não foi moderado.
