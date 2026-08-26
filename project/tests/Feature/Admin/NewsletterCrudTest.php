@@ -85,26 +85,6 @@ class NewsletterCrudTest extends TestCase
         $this->assertTrue(Newsletter::firstWhere('edition', 12)->is_draft);
     }
 
-    public function test_the_status_cannot_be_changed_by_whoever_submits_the_form(): void
-    {
-        $admin = User::factory()->create();
-        $newsletter = Newsletter::factory()->create([
-            'status' => Newsletter::RASCUNHO,
-            'edition' => 12,
-        ]);
-
-        // o formulário de edição envia um campo status, mas publicar não é gravar
-        // um campo: tem de bloquear a edição e, na Sprint 5, gerar o PDF. Por isso
-        // a publicação é a SCRUM-116, numa rota própria, e o status nunca entra
-        // por aqui. Se um dia este teste falhar, alguém acrescentou 'status' às
-        // regras do UpdateNewsletterRequest — é o desenho a mudar, não a completar-se.
-        $this->actingAs($admin)->put(route('admin.newsletters.update', $newsletter), $this->validPayload([
-            'status' => Newsletter::PUBLICADA,
-        ]));
-
-        $this->assertTrue($newsletter->fresh()->is_draft);
-    }
-
     public function test_creating_a_newsletter_requires_the_mandatory_fields(): void
     {
         $admin = User::factory()->create();
@@ -124,7 +104,6 @@ class NewsletterCrudTest extends TestCase
 
         $response->assertSessionHasErrors(['title', 'edition', 'date', 'period_start', 'period_end']);
     }
-
 
     public function test_the_title_needs_at_least_five_characters(): void
     {
@@ -234,7 +213,7 @@ class NewsletterCrudTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)
-            ->from(route('admin.newsletter.index'))
+            ->from(route('admin.newsletters.index'))
             ->put(
                 route('admin.newsletters.update', $newsletter),
                 [
@@ -250,7 +229,7 @@ class NewsletterCrudTest extends TestCase
         $response->assertRedirect(route('admin.newsletters.index'));
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseHas('newsletter', [
+        $this->assertDatabaseHas('newsletters', [
             'id' => $newsletter->id,
             'status' => true,
         ]);
@@ -265,7 +244,7 @@ class NewsletterCrudTest extends TestCase
         ]);
 
         $response = $this->actingAs($admin)
-            ->from(route('admin.newsletter.index'))
+            ->from(route('admin.newsletters.index'))
             ->put(
                 route('admin.newsletters.update', $newsletter),
                 [
@@ -281,12 +260,11 @@ class NewsletterCrudTest extends TestCase
         $response->assertRedirect(route('admin.newsletters.index'));
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseHas('newsletter', [
+        $this->assertDatabaseHas('newsletters', [
             'id' => $newsletter->id,
             'status' => Newsletter::PUBLICADA,
         ]);
     }
-
 
     public function test_the_three_operations_are_written_to_the_activity_log(): void
     {

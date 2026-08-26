@@ -35,7 +35,7 @@ class NewsletterController extends Controller
                     'date',
                     'period_start',
                     'period_end',
-                    'status'
+                    'status',
                 ]),
         ]);
     }
@@ -58,8 +58,12 @@ class NewsletterController extends Controller
     /**
      * Atualiza uma newsletter existente.
      *
-     * Não impede a edição de uma newsletter já publicada — esse bloqueio é a
-     * SCRUM-116, na Sprint 5.
+     * O status é aceite a partir do formulário (SCRUM-106), mas isso é provisório:
+     * publicar tem de bloquear a edição e, na Sprint 5, gerar o PDF. A SCRUM-116
+     * tem de retirar o status daqui e mover a mudança de estado para uma rota
+     * própria — senão ficam dois caminhos para publicar, e este não bloqueia nada.
+     *
+     * Não impede a edição de uma newsletter já publicada — mesmo motivo.
      */
     public function update(UpdateNewsletterRequest $request, Newsletter $newsletter): RedirectResponse
     {
@@ -71,11 +75,10 @@ class NewsletterController extends Controller
 
         $message = $newsletter->status
             ? 'Rascunho guardado com sucesso.'
-            : 'Newsletter atualizada com sucesso.'; //status = false -> atualizada 
+            : 'Newsletter atualizada com sucesso.'; // status = false -> atualizada
 
         return back()->with('success', $message);
     }
-
 
     /**
      * Remove uma newsletter.
@@ -96,15 +99,15 @@ class NewsletterController extends Controller
     public function preview(Newsletter $newsletter): Response
     {
         $newsletter->load([
-            'news' => fn($q) => $q->with('category')->orderByPivot('order'),
-            'testimonials' => fn($q) => $q->with('category')->orderByPivot('order'),
-            'calendars' => fn($q) => $q->orderBy('date'),
+            'news' => fn ($q) => $q->with('category')->orderByPivot('order'),
+            'testimonials' => fn ($q) => $q->with('category')->orderByPivot('order'),
+            'calendars' => fn ($q) => $q->orderBy('date'),
             'courses',
         ]);
 
         // start_date é string livre vinda da API externa, não dá para ordenar em SQL
         $newsletter->setRelation('courses', $newsletter->courses
-            ->sortBy(fn(Course $course) => $course->start_date_for_sorting)
+            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
             ->values());
 
         return Inertia::render('Admin/Newsletters/Preview', [
@@ -122,7 +125,7 @@ class NewsletterController extends Controller
         // start_date é uma string vinda da API externa, não uma coluna de data,
         // por isso ordenamos em PHP (start_date_for_sorting) em vez de orderBy() no banco.
         $courses = Course::get(['id', 'title', 'start_date'])
-            ->sortBy(fn(Course $course) => $course->start_date_for_sorting)
+            ->sortBy(fn (Course $course) => $course->start_date_for_sorting)
             ->values();
 
         return Inertia::render('Admin/Newsletters/Courses', [
