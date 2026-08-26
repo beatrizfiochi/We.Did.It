@@ -22,7 +22,15 @@ class NewsletterController extends Controller
     {
         return Inertia::render('Admin/Newsletters/Index', [
             'newsletters' => Newsletter::orderByDesc('edition')
-                ->get(['id', 'title', 'edition', 'date', 'status']),
+                ->get([
+                    'id',
+                    'title',
+                    'edition',
+                    'date',
+                    'period_start',
+                    'period_end',
+                    'status',
+                ]),
         ]);
     }
 
@@ -44,8 +52,12 @@ class NewsletterController extends Controller
     /**
      * Atualiza uma newsletter existente.
      *
-     * Não impede a edição de uma newsletter já publicada — esse bloqueio é a
-     * SCRUM-116, na Sprint 5.
+     * O status é aceite a partir do formulário (SCRUM-106), mas isso é provisório:
+     * publicar tem de bloquear a edição e, na Sprint 5, gerar o PDF. A SCRUM-116
+     * tem de retirar o status daqui e mover a mudança de estado para uma rota
+     * própria — senão ficam dois caminhos para publicar, e este não bloqueia nada.
+     *
+     * Não impede a edição de uma newsletter já publicada — mesmo motivo.
      */
     public function update(UpdateNewsletterRequest $request, Newsletter $newsletter): RedirectResponse
     {
@@ -55,7 +67,11 @@ class NewsletterController extends Controller
 
         ActivityLog::record($newsletter, 'updated');
 
-        return back()->with('success', 'Rascunho guardado com sucesso.');
+        $message = $newsletter->status
+            ? 'Rascunho guardado com sucesso.'
+            : 'Newsletter atualizada com sucesso.'; // status = false -> atualizada
+
+        return back()->with('success', $message);
     }
 
     /**

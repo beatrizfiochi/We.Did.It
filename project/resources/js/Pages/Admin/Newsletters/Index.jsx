@@ -6,41 +6,29 @@ import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
+import StatusBadge from '@/Components/StatusBadge';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
-function formatDate(value) {
-    if (!value) {
-        return '—';
-    }
-
-    return new Date(value).toLocaleDateString('pt-PT');
-}
 
 export default function Index({ newsletters }) {
+    // null = criar, objeto = editar. Um modal só para os dois casos.
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [deleting, setDeleting] = useState(null);
 
-    const {
-        data,
-        setData,
-        post,
-        put,
-        delete: destroy,
-        processing,
-        errors,
-        reset,
-        clearErrors,
-    } = useForm({
-        title: '',
-        edition: '',
-        date: '',
-        period_start: '',
-        period_end: '',
-    });
+    // obtem a data atual do utilizador de acordo com o timezone, sem depender do UTC - referencia universal
+    const getToday = () => {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+    const todayDate = getToday();
+
+
+    const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors, transform } =
+        useForm({ title: '', edition: '', date: todayDate, period_start: '', period_end: '', status: false });
 
     const openCreate = () => {
         reset();
@@ -49,35 +37,52 @@ export default function Index({ newsletters }) {
         setShowForm(true);
     };
 
-    const openEdit = (newsletter) => {
+    const openEdit = (event) => {
+
+        //console.log('EVENT:', event);
+
         clearErrors();
-        setEditing(newsletter);
+        setEditing(event);
+
         setData({
-            title: newsletter.title ?? '',
-            edition: newsletter.edition ?? '',
-            date: newsletter.date?.slice(0, 10) ?? '',
-            period_start: newsletter.period_start?.slice(0, 10) ?? '',
-            period_end: newsletter.period_end?.slice(0, 10) ?? '',
+            title: event.title,
+            edition: event.edition,
+            date: event.date.slice(0, 10),
+            period_start: event.period_start?.slice(0, 10),
+            period_end: event.period_end?.slice(0, 10),
+            status: event.status,
         });
+
         setShowForm(true);
     };
 
     const closeForm = () => {
         setShowForm(false);
-        reset();
         clearErrors();
+        setEditing(null);
+        reset();
     };
 
-    const submit = (e) => {
+    const submit = (e, status = false) => {
         e.preventDefault();
 
-        const options = { preserveScroll: true, onSuccess: closeForm };
+        // status === true  → draft
+        // status === false → published
+        // adiciona o status no formulario a partir do respetivo botão que chama esta função
+        transform((formData) => ({ ...formData, status }));
 
-        if (editing) {
-            put(route('admin.newsletters.update', editing.id), options);
-        } else {
-            post(route('admin.newsletters.store'), options);
-        }
+        // ações possiveis: atualizar e publicar
+        const action = editing ? put : post;
+
+        // route de acordo com a ação escolhida
+        const url = editing
+            ? route('admin.newsletters.update', editing.id)
+            : route('admin.newsletters.store');
+
+        action(url, {
+            preserveScroll: true,
+            onSuccess: closeForm,
+        });
     };
 
     const confirmDelete = () => {
@@ -88,19 +93,31 @@ export default function Index({ newsletters }) {
     };
 
     const columns = [
-        { key: 'edition', label: 'Edição', render: (row) => `#${row.edition}` },
-        { key: 'title', label: 'Título' },
-        { key: 'date', label: 'Data', render: (row) => formatDate(row.date) },
+        {
+            key: 'date',
+            label: 'Data de criação',
+            render: (row) => new Date(row.date).toLocaleDateString('pt-PT'),
+        },
+        {
+            key: 'title',
+            label: 'Título',
+            render: (row) => row.title,
+        },
+        {
+            key: 'edition',
+            label: 'Edição',
+            render: (row) => row.edition,
+        },
         {
             key: 'status',
             label: 'Estado',
-            render: (row) => (row.status ? 'Rascunho' : 'Publicada'),
+            render: (row) => <StatusBadge status={row.status ? 'Rascunho' : 'Publicada'}></StatusBadge>,
         },
         {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex gap-2">
                     <Link
                         href={route('admin.newsletters.preview', row.id)}
                         className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -112,37 +129,42 @@ export default function Index({ newsletters }) {
                         Editar
                     </SecondaryButton>
 
-                    <button
-                        type="button"
-                        className="inline-flex items-center rounded-md border border-red-200 bg-red-100 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-red-700 shadow-sm transition duration-150 ease-in-out hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 active:bg-red-300"
-                        onClick={() => setDeleting(row)}
-                    >
+                    <DangerButton onClick={() => setDeleting(row)}>
                         Remover
-                    </button>
+                    </DangerButton>
                 </div>
             ),
         },
     ];
 
+
     return (
-        <AuthenticatedLayout header="Newsletters">
-            <Head title="Newsletters" />
+        <AuthenticatedLayout
+            header={
+                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                    Newsletter
+                </h2>
+            }
+        >
+            <Head title="Newsletter" />
 
-            <div className="space-y-6">
-                <FlashMessage />
+            <div className="py-12">
+                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+                    <FlashMessage />
 
-                <div className="flex justify-end">
-                    <PrimaryButton onClick={openCreate}>
-                        Nova newsletter
-                    </PrimaryButton>
+                    <div className="flex justify-end">
+                        <PrimaryButton onClick={openCreate}>
+                            Nova Newsletter
+                        </PrimaryButton>
+                    </div>
+
+                    <DataTable
+                        columns={columns}
+                        rows={newsletters}
+                        emptyTitle="Ainda não há newsletters criadas"
+                        emptyDescription="Cria a primeira newsletter no botão acima."
+                    />
                 </div>
-
-                <DataTable
-                    columns={columns}
-                    rows={newsletters}
-                    emptyTitle="Ainda não há newsletters"
-                    emptyDescription="Cria a primeira newsletter no botão acima."
-                />
             </div>
 
             <Modal show={showForm} onClose={closeForm} maxWidth="md">
@@ -168,7 +190,6 @@ export default function Index({ newsletters }) {
                         <TextInput
                             id="edition"
                             type="number"
-                            min="1"
                             value={data.edition}
                             className="mt-1 block w-full"
                             onChange={(e) => setData('edition', e.target.value)}
@@ -177,19 +198,24 @@ export default function Index({ newsletters }) {
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="date" value="Data" />
+                        <InputLabel htmlFor="date" value="Data de criação" />
                         <TextInput
                             id="date"
                             type="date"
                             value={data.date}
-                            className="mt-1 block w-full"
+                            min={editing ? undefined : todayDate} //if user is editing, min and max is undefined(free to choose)
+                            max={todayDate}
+                            disabled={!editing}
+                            className={`mt-1 block w-full
+                                ${!editing ? 'cursor-not-allowed bg-gray-100 text-gray-500' : ''
+                                }`}
                             onChange={(e) => setData('date', e.target.value)}
                         />
                         <InputError message={errors.date} className="mt-2" />
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="period_start" value="Início do período" />
+                        <InputLabel htmlFor="period_start" value="Data de início" />
                         <TextInput
                             id="period_start"
                             type="date"
@@ -201,7 +227,7 @@ export default function Index({ newsletters }) {
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="period_end" value="Fim do período" />
+                        <InputLabel htmlFor="period_end" value="Data de fim" />
                         <TextInput
                             id="period_end"
                             type="date"
@@ -212,18 +238,43 @@ export default function Index({ newsletters }) {
                         <InputError message={errors.period_end} className="mt-2" />
                     </div>
 
-                    <div className="flex flex-wrap justify-end gap-3">
+                    {editing &&
+                        <div>
+                            <InputLabel htmlFor="status" value="Estado" />
+
+                            {/* "publicada" será eliminada mais tarde nos proximo sprint(nao sera possivel editar uma publicada) */}
+                            <div className="mt-1">
+                                <StatusBadge status={data.status ? 'Rascunho' : 'Publicada'} />
+                            </div>
+
+                            <InputError message={errors.status} className="mt-2" />
+                        </div>
+                    }
+
+                    <div className="flex justify-end gap-3">
                         <SecondaryButton type="button" onClick={closeForm}>
                             Cancelar
                         </SecondaryButton>
 
-                        <PrimaryButton disabled={processing}>
-                            {editing ? 'Guardar' : 'Criar'}
+                        < PrimaryButton
+                            type="button"
+                            disabled={processing}
+                            //status=true guarda como rascunho
+                            onClick={(event) => submit(event, true)}>
+                            Guardar Rascunho
                         </PrimaryButton>
+
+                        {editing && // só pode publicar depois de guardar rascunho
+                            <PrimaryButton disabled={processing}>
+                                {/* entra no default do submit status=false -> publica a newsletter */}
+                                {/* {editing ? 'Guardar' : 'Criar'} */}
+                                Publicar
+                            </PrimaryButton>}
                     </div>
                 </form>
             </Modal>
 
+            {/* confirmação em modal, e não window.confirm(), que bloqueia o browser */}
             <Modal show={deleting !== null} onClose={() => setDeleting(null)} maxWidth="md">
                 <div className="space-y-4 p-6">
                     <h2 className="text-lg font-medium text-gray-900">
@@ -234,7 +285,7 @@ export default function Index({ newsletters }) {
                         {deleting?.title} — esta ação não pode ser anulada.
                     </p>
 
-                    <div className="flex flex-wrap justify-end gap-3">
+                    <div className="flex justify-end gap-3">
                         <SecondaryButton onClick={() => setDeleting(null)}>
                             Cancelar
                         </SecondaryButton>
@@ -245,6 +296,7 @@ export default function Index({ newsletters }) {
                     </div>
                 </div>
             </Modal>
-        </AuthenticatedLayout>
+
+        </AuthenticatedLayout >
     );
 }
