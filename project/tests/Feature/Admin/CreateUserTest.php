@@ -48,14 +48,14 @@ class CreateUserTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'Novo Admin',
-            'email' => 'novo@example.com',
+            'email' => 'novo@cesae.pt',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
 
         $this->assertDatabaseHas('users', [
             'name' => 'Novo Admin',
-            'email' => 'novo@example.com',
+            'email' => 'novo@cesae.pt',
         ]);
 
         $response->assertRedirect(route('dashboard'));
@@ -68,7 +68,7 @@ class CreateUserTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'Novo Admin',
-            'email' => 'novo@example.com',
+            'email' => 'novo@cesae.pt',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
@@ -76,13 +76,45 @@ class CreateUserTest extends TestCase
         $this->assertAuthenticatedAs($admin);
     }
 
+    public function test_the_email_must_belong_to_an_allowed_domain(): void
+    {
+        $admin = User::factory()->create();
+
+        // requisito do cliente: as contas ficam restritas aos domínios da casa
+        $response = $this->actingAs($admin)->post(route('admin.users.store'), [
+            'name' => 'De Fora',
+            'email' => 'defora@gmail.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertDatabaseMissing('users', ['email' => 'defora@gmail.com']);
+    }
+
+    public function test_both_allowed_domains_are_accepted(): void
+    {
+        $admin = User::factory()->create();
+
+        foreach (['ana@cesae.pt', 'rita@cesaedigital.pt'] as $email) {
+            $this->actingAs($admin)->post(route('admin.users.store'), [
+                'name' => 'Gestora',
+                'email' => $email,
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+
+            $this->assertDatabaseHas('users', ['email' => $email]);
+        }
+    }
+
     public function test_email_must_be_unique(): void
     {
-        $admin = User::factory()->create(['email' => 'existente@example.com']);
+        $admin = User::factory()->create(['email' => 'existente@cesae.pt']);
 
         $response = $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'Duplicado',
-            'email' => 'existente@example.com',
+            'email' => 'existente@cesae.pt',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
