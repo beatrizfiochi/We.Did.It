@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
+use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\Newsletter;
 use Illuminate\Http\RedirectResponse;
@@ -30,7 +31,6 @@ class CourseController extends Controller
         ]);
     }
 
-
     /**
      * Mostra o formulário de criação de uma nova oferta formativa.
      */
@@ -52,6 +52,8 @@ class CourseController extends Controller
 
         $course = Course::create($data);
         $course->newsletters()->sync($newsletterIds);
+
+        ActivityLog::record($course, 'created');
 
         return redirect()->route('admin.courses.index')->with('success', 'Oferta formativa criada com sucesso.');
     }
@@ -88,6 +90,8 @@ class CourseController extends Controller
 
         $course->update($data);
 
+        ActivityLog::record($course, 'updated');
+
         return redirect()->route('admin.courses.index')->with('success', 'Oferta formativa atualizada com sucesso.');
     }
 
@@ -97,6 +101,10 @@ class CourseController extends Controller
     public function destroy(Course $course): RedirectResponse
     {
         $course->delete();
+
+        // depois do delete(): o Eloquent mantém os atributos na instância e o
+        // record_id não é chave estrangeira, por isso a linha do log sobrevive
+        ActivityLog::record($course, 'removed');
 
         return redirect()->route('admin.courses.index')->with('success', 'Oferta formativa removida com sucesso.');
     }
