@@ -1,6 +1,6 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Calendars({ newsletter, calendars, calendar_ids }) {
     const { data, setData, put, processing, recentlySuccessful } = useForm({
@@ -31,10 +31,23 @@ export default function Calendars({ newsletter, calendars, calendar_ids }) {
         >
             <Head title="Selecionar eventos da agenda" />
 
-            <div className="mx-auto max-w-2xl p-6">
+            <div className="mx-auto max-w-2xl space-y-4 p-6">
+                <Link
+                    href={route('admin.newsletters.index')}
+                    className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+                >
+                    ← Voltar às newsletters
+                </Link>
+
                 <form onSubmit={submit} className="rounded-lg bg-white p-6 shadow">
                     {calendars.length === 0 && (
                         <p className="text-sm text-gray-500">Não existem eventos da agenda disponíveis.</p>
+                    )}
+
+                    {calendars.length > 0 && (
+                        <p className="mb-3 text-sm text-gray-500">
+                            {data.calendar_ids.length} de {calendars.length} selecionados
+                        </p>
                     )}
 
                     <ul className="divide-y divide-gray-200">
