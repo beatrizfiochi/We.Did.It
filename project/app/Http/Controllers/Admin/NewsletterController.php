@@ -142,6 +142,13 @@ class NewsletterController extends Controller
     {
         $newsletter->courses()->sync($request->validated()['course_ids'] ?? []);
 
+        // o log é sobre a newsletter, não sobre os conteúdos associados: o enum
+        // da coluna operation só tem created|updated|removed, e o record_id
+        // guarda uma chave só. Fica registado que a newsletter foi alterada e
+        // por quem, não que conteúdos entraram ou saíram. Vale para os quatro
+        // update* de conteúdos (SCRUM-105).
+        ActivityLog::record($newsletter, 'updated');
+
         return redirect()->route('admin.newsletters.courses.edit', $newsletter)
             ->with('success', 'Ofertas formativas da newsletter atualizadas com sucesso.');
     }
@@ -186,6 +193,10 @@ class NewsletterController extends Controller
             collect($ids)->mapWithKeys(fn ($id, $i) => [$id => ['order' => $i + 1]])
         );
 
+        // regista a newsletter, não os conteúdos: o enum só tem
+        // created|updated|removed e o record_id é uma chave só
+        ActivityLog::record($newsletter, 'updated');
+
         return back()->with('success', 'Notícias da newsletter atualizadas com sucesso.');
     }
 
@@ -226,6 +237,10 @@ class NewsletterController extends Controller
             collect($ids)->mapWithKeys(fn ($id, $i) => [$id => ['order' => $i + 1]])
         );
 
+        // regista a newsletter, não os conteúdos: o enum só tem
+        // created|updated|removed e o record_id é uma chave só
+        ActivityLog::record($newsletter, 'updated');
+
         return back()->with('success', 'Testemunhos da newsletter atualizados com sucesso.');
     }
 
@@ -251,6 +266,10 @@ class NewsletterController extends Controller
     public function updateCalendars(UpdateNewsletterCalendarsRequest $request, Newsletter $newsletter): RedirectResponse
     {
         $newsletter->calendars()->sync($request->validated()['calendar_ids'] ?? []);
+
+        // regista a newsletter, não os conteúdos: o enum só tem
+        // created|updated|removed e o record_id é uma chave só
+        ActivityLog::record($newsletter, 'updated');
 
         return redirect()->route('admin.newsletters.calendars.edit', $newsletter)
             ->with('success', 'Eventos da agenda da newsletter atualizados com sucesso.');
