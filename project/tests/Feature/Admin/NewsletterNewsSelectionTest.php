@@ -6,18 +6,24 @@ use App\Models\News;
 use App\Models\Newsletter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
-/**
- * Seleção das notícias para a newsletter (SCRUM-103).
- *
- * Não há teste de 200 ao ecrã: o editNews renderiza Admin/Newsletters/News, que é
- * a SCRUM-108 da Leida e ainda não existe. Testá-lo agora daria 500, como os testes
- * da agenda que a SCRUM-133 teve de limpar. Fica do lado de quem faz o ecrã.
- */
+
 class NewsletterNewsSelectionTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_authenticated_users_can_see_the_news_selection_screen(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        News::factory()->count(3)->create(['status' => 'accepted']);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.news.edit', $newsletter));
+        $response->assertOk();
+        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/News')->has('news', 3));
+    }
 
     public function test_guests_cannot_access_the_news_selection(): void
     {

@@ -5,15 +5,9 @@ namespace Tests\Feature\Admin;
 use App\Models\Newsletter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
-/**
- * CRUD da newsletter (SCRUM-102).
- *
- * Não há teste ao index: ele renderiza Admin/Newsletters/Index, que é o ecrã da
- * SCRUM-106 da Leida e ainda não existe. Testá-lo agora daria 500, como os
- * testes da agenda que a SCRUM-133 teve de limpar. Fica do lado de quem faz o ecrã.
- */
 class NewsletterCrudTest extends TestCase
 {
     use RefreshDatabase;
@@ -27,6 +21,18 @@ class NewsletterCrudTest extends TestCase
             'period_start' => '2026-08-24',
             'period_end' => '2026-08-28',
         ], $overrides);
+    }
+
+    public function test_authenticated_users_can_see_the_newsletter_list(): void
+    {
+
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->count(3)->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.index'));
+
+        $response->assertOk();
+        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Index')->has('newsletters', 3));
     }
 
     public function test_guests_cannot_access_any_newsletter_route(): void
