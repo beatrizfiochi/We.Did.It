@@ -32,7 +32,7 @@ class NewsletterCrudTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.newsletters.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Index')->has('newsletters', 3));
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/Index')->has('newsletters', 3));
     }
 
     public function test_guests_cannot_access_any_newsletter_route(): void

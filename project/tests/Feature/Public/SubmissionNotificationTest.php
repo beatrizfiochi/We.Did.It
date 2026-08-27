@@ -15,7 +15,7 @@ class SubmissionNotificationTest extends TestCase
     /**
      * @return array<string, mixed>
      */
-    private function testimonialPayload(): array
+    private function testimonial_payload(): array
     {
         return [
             'terms_conditions' => 'on',
@@ -45,7 +45,7 @@ class SubmissionNotificationTest extends TestCase
         Mail::fake();
         $manager = User::factory()->create();
 
-        $this->post(route('testimonials.store'), $this->testimonialPayload());
+        $this->post(route('testimonials.store'), $this->testimonial_payload());
 
         Mail::assertSent(
             NewSubmissionReceived::class,
@@ -77,7 +77,7 @@ class SubmissionNotificationTest extends TestCase
         $first = User::factory()->create();
         $second = User::factory()->create();
 
-        $this->post(route('testimonials.store'), $this->testimonialPayload());
+        $this->post(route('testimonials.store'), $this->testimonial_payload());
 
         // um email só, com os dois em To:
         Mail::assertSentCount(1);
@@ -94,7 +94,7 @@ class SubmissionNotificationTest extends TestCase
         $active = User::factory()->create(['status' => true]);
         $inactive = User::factory()->create(['status' => false]);
 
-        $this->post(route('testimonials.store'), $this->testimonialPayload());
+        $this->post(route('testimonials.store'), $this->testimonial_payload());
 
         Mail::assertSent(
             NewSubmissionReceived::class,
@@ -120,7 +120,7 @@ class SubmissionNotificationTest extends TestCase
         // sem utilizadores na base, o Mail::to() receberia uma coleção vazia
         $this->assertSame(0, User::count());
 
-        $this->post(route('testimonials.store'), $this->testimonialPayload())
+        $this->post(route('testimonials.store'), $this->testimonial_payload())
             ->assertSessionHasNoErrors();
 
         $this->assertDatabaseCount('testimonials', 1);

@@ -16,13 +16,12 @@ class UpdateNewsletterTestimonialsRequest extends FormRequest
     }
 
     /**
-       * Só testemunhos aprovados entram na newsletter. A regra vive aqui, e não só
-       * no ecrã, para que um pedido feito à mão ao endpoint não consiga associar
-       * um testemunho por moderar ou recusado.
-       *
-       * @return array<string, ValidationRule|array<mixed>|string>
-       */
-
+     * Só testemunhos aprovados entram na newsletter. A regra vive aqui, e não só
+     * no ecrã, para que um pedido feito à mão ao endpoint não consiga associar
+     * um testemunho por moderar ou recusado.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

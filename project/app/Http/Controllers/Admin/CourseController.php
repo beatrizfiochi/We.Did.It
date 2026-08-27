@@ -30,7 +30,6 @@ class CourseController extends Controller
         ]);
     }
 
-
     /**
      * Mostra o formulário de criação de uma nova oferta formativa.
      */
