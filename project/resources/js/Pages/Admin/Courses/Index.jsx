@@ -1,9 +1,16 @@
 import DataTable from '@/Components/DataTable';
+import FlashMessage from '@/Components/FlashMessage';
 import StatusBadge from '@/Components/StatusBadge';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 
 export default function Index({ courses = [] }) {
+    const { post, processing } = useForm();
+
+    function importCourses() {
+        post(route('admin.courses.import'), { preserveScroll: true });
+    }
+
     const columns = [
         { key: 'title', label: 'Título' },
         { key: 'location', label: 'Local' },
@@ -48,6 +55,8 @@ export default function Index({ courses = [] }) {
             <Head title="Ofertas formativas" />
 
             <div className="space-y-6">
+                <FlashMessage />
+
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
 
@@ -56,12 +65,23 @@ export default function Index({ courses = [] }) {
                         </p>
                     </div>
 
-                    <Link
-                        href={route('admin.courses.create')}
-                        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-                    >
-                        Nova oferta
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={importCourses}
+                            disabled={processing}
+                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {processing ? 'A importar…' : 'Importar cursos'}
+                        </button>
+
+                        <Link
+                            href={route('admin.courses.create')}
+                            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                        >
+                            Nova oferta
+                        </Link>
+                    </div>
                 </div>
 
                 <DataTable

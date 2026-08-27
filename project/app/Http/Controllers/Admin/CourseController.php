@@ -8,9 +8,11 @@ use App\Http\Requests\UpdateCourseRequest;
 use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\Newsletter;
+use App\Services\CourseImporter;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class CourseController extends Controller
 {
@@ -93,6 +95,33 @@ class CourseController extends Controller
         ActivityLog::record($course, 'updated');
 
         return redirect()->route('admin.courses.index')->with('success', 'Oferta formativa atualizada com sucesso.');
+    }
+
+    /**
+     * Importa as ofertas formativas do site do CESAE Digital (SCRUM-123).
+     *
+     * Mesma lógica do comando courses:import, via CourseImporter. Não regista
+     * no ActivityLog: a coluna record_id é uma chave só, e uma importação
+     * mexe em 0 a N cursos de uma vez — não há um registo único para apontar,
+     * mesmo problema que os sync() de conteúdo da newsletter resolveram
+     * registando a newsletter em vez dos conteúdos. Aqui não há esse ponto
+     * de apoio.
+     */
+    public function import(CourseImporter $importer): RedirectResponse
+    {
+        try {
+            $result = $importer->import();
+        } catch (Throwable $e) {
+            return redirect()->route('admin.courses.index')
+                ->with('error', 'Não foi possível importar os cursos: '.$e->getMessage());
+        }
+
+        return redirect()->route('admin.courses.index')->with('success', sprintf(
+            '%d cursos encontrados, %d criados, %d atualizados.',
+            $result['total'],
+            $result['created'],
+            $result['updated'],
+        ));
     }
 
     /**

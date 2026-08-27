@@ -66,6 +66,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->parameters(['cursos' => 'course'])
         ->names('courses');
 
+    // Importa as ofertas formativas do site do CESAE Digital (SCRUM-123)
+    Route::post('cursos/importar', [CourseController::class, 'import'])->name('courses.import');
+
     // Moderação de notícias e testemunhos (SCRUM-86).
     // PATCH para aprovar/recusar/categorizar, que mudam um campo; PUT para o
     // update, que substitui o conteúdo do registo.
