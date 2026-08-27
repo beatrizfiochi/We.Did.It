@@ -51,9 +51,10 @@ ADMIN_EMAIL=admin@cesae.pt
 ADMIN_PASSWORD=<uma password à tua escolha>
 ```
 
-> O `AdminUserSeeder` lê os valores de `ADMIN_EMAIL`, `ADMIN_NAME` e `ADMIN_PASSWORD` do
-> `.env`, com `admin@example.com` / `password` por defeito. Enquanto essas credenciais não
-> forem fixas e iguais para toda a equipa, cada pessoa entra com um email diferente.
+> O `AdminUserSeeder` lê `ADMIN_EMAIL`, `ADMIN_NAME` e `ADMIN_PASSWORD` do `.env`.
+> O `.env.example` já traz `admin@cesae.pt`, para toda a equipa entrar com o mesmo
+> email; a password é de cada pessoa. Se o administrador já existir, o seeder não
+> faz nada e avisa.
 
 ## Comandos úteis
 
