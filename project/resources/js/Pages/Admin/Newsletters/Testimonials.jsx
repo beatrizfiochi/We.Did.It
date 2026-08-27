@@ -111,7 +111,7 @@ export default function Testimonials({ newsletter, testimonials, testimonial_ids
                                     {
                                         event.image && (
                                             <img
-                                                src={`/ storage / ${event.image}`}
+                                                src={`/storage/${event.image}`}
                                                 alt={event.title}
                                                 className="h-28 w-48 rounded object-cover"
                                             />

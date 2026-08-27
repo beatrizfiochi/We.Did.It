@@ -13,8 +13,8 @@ import TextInput from '@/Components/TextInput';
  * (é o caso da agenda, que não tem category_id).
  */
 export default function ContentFilters({
-    categories,
-    selectedCategories,
+    categories = null,
+    selectedCategories = [],
     onToggleCategory,
     onClearCategories,
     periodStart,
