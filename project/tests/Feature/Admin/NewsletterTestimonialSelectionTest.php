@@ -22,8 +22,7 @@ class NewsletterTestimonialSelectionTest extends TestCase
 
         $response = $this->actingAs($admin)->get(route('admin.newsletters.testimonials.edit', $newsletter));
         $response->assertOk();
-        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Testimonials')
-            ->has('testimonials', 3));
+        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Testimonials')->has('testimonials', 3));
     }
 
     public function test_guests_cannot_access_the_testimonial_selection(): void

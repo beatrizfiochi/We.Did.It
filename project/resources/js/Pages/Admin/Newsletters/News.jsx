@@ -53,7 +53,7 @@ export default function News({ newsletter, news, news_ids }) {
                                         <span className="block font-medium text-gray-900">{event.title}</span>
                                         <span className="block text-sm text-gray-500">{new Date(event.created_at).toLocaleDateString('pt-Pt')}</span>
                                         <span className="block text-sm text-gray-500">
-                                            {event.category ? `${event.category_id} - ${event.category.name}` : 'Sem categoria'}
+                                            {event.category ? event.category.name : 'Sem categoria'}
                                         </span>
                                     </span>
                                 </label>
