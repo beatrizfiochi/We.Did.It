@@ -14,7 +14,12 @@ use Throwable;
 class ImportCourses extends Command
 {
     /**
-     * Execute the console command.
+     * Importa os cursos do site e grava-os, sem passar pelo CourseController.
+     *
+     * Não regista no ActivityLog de propósito: o record() usa auth()->id(), que é
+     * null na consola. Registar aqui encheria a tabela de linhas sem autor a cada
+     * importação, e o log passaria a ser sobre a máquina em vez das pessoas — o
+     * que interessa saber é quem mexeu no quê pelo admin (SCRUM-105).
      */
     public function handle(CesaeCourseScraper $scraper): int
     {
