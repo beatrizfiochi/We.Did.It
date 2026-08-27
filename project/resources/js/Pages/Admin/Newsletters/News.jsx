@@ -61,7 +61,7 @@ export default function News({ newsletter, news, news_ids }) {
                                     <img
                                         src={`/storage/${event.image}`}
                                         alt={event.title}
-                                        className="h-28 w-45 rounded object-cover"
+                                        className="h-28 w-48 rounded object-cover"
                                     />
                                 )}
                             </li>

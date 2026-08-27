@@ -6,18 +6,25 @@ use App\Models\Newsletter;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
-/**
- * Seleção dos testemunhos para a newsletter (SCRUM-103).
- *
- * Não há teste de 200 ao ecrã: o editTestimonials renderiza
- * Admin/Newsletters/Testimonials, que é a SCRUM-109 da Leida e ainda não existe.
- * Testá-lo agora daria 500. Fica do lado de quem faz o ecrã.
- */
 class NewsletterTestimonialSelectionTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_authenticated_users_can_see_the_testimonials_selection_screen(): void
+    {
+
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        Testimonial::factory()->count(3)->create(['status' => 'accepted']);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.testimonials.edit', $newsletter));
+        $response->assertOk();
+        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Testimonials')
+            ->has('testimonials', 3));
+    }
 
     public function test_guests_cannot_access_the_testimonial_selection(): void
     {

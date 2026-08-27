@@ -49,19 +49,21 @@ export default function Testimonials({ newsletter, testimonials, testimonial_ids
                                         className="rounded border-gray-300"
                                     />
                                     <span>
-                                        <span className="block font-medium text-gray-900">{event.name}</span>
-                                        <span className="block text-sm text-gray-500">{new Date(event.created_at).toLocaleDateString('pt-Pt')}</span>
+                                        <span className="block font-medium text-gray-900">{event.title}</span>
                                         <span className="block text-sm text-gray-500">
-                                            {event.category ? `${event.category_id} - ${event.category.name}` : 'Sem categoria'}
+                                            {event.name} · {new Date(event.created_at).toLocaleDateString('pt-PT')}
+                                        </span>
+                                        <span className="block text-sm text-gray-500">
+                                            {event.category ? event.category.name : 'Sem categoria'}
                                         </span>
                                     </span>
                                 </label>
                                 {
                                     event.image && (
                                         <img
-                                            src={`/storage/${event.image}`}
+                                            src={`/ storage / ${event.image}`}
                                             alt={event.title}
-                                            className="h-28 w-45 rounded object-cover"
+                                            className="h-28 w-48 rounded object-cover"
                                         />
                                     )
                                 }
