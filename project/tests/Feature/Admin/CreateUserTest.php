@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
+/**
+ * Criação de administradores pelo painel (SCRUM-118).
+ *
+ * Não há teste ao index: ele renderiza Admin/Users/Index, que é o ecrã da
+ * SCRUM-124 e ainda não existe. Testá-lo agora daria 500. Fica do lado de quem
+ * faz o ecrã.
+ *
+ * O CreateUser.jsx e a rota users.create ficam mortos quando esse ecrã entrar —
+ * passa a ser tudo por modal, como nos outros CRUD. Os dois testes que ainda
+ * usam users.create saem nessa altura.
+ */
 class CreateUserTest extends TestCase
 {
     use RefreshDatabase;
@@ -48,19 +59,23 @@ class CreateUserTest extends TestCase
     {
         $admin = User::factory()->create();
 
-        $response = $this->actingAs($admin)->post(route('admin.users.store'), [
-            'name' => 'Novo Admin',
-            'email' => 'novo@cesae.pt',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+        // o controller responde com back(): o from() é o que faz o redirect
+        // voltar para a listagem, como acontece no browser
+        $response = $this->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->post(route('admin.users.store'), [
+                'name' => 'Novo Admin',
+                'email' => 'novo@cesae.pt',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
 
         $this->assertDatabaseHas('users', [
             'name' => 'Novo Admin',
             'email' => 'novo@cesae.pt',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('admin.users.index'));
         $response->assertSessionHas('success');
     }
 
@@ -149,15 +164,17 @@ class CreateUserTest extends TestCase
         // pode devolver 500 a quem acabou de criar a conta
         Mail::shouldReceive('to')->andThrow(new \RuntimeException('SMTP em baixo'));
 
-        $response = $this->actingAs($admin)->post(route('admin.users.store'), [
-            'name' => 'Ana Silva',
-            'email' => 'ana@cesae.pt',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+        $response = $this->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->post(route('admin.users.store'), [
+                'name' => 'Ana Silva',
+                'email' => 'ana@cesae.pt',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
 
         $this->assertDatabaseHas('users', ['email' => 'ana@cesae.pt']);
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('admin.users.index'));
         $response->assertSessionHas('success');
     }
 

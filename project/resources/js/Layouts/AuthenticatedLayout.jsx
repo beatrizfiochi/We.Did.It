@@ -44,7 +44,11 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route('admin.newsletters.index'),
             active: route().current('admin.newsletters.*'),
         },
-        { label: 'Administradores', disabled: true },
+        {
+            label: 'Administradores',
+            href: route('admin.users.index'),
+            active: route().current('admin.users.*'),
+        },
     ];
 
     return (

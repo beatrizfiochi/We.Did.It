@@ -19,6 +19,16 @@ use Inertia\Response;
 class RegisteredUserController extends Controller
 {
     /**
+     * Lista os administradores, por ordem alfabética.
+     */
+    public function index(): Response
+    {
+        return Inertia::render('Admin/Users/Index', [
+            'users' => User::orderBy('name')->get(['id', 'name', 'email', 'status', 'created_at']),
+        ]);
+    }
+
+    /**
      * Display the form for creating an administrator account.
      */
     public function create(): Response
@@ -57,6 +67,6 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        return redirect()->route('dashboard')->with('success', 'Administrador criado com sucesso.');
+        return back()->with('success', 'Administrador criado com sucesso.');
     }
 }
