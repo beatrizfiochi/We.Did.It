@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Category;
 use App\Models\News;
 use App\Models\Newsletter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
-
 
 class NewsletterNewsSelectionTest extends TestCase
 {
@@ -22,7 +22,19 @@ class NewsletterNewsSelectionTest extends TestCase
 
         $response = $this->actingAs($admin)->get(route('admin.newsletters.news.edit', $newsletter));
         $response->assertOk();
-        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/News')->has('news', 3));
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/News')->has('news', 3));
+    }
+
+    public function test_the_screen_brings_the_categories_for_the_period_and_category_filter(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        Category::create(['name' => 'Tecnologia']);
+        Category::create(['name' => 'Eventos']);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.news.edit', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/News')->has('categories', 2));
     }
 
     public function test_guests_cannot_access_the_news_selection(): void

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Category;
 use App\Models\Newsletter;
 use App\Models\Testimonial;
 use App\Models\User;
@@ -13,6 +14,18 @@ class NewsletterTestimonialSelectionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_the_screen_brings_the_categories_for_the_period_and_category_filter(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        Category::create(['name' => 'Tecnologia']);
+        Category::create(['name' => 'Eventos']);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.testimonials.edit', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/Testimonials')->has('categories', 2));
+    }
+
     public function test_authenticated_users_can_see_the_testimonials_selection_screen(): void
     {
 
@@ -22,7 +35,7 @@ class NewsletterTestimonialSelectionTest extends TestCase
 
         $response = $this->actingAs($admin)->get(route('admin.newsletters.testimonials.edit', $newsletter));
         $response->assertOk();
-        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Testimonials')->has('testimonials', 3));
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/Testimonials')->has('testimonials', 3));
     }
 
     public function test_guests_cannot_access_the_testimonial_selection(): void

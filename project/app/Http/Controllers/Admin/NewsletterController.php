@@ -11,6 +11,7 @@ use App\Http\Requests\Admin\UpdateNewsletterRequest;
 use App\Http\Requests\Admin\UpdateNewsletterTestimonialsRequest;
 use App\Models\ActivityLog;
 use App\Models\Calendar;
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\News;
 use App\Models\Newsletter;
@@ -177,6 +178,7 @@ class NewsletterController extends Controller
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
             'news' => $news,
             'news_ids' => $newsletter->news->pluck('id'),
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -221,6 +223,7 @@ class NewsletterController extends Controller
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
             'testimonials' => $testimonials,
             'testimonial_ids' => $newsletter->testimonials->pluck('id'),
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
