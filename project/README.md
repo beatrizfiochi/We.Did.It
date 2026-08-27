@@ -7,14 +7,16 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## We.Did.It — Dados de desenvolvimento
+## We.Did.It
 
-Depois de rodar `php artisan migrate:fresh --seed`, o banco fica populado com dados de exemplo (categorias, notícias, testemunhos, cursos, calendário e newsletters) para testar as telas sem precisar submeter tudo manualmente.
+A documentação do projeto — requisitos, instalação, configuração do `.env`,
+comandos úteis e deploy — está no [README da raiz do repositório](../README.md).
 
-**Credenciais do admin (fixas, para toda a equipe):**
+Não duplicar informação aqui: as credenciais do administrador deixaram de ser
+fixas e passaram a vir do `.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`), lidas pelo
+`AdminUserSeeder`.
 
-- Email: `admin@wedidit.pt`
-- Senha: `password`
+O resto deste ficheiro é a documentação que vem com o Laravel.
 
 ## About Laravel
 
