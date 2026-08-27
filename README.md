@@ -11,10 +11,15 @@ A aplicação Laravel vive na pasta `project/`. A raiz do repositório tem tamb�
 
 ## Requisitos
 
-- PHP 8.3 ou superior, com as extensões `pdo_mysql`, `fileinfo` e `gd`
+- PHP 8.3 ou superior, com as extensões `pdo_mysql` e `fileinfo`
 - Composer
 - MySQL 8
 - Node.js 20 e npm
+
+A extensão `gd` é precisa **apenas para correr os testes**: o `UploadedFile::fake()->image()`
+gera as imagens de teste com ela e sem a extensão atira `GD extension is not installed`.
+A aplicação não usa a `gd` — quem faz upload de imagens precisa da `fileinfo`, que valida
+o tipo do ficheiro.
 
 A extensão `intl` é opcional, mas sem ela alguns comandos do artisan que formatam números
 falham — o `php artisan db:table` é o caso mais visível. Não afeta a aplicação em si.
@@ -75,7 +80,8 @@ A aplicação corre em qualquer alojamento com PHP, MySQL e acesso a linha de co
 
 ### Requisitos do servidor
 
-- PHP 8.3 ou superior, com a extensão **`gd`** — sem ela o upload de imagens falha
+- PHP 8.3 ou superior, com a extensão **`fileinfo`** — sem ela a validação das imagens
+  enviadas nos formulários falha. A `gd` não é precisa em produção, só para os testes
 - MySQL 8
 - Acesso a linha de comandos, para correr o Composer e o artisan
 - **O document root tem de apontar para `project/public`**, nunca para a raiz do
