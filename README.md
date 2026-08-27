@@ -105,12 +105,12 @@ No servidor, depois de lá pôr o código e a pasta `public/build`:
 cd project
 composer install --no-dev --optimize-autoloader
 
-cp .env.example .env        # e preencher — ver abaixo
+cp .env.example .env             # e preencher — ver abaixo
 php artisan key:generate
-php artisan migrate --force
-php artisan storage:link
+php artisan migrate --force      # --force: em produção o Laravel recusa-se sem ele
+php artisan storage:link         # sem o link, as imagens dão todas 404
 php artisan db:seed --class=AdminUserSeeder
-php artisan config:cache
+php artisan config:cache         # obrigatório sempre que o .env muda
 php artisan route:cache
 ```
 
@@ -133,19 +133,11 @@ conteúdo do `.env` a quem abrir a página.
 git pull
 composer install --no-dev --optimize-autoloader
 php artisan migrate --force
-php artisan config:cache
+php artisan config:cache         # sem isto, a configuração antiga fica em cache
 php artisan route:cache
 ```
 
 Mais o `npm run build` e o envio da pasta `public/build` atualizada.
-
-### Comandos que se esquecem
-
-- **`--force` no migrate** — sem ele o Laravel recusa-se a migrar em produção
-- **`config:cache` depois de mexer no `.env`** — sem ele a aplicação continua a ler
-  a configuração antiga e parece que nada mudou
-- **`storage:link`** — as imagens das notícias e testemunhos são servidas de
-  `public/storage`; sem o link simbólico dão todas 404
 
 ### Dados iniciais
 
