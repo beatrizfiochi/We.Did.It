@@ -1,6 +1,14 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+
+// start_date pode vir como texto livre da API externa (ex.: "A anunciar",
+// SCRUM-123) — mostra a data formatada só quando é mesmo interpretável.
+function formatStartDate(rawDate) {
+    const date = new Date(rawDate);
+
+    return Number.isNaN(date.getTime()) ? rawDate : date.toLocaleDateString('pt-PT');
+}
 
 export default function Courses({ newsletter, courses, course_ids }) {
     const { data, setData, put, processing, recentlySuccessful } = useForm({
@@ -31,10 +39,23 @@ export default function Courses({ newsletter, courses, course_ids }) {
         >
             <Head title="Selecionar ofertas formativas" />
 
-            <div className="mx-auto max-w-2xl p-6">
+            <div className="mx-auto max-w-2xl space-y-4 p-6">
+                <Link
+                    href={route('admin.newsletters.index')}
+                    className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+                >
+                    ← Voltar às newsletters
+                </Link>
+
                 <form onSubmit={submit} className="rounded-lg bg-white p-6 shadow">
                     {courses.length === 0 && (
                         <p className="text-sm text-gray-500">Não existem ofertas formativas disponíveis.</p>
+                    )}
+
+                    {courses.length > 0 && (
+                        <p className="mb-3 text-sm text-gray-500">
+                            {data.course_ids.length} de {courses.length} selecionadas
+                        </p>
                     )}
 
                     <ul className="divide-y divide-gray-200">
@@ -50,7 +71,9 @@ export default function Courses({ newsletter, courses, course_ids }) {
                                     />
                                     <span>
                                         <span className="block font-medium text-gray-900">{course.title}</span>
-                                        <span className="block text-sm text-gray-500">{course.start_date}</span>
+                                        <span className="block text-sm text-gray-500">
+                                            {formatStartDate(course.start_date)}
+                                        </span>
                                     </span>
                                 </label>
                             </li>
