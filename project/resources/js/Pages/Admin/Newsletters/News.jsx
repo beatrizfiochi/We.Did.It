@@ -1,11 +1,17 @@
+import ContentFilters from '@/Components/ContentFilters';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 
-export default function News({ newsletter, news, news_ids }) {
+export default function News({ newsletter, news, news_ids, categories }) {
     const { data, setData, put, processing, recentlySuccessful } = useForm({
         news_ids,
     });
+
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [periodStart, setPeriodStart] = useState('');
+    const [periodEnd, setPeriodEnd] = useState('');
 
     function toggleNews(id) {
         setData(
@@ -16,10 +22,25 @@ export default function News({ newsletter, news, news_ids }) {
         );
     }
 
+    function toggleCategory(categoryId) {
+        setSelectedCategories((prev) =>
+            prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId],
+        );
+    }
+
     function submit(e) {
         e.preventDefault();
         put(route('admin.newsletters.news.update', newsletter.id));
     }
+
+    const filteredNews = news.filter((item) => {
+        const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(item.category_id);
+
+        const publishedOn = item.created_at.slice(0, 10);
+        const matchesPeriod = (!periodStart || publishedOn >= periodStart) && (!periodEnd || publishedOn <= periodEnd);
+
+        return matchesCategory && matchesPeriod;
+    });
 
     return (
         <AuthenticatedLayout
@@ -31,7 +52,7 @@ export default function News({ newsletter, news, news_ids }) {
         >
             <Head title="Selecionar notícias" />
 
-            <div className="mx-auto max-w-2xl space-y-4 p-6">
+            <div className="mx-auto max-w-5xl space-y-4 p-6">
                 <Link
                     href={route('admin.newsletters.index')}
                     className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
@@ -39,54 +60,71 @@ export default function News({ newsletter, news, news_ids }) {
                     ← Voltar às newsletters
                 </Link>
 
-                <form onSubmit={submit} className="rounded-lg bg-white p-6 shadow">
-                    {news.length === 0 && (
-                        <p className="text-sm text-gray-500">Não existem notícias disponíveis.</p>
-                    )}
+                <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+                    <ContentFilters
+                        categories={categories}
+                        selectedCategories={selectedCategories}
+                        onToggleCategory={toggleCategory}
+                        onClearCategories={() => setSelectedCategories([])}
+                        periodStart={periodStart}
+                        periodEnd={periodEnd}
+                        onPeriodStartChange={setPeriodStart}
+                        onPeriodEndChange={setPeriodEnd}
+                    />
 
-                    {news.length > 0 && (
-                        <p className="mb-3 text-sm text-gray-500">
-                            {data.news_ids.length} de {news.length} selecionadas
-                        </p>
-                    )}
+                    <form onSubmit={submit} className="min-w-0 rounded-lg bg-white p-6 shadow">
+                        {news.length === 0 && (
+                            <p className="text-sm text-gray-500">Não existem notícias disponíveis.</p>
+                        )}
 
-                    <ul className="divide-y divide-gray-200">
-                        {news.map((event) => (
-                            <li key={event.id} className="flex items-center justify-between py-3">
-                                <label htmlFor={`event-${event.id}`} className="flex flex-1 items-center gap-3">
-                                    <input
-                                        id={`event-${event.id}`}
-                                        type="checkbox"
-                                        checked={data.news_ids.includes(event.id)}
-                                        onChange={() => toggleNews(event.id)}
-                                        className="rounded border-gray-300"
-                                    />
-                                    <span>
+                        {news.length > 0 && filteredNews.length === 0 && (
+                            <p className="text-sm text-gray-500">Nenhuma notícia corresponde aos filtros selecionados.</p>
+                        )}
 
-                                        <span className="block font-medium text-gray-900">{event.title}</span>
-                                        <span className="block text-sm text-gray-500">{new Date(event.created_at).toLocaleDateString('pt-Pt')}</span>
-                                        <span className="block text-sm text-gray-500">
-                                            {event.category ? event.category.name : 'Sem categoria'}
+                        {news.length > 0 && (
+                            <p className="mb-3 text-sm text-gray-500">
+                                {data.news_ids.length} de {news.length} selecionadas
+                            </p>
+                        )}
+
+                        <ul className="divide-y divide-gray-200">
+                            {filteredNews.map((event) => (
+                                <li key={event.id} className="flex items-center justify-between py-3">
+                                    <label htmlFor={`event-${event.id}`} className="flex flex-1 items-center gap-3">
+                                        <input
+                                            id={`event-${event.id}`}
+                                            type="checkbox"
+                                            checked={data.news_ids.includes(event.id)}
+                                            onChange={() => toggleNews(event.id)}
+                                            className="rounded border-gray-300"
+                                        />
+                                        <span>
+
+                                            <span className="block font-medium text-gray-900">{event.title}</span>
+                                            <span className="block text-sm text-gray-500">{new Date(event.created_at).toLocaleDateString('pt-Pt')}</span>
+                                            <span className="block text-sm text-gray-500">
+                                                {event.category ? event.category.name : 'Sem categoria'}
+                                            </span>
                                         </span>
-                                    </span>
-                                </label>
-                                {event.image && (
-                                    <img
-                                        src={`/storage/${event.image}`}
-                                        alt={event.title}
-                                        className="h-28 w-48 rounded object-cover"
-                                    />
-                                )}
-                            </li>
-                        ))}
-                    </ul>
+                                    </label>
+                                    {event.image && (
+                                        <img
+                                            src={`/storage/${event.image}`}
+                                            alt={event.title}
+                                            className="h-28 w-48 rounded object-cover"
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
 
-                    <div className="mt-6 flex items-center gap-4">
-                        <PrimaryButton disabled={processing}>Guardar seleção</PrimaryButton>
+                        <div className="mt-6 flex items-center gap-4">
+                            <PrimaryButton disabled={processing}>Guardar seleção</PrimaryButton>
 
-                        {recentlySuccessful && <p className="text-sm text-gray-600">Guardado.</p>}
-                    </div>
-                </form>
+                            {recentlySuccessful && <p className="text-sm text-gray-600">Guardado.</p>}
+                        </div>
+                    </form>
+                </div>
             </div>
         </AuthenticatedLayout>
     );
