@@ -1,6 +1,6 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function News({ newsletter, news, news_ids }) {
     const { data, setData, put, processing, recentlySuccessful } = useForm({
@@ -31,10 +31,23 @@ export default function News({ newsletter, news, news_ids }) {
         >
             <Head title="Selecionar notícias" />
 
-            <div className="mx-auto max-w-2xl p-6">
+            <div className="mx-auto max-w-2xl space-y-4 p-6">
+                <Link
+                    href={route('admin.newsletters.index')}
+                    className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+                >
+                    ← Voltar às newsletters
+                </Link>
+
                 <form onSubmit={submit} className="rounded-lg bg-white p-6 shadow">
                     {news.length === 0 && (
                         <p className="text-sm text-gray-500">Não existem notícias disponíveis.</p>
+                    )}
+
+                    {news.length > 0 && (
+                        <p className="mb-3 text-sm text-gray-500">
+                            {data.news_ids.length} de {news.length} selecionadas
+                        </p>
                     )}
 
                     <ul className="divide-y divide-gray-200">
