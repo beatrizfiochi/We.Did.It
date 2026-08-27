@@ -46,7 +46,7 @@ export default function Calendars({ newsletter, calendars, calendar_ids }) {
 
                     {calendars.length > 0 && (
                         <p className="mb-3 text-sm text-gray-500">
-                            {data.calendar_ids.length} de {calendars.length} selecionadas
+                            {data.calendar_ids.length} de {calendars.length} selecionados
                         </p>
                     )}
 

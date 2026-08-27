@@ -46,7 +46,7 @@ export default function Testimonials({ newsletter, testimonials, testimonial_ids
 
                     {testimonials.length > 0 && (
                         <p className="mb-3 text-sm text-gray-500">
-                            {data.testimonial_ids.length} de {testimonials.length} selecionadas
+                            {data.testimonial_ids.length} de {testimonials.length} selecionados
                         </p>
                     )}
 
