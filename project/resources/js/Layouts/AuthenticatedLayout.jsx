@@ -44,7 +44,16 @@ export default function AuthenticatedLayout({ header, children }) {
             href: route('admin.newsletters.index'),
             active: route().current('admin.newsletters.*'),
         },
+        // o ecrã Admin/Users/Index é da SCRUM-124; o link ativa-se lá, como
+        // fizemos nos ecrãs de seleção da newsletter
+        // quando tiver o ecra trocar para:
+        //{
+        //    label: 'Administradores',
+        //    href: route('admin.users.index'),
+        //    active: route().current('admin.users.*'),
+        //},
         { label: 'Administradores', disabled: true },
+
     ];
 
     return (

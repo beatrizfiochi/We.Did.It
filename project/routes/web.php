@@ -50,6 +50,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('users', [RegisteredUserController::class, 'store'])
         ->name('users.store');
 
+    Route::get('users', [RegisteredUserController::class, 'index'])->name('users.index');
+
     // CRUD de categorias (SCRUM-89). O ->parameters() é obrigatório: sem ele o
     // parâmetro chama-se {categoria} e o route model binding não resolve a Category.
     Route::resource('categorias', CategoryController::class)
@@ -110,4 +112,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->names('newsletters');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

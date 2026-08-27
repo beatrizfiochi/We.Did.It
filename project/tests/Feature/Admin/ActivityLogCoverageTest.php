@@ -123,12 +123,12 @@ class ActivityLogCoverageTest extends TestCase
 
         $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'Nova Gestora',
-            'email' => 'nova@example.com',
+            'email' => 'nova@cesae.pt',
             'password' => 'palavra-passe-segura',
             'password_confirmation' => 'palavra-passe-segura',
         ]);
 
-        $novo = User::firstWhere('email', 'nova@example.com');
+        $novo = User::firstWhere('email', 'nova@cesae.pt');
 
         // user_id é quem criou, record_id é o administrador novo — é isso que
         // torna o log útil: saber quem deu acesso a quem
