@@ -10,6 +10,7 @@ use App\Models\Course;
 use App\Models\Newsletter;
 use App\Services\CourseImporter;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
@@ -112,6 +113,10 @@ class CourseController extends Controller
         try {
             $result = $importer->import();
         } catch (Throwable $e) {
+            Log::error('Falha ao importar as ofertas formativas', [
+                'error' => $e->getMessage(),
+            ]);
+
             return redirect()->route('admin.courses.index')
                 ->with('error', 'Não foi possível importar os cursos: '.$e->getMessage());
         }
