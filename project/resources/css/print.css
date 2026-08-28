@@ -12,7 +12,9 @@
  */
 
 @page {
-    margin: 2cm;
+    /* 2 cm somava-se ao padding do corpo do template e deixava quase 4 cm de
+       cada lado. O padding interno é anulado com print:px-0 no template. */
+    margin: 1.4cm;
 }
 
 @media print {

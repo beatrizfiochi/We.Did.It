@@ -101,7 +101,7 @@ export default function NewsletterTemplate({ newsletter }) {
                 </div>
             </header>
 
-            <div className="space-y-10 px-6 py-8 sm:px-10 sm:py-10">
+            <div className="space-y-10 px-6 py-8 sm:px-10 sm:py-10 print:px-0 print:py-6">
                 <Section title="Notícias" eyebrow="Atualizações">
                     {news.length === 0 ? (
                         <EmptyMessage>Sem notícias selecionadas.</EmptyMessage>
@@ -119,7 +119,7 @@ export default function NewsletterTemplate({ newsletter }) {
                                             <img
                                                 src={src}
                                                 alt={item.title}
-                                                className="h-48 w-full object-cover"
+                                                className="h-48 w-full object-cover print:h-32"
                                             />
                                         )}
 
@@ -207,7 +207,7 @@ export default function NewsletterTemplate({ newsletter }) {
                                             <img
                                                 src={src}
                                                 alt={item.title}
-                                                className="h-40 w-full object-cover"
+                                                className="h-40 w-full object-cover print:h-28"
                                             />
                                         )}
 
