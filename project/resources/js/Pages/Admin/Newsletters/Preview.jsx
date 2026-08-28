@@ -7,7 +7,7 @@ import '../../../../css/print.css';
 export default function Preview({ newsletter }) {
     return (
         <AuthenticatedLayout header="Pré-visualização da newsletter">
-            <Head title="Pré-visualização da newsletter" />
+            <Head title={`${newsletter.title} — edição ${newsletter.edition}`} />
 
             <div className="space-y-6">
                 {/* print:hidden — nada aqui é conteúdo da newsletter, é só navegação
