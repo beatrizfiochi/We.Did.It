@@ -47,7 +47,9 @@ class MailBrandingTest extends TestCase
         $this->assertStringContainsString('images/logo-email.png', $rendered);
 
         // muitos clientes bloqueiam imagens remotas: para boa parte de quem
-        // recebe, o alt é o cabeçalho
+        // recebe, o alt é o cabeçalho. O valor literal é seguro porque o
+        // phpunit.xml fixa o APP_NAME — sem isso vinha do .env de quem corre
+        // os testes, e o fallback do config/app.php é outro texto.
         $this->assertStringContainsString('alt="We Did It"', $rendered);
     }
 
