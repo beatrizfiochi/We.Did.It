@@ -19,11 +19,11 @@ export default function Welcome() {
                     </p>
 
                     <div className="welcome-actions">
-                        <Link href="/noticias/create" className="welcome-action">
+                        <Link href={route('news.create')} className="welcome-action">
                             Contribua com a sua notícia
                         </Link>
 
-                        <Link href="/testemunhos/create" className="welcome-action">
+                        <Link href={route('testimonials.create')} className="welcome-action">
                             Contribua com o seu testemunho
                         </Link>
                     </div>

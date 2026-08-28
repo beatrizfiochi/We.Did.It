@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Public;
 
+use App\Models\Category;
 use App\Models\News;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class NewsSubmissionTest extends TestCase
@@ -20,6 +22,20 @@ class NewsSubmissionTest extends TestCase
             // o cliente exige consentimento explícito; é validado mas não guardado
             'terms_conditions' => 'on',
         ], $overrides);
+    }
+
+    public function test_the_form_is_public_and_lists_the_categories(): void
+    {
+        Category::create(['name' => 'Formação']);
+
+        $this->get(route('news.create'))
+            ->assertOk()
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->component('News/InsertForm')
+                    ->has('categories', 1)
+                    ->where('categories.0.name', 'Formação')
+            );
     }
 
     public function test_a_visitor_can_submit_a_news_article(): void
