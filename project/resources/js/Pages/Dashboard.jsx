@@ -12,13 +12,9 @@ export default function Dashboard() {
         >
             <Head title="Painel Administrativo" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            Aqui vais poder gerir notícias, testemunhos, categorias, formações, agenda, newsletters e administradores.
-                        </div>
-                    </div>
+            <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                <div className="p-6 text-gray-900">
+                    Aqui vais poder gerir notícias, testemunhos, categorias, formações, agenda, newsletters e administradores.
                 </div>
             </div>
         </AuthenticatedLayout>
