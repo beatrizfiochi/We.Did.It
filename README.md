@@ -137,7 +137,8 @@ php artisan config:cache         # sem isto, a configuração antiga fica em cac
 php artisan route:cache
 ```
 
-Mais o `npm run build` e o envio da pasta `public/build` atualizada.
+Mais o `npm run build` e o envio da pasta `public/build` atualizada. **Apagar a pasta
+`public/build` do servidor antes de a copiar** — ver a última alínea da secção seguinte.
 
 ### Dados iniciais
 
@@ -147,6 +148,44 @@ não há como entrar na aplicação.
 
 **Não correr o `php artisan db:seed` completo em produção** — ele cria notícias e
 testemunhos de exemplo com texto gerado, que podem ser confundidos com conteúdo real.
+
+### Se alguma coisa correr mal
+
+Os casos que encontrámos a pôr a aplicação a correr num alojamento partilhado.
+
+**`Invalid URI` ao correr um comando artisan**
+O `APP_URL` está mal formado. Tem de incluir o esquema, sem espaços à volta do `=` e
+sem barra no fim: `APP_URL=https://o-dominio-real`.
+
+**As alterações não aparecem no site**
+Falta o `php artisan config:cache` e o `route:cache`. A configuração e as rotas ficam
+em cache, e sem estes comandos a aplicação continua a servir as antigas. É o passo
+mais esquecido depois de mexer no `.env`.
+
+**Erro de base de dados logo no arranque**
+Confirmar `DB_CONNECTION=mysql` no `.env`. O valor por defeito do Laravel é `sqlite`,
+e a aplicação arranca sem dar erro visível até tentar ler dados.
+
+**As imagens dão todas 404**
+Falta o link simbólico: `php artisan storage:link`. As notícias e os testemunhos
+guardam as imagens em `storage/app/public` e servem-nas de `/storage/...`.
+
+**O site continua com o aspeto antigo depois de copiar o `public/build`**
+Se a pasta `build` já existir no servidor, o `scp -r` **não a substitui** — copia para
+dentro dela e cria `public/build/build`. O site passa a servir os assets antigos e
+**não dá erro nenhum**, o que faz perder muito tempo. Apagar a pasta antes de copiar:
+
+```bash
+ssh utilizador@servidor 'rm -rf caminho/do/projeto/public/build'
+scp -r public/build utilizador@servidor:caminho/do/projeto/public/
+```
+
+Para confirmar, o nome do ficheiro no servidor tem de ser igual ao local:
+
+```bash
+ls public/build/assets | grep '^app-'
+ssh utilizador@servidor 'ls caminho/do/projeto/public/build/assets | grep "^app-"'
+```
 
 ## Stack
 
