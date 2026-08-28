@@ -1,3 +1,4 @@
+import FlashMessage from '@/Components/FlashMessage';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -17,7 +18,12 @@ export default function CreateUser() {
         e.preventDefault();
 
         post(route('admin.users.store'), {
-            onFinish: () => reset('password', 'password_confirmation'),
+            // em sucesso limpa tudo: a mensagem verde por cima de um formulário
+            // ainda preenchido não deixa perceber se já criou ou está prestes a
+            // criar. Em erro limpa só as palavras-passe, para não obrigar a
+            // reescrever o nome e o email por causa de um engano na confirmação.
+            onSuccess: () => reset(),
+            onError: () => reset('password', 'password_confirmation'),
         });
     };
 
@@ -30,6 +36,10 @@ export default function CreateUser() {
             }
         >
             <Head title="Criar administrador" />
+
+            <div className="mx-auto max-w-xl px-6 pt-6">
+                <FlashMessage />
+            </div>
 
             <form onSubmit={submit} className="mx-auto max-w-xl p-6">
                 <div>
