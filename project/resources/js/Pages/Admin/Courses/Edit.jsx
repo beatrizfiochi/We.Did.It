@@ -34,7 +34,7 @@ export default function Edit({ course, newsletters = [] }) {
                     </p>
                 </div>
 
-                <div className="rounded-lg bg-white p-6 shadow-sm">
+                <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
                     <form onSubmit={submit} className="space-y-6">
                         <CourseForm
                             data={data}
@@ -43,7 +43,7 @@ export default function Edit({ course, newsletters = [] }) {
                             newsletters={newsletters}
                         />
 
-                        <div className="flex items-center justify-end gap-3">
+                        <div className="flex flex-wrap items-center justify-end gap-3">
                             <Link
                                 href={route('admin.courses.index')}
                                 className="rounded-md px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900"

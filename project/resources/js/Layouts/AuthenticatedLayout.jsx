@@ -226,7 +226,12 @@ export default function AuthenticatedLayout({ header, children }) {
                     </header>
 
                     <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 print:p-0">
-                        <div className="mx-auto max-w-7xl print:max-w-none">
+                        {/* sem max-w: as tabelas do admin aproveitam a largura
+                            toda do ecrã. O <main> acima já dá o espaçamento
+                            lateral, por isso os ecrãs não repetem wrappers.
+                            O print:max-w-none deixou de ser preciso quando o
+                            max-w-7xl saiu daqui. */}
+                        <div className="mx-auto w-full">
                             {children}
                         </div>
                     </main>

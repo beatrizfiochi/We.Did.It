@@ -9,6 +9,12 @@ import { Head, router } from "@inertiajs/react";
 
 // tabela com as noticias todas e botao para ver --> modal
 export default function Index({ testimonials, categories }) {
+    const actionClass =
+        'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
+    const approveActionClass =
+        'inline-flex items-center rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700 shadow-sm transition hover:bg-green-100 hover:text-green-800 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400';
+    const dangerActionClass =
+        'inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-100 hover:text-red-700 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400';
 
 
     // variable that holds the labels to be rendered in <DataTable/> according to keys from the testimonials table
@@ -30,7 +36,7 @@ export default function Index({ testimonials, categories }) {
                 <div className="flex flex-wrap items-center gap-2">
                     <button
                         type="button"
-                        className="text-sm font-semibold text-green-600 hover:text-green-900 disabled:cursor-not-allowed disabled:text-gray-400"
+                        className={approveActionClass}
                         disabled={row.status === 'accepted'}
                         onClick={() => router.patch(route('admin.testimonials.approve', row.id), {}, { preserveScroll: true })}
                     >
@@ -38,7 +44,7 @@ export default function Index({ testimonials, categories }) {
                     </button>
                     <button
                         type="button"
-                        className="text-sm font-semibold text-red-600 hover:text-red-900 disabled:cursor-not-allowed disabled:text-gray-400"
+                        className={dangerActionClass}
                         disabled={row.status === 'refused'}
                         onClick={() => router.patch(route('admin.testimonials.refuse', row.id), {}, { preserveScroll: true })}
                     >
@@ -52,7 +58,7 @@ export default function Index({ testimonials, categories }) {
             key: 'view', label: '', render: (row) => (
                 <button
                     type="button"
-                    className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
+                    className={actionClass}
                     onClick={() => handleViewTestimonials(row)}
                 >
                     Ver
@@ -174,23 +180,52 @@ export default function Index({ testimonials, categories }) {
 
             <FlashMessage />
 
-            <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+            <div className="space-y-4">
+                <section className="rounded-lg bg-white px-4 py-3 shadow-sm">
+                    <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                        <div className="flex min-w-0 flex-wrap items-center gap-3">
+                            <span className="text-sm font-semibold text-gray-900">Filtrar por</span>
 
-                <aside className="rounded-lg bg-white p-4 shadow-sm">
-                    <div className="mb-2 font-semibold text-gray-900">Filtrar por</div>
+                            <button
+                                type="button"
+                                className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                                onClick={() => setIsCategoryOpen((prev) => !prev)}
+                            >
+                                Categoria
+                                <span aria-hidden="true">{isCategoryOpen ? '⌃' : '⌄'}</span>
+                            </button>
 
-                    <div
-                        className="flex cursor-pointer items-center justify-between text-sm font-medium text-gray-700"
-                        onClick={() => setIsCategoryOpen((prev) => !prev)}
-                    >
-                        <span>Categoria</span>
-                        <span aria-hidden="true">{isCategoryOpen ? '⌃' : '⌄'}</span>
+                            {selectedCategories.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-700 hover:bg-indigo-100"
+                                    onClick={clearCategories}
+                                >
+                                    Limpar
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="w-full xl:max-w-sm">
+                            <input
+                                className="block w-full rounded-md border-gray-300 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500"
+                                type="search"
+                                placeholder="Pesquisar por estado..."
+                                aria-label="Search"
+                                value={searchTerm}
+                                onChange={(event) => setSearchTerm(event.target.value)}
+                            />
+                        </div>
                     </div>
 
-                    {isCategoryOpen && (
-                        <div className="mt-2 space-y-2">
+                    {isCategoryOpen && categories.length > 0 && (
+                        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
                             {categories.map((item) => (
-                                <div className="flex items-center gap-2" key={item.id}>
+                                <label
+                                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700"
+                                    key={item.id}
+                                    htmlFor={`category-${item.id}`}
+                                >
                                     <input
                                         className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                         type="checkbox"
@@ -199,40 +234,17 @@ export default function Index({ testimonials, categories }) {
                                         checked={selectedCategories.includes(item.id)}
                                         onChange={() => toggleCategory(item.id)}
                                     />
-                                    <label className="text-sm text-gray-700" htmlFor={`category-${item.id}`}>
-                                        {item.name}
-                                    </label>
-                                </div>
+                                    {item.name}
+                                </label>
                             ))}
-
-                            <button
-                                type="button"
-                                className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
-                                onClick={clearCategories}
-                            >
-                                Limpar
-                            </button>
                         </div>
                     )}
-                </aside>
-
-
-                <section className="min-w-0 space-y-4">
-                    <div className="max-w-sm lg:ml-auto">
-                        <input className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                            type="search" placeholder="Pesquisar por estado..."
-                            aria-label="Search"
-                            value={searchTerm}
-                            onChange={(event) => setSearchTerm(event.target.value)}
-                        />
-                    </div>
-
-                    <DataTable
-                        columns={columns}
-                        rows={filteredTestimonials} // shows according to what is set in the filter areas
-                    />
                 </section>
 
+                <DataTable
+                    columns={columns}
+                    rows={filteredTestimonials} // shows according to what is set in the filter areas
+                />
             </div>
 
 

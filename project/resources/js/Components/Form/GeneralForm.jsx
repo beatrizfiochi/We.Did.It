@@ -21,6 +21,11 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
     const [fileInputKey, setFileInputKey] = useState(0)
     const [imageRights, setImageRights] = useState(false)
     const [wasSuccessful, setWasSuccessful] = useState(false)
+    const inputClass =
+        'mt-1 block w-full rounded-md border-gray-300 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500'
+    const checkboxClass =
+        'mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50'
+    const errorClass = 'mt-1 block text-sm text-red-500'
 
     // checks if there is more than "0" files coming from the target(the input from the form that holds the image)
     function handleFileChange(event) {
@@ -41,26 +46,28 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
     return (
         <div className="mt-5 mx-auto">
-            <h3 className="text-center mb-3">{formTitle}</h3>
-            <div className="container">
-                <div className="row justify-content-center">
-                    <div className="col-6">
-                        <Form
-                            ref={formRef}
-                            action={formAction}
-                            method={formMethod}
-                            encType="multipart/form-data"
-                            noValidate
-                            resetOnSuccess
-                            onBefore={() => submitFunction(formRef.current.getFormData())}
-                            onSuccess={() => {
-                                setWasSuccessful(true)
-                                handleRemoveImage()
-                            }}
-                            onError={() => setWasSuccessful(false)}
-                            onChange={() => setWasSuccessful(false)}
-                            className="container shadow p-3">
-                            {({ processing }) => (
+            <h3 className="mb-3 text-center">{formTitle}</h3>
+            {/* text-gray-900 no formulário: o .public-layout define color #f8fafc
+                para o texto assentar na fotografia de fundo, e isso é herdado cá
+                dentro. Sem essa classe, tudo o que não traga cor própria fica
+                branco sobre o cartão branco. */}
+            <div className="mx-auto w-full max-w-2xl px-4">
+                <Form
+                    ref={formRef}
+                    action={formAction}
+                    method={formMethod}
+                    encType="multipart/form-data"
+                    noValidate
+                    resetOnSuccess
+                    onBefore={() => submitFunction(formRef.current.getFormData())}
+                    onSuccess={() => {
+                        setWasSuccessful(true)
+                        handleRemoveImage()
+                    }}
+                    onError={() => setWasSuccessful(false)}
+                    onChange={() => setWasSuccessful(false)}
+                    className="rounded-lg bg-white p-4 text-gray-900 shadow sm:p-6">
+                    {({ processing }) => (
                             <>
                             {/* Honeypot: invisível para pessoas, presente no DOM para bots
                                 que preenchem tudo o que encontram. Só tem efeito se o
@@ -76,13 +83,13 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
                                 {fields.map((item, index) => (
                                     <div key={item.name} className="mb-3">
-                                        <label>{item.label}</label>
+                                        <label className="text-sm font-medium text-gray-700">{item.label}</label>
                                         <div>
                                             {/* labelType[index] connects the labelType array to iterate on same positions as fields */}
                                             {/* if the type is file, onChange(if uploaded a file or removed) calls function */}
                                             {item.type === 'file' ? (
                                                 <input
-                                                    className="form-control"
+                                                    className={inputClass}
                                                     type="file"
                                                     // key changes (0 → 1) so React treats this as a new input, not the old one 
                                                     // it deletes the old DOM node (with the file inside) and mounts a fresh, empty one
@@ -95,10 +102,10 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
                                             ) : item.type === 'textarea' ? (
 
-                                                <textarea className="form-control" rows={4} name={item.name} />
+                                                <textarea className={inputClass} rows={4} name={item.name} />
                                             ) : item.type === 'select' ? (
                                                 <>
-                                                    <select name={item.name} id="news-category">
+                                                    <select className={inputClass} name={item.name} id="news-category">
                                                         {/* Value for option "nenhuma" is empty string so it reaches the DB as null */}
                                                         <option value="" default>Nenhuma</option>
                                                         {categoryList.map((category) =>
@@ -111,24 +118,24 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                             ) : (
 
                                                 // input type holds type assigned in the labelType array, same position as current item from userLabel
-                                                <input className="form-control" type={item.type} name={item.name} />
+                                                <input className={inputClass} type={item.type} name={item.name} />
                                             )}
 
-                                            {item.type === 'file' && imageUploaded && <div><button type="button" onClick={handleRemoveImage}>X REMOVER IMAGEM</button></div>}
+                                            {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagem</button></div>}
 
                                         </div>
                                         {/* if there is an error associated to item, it shows under input */}
-                                        {errors[item.name] && <small className="mt-1 text-sm text-red-500">{errors[item.name]}</small>}
+                                        {errors[item.name] && <small className={errorClass}>{errors[item.name]}</small>}
                                     </div>
                                 ))}
 
 
 
                                 {/* image rights - only enabled once a file is picked */}
-                                <div className="mb-3 form-check">
+                                <div className="mb-3 flex items-start gap-2">
                                     <input
                                         type="checkbox"
-                                        className="form-check-input"
+                                        className={checkboxClass}
                                         id="image_rights"
                                         name="image_rights"
                                         // if checked it means imageRights is true
@@ -137,39 +144,46 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                         onChange={(click) => setImageRights(click.target.checked)}
                                         disabled={!imageUploaded}
                                     />
-                                    <label className="form-check-label" htmlFor="image_rights">
-                                        Autorizo a utilização desta imagem para as finalidades relacionadas a este formulário.
-                                    </label>
-                                    {imageUploaded && errors.image_rights && (
-                                        <small className="d-block text-danger">{errors.image_rights}</small>
-                                    )}
+                                    <div>
+                                        <label className="text-sm text-gray-700" htmlFor="image_rights">
+                                            Autorizo a utilização desta imagem para as finalidades relacionadas a este formulário.
+                                        </label>
+                                        {imageUploaded && errors.image_rights && (
+                                            <small className={errorClass}>{errors.image_rights}</small>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* terms and conditions */}
-                                <div className="mb-3 form-check">
-                                    <input type="checkbox" className="form-check-input" id="terms-conditions" name="terms_conditions" />
-                                    <label className="form-check-label" htmlFor="terms-conditions">
-                                        Aceito a Política de Privacidade.
-                                    </label>
-                                    {errors.terms_conditions && (
-                                        <small className="d-block text-danger">{errors.terms_conditions}</small>
-                                    )}
+                                <div className="mb-3 flex items-start gap-2">
+                                    <input type="checkbox" className={checkboxClass} id="terms-conditions" name="terms_conditions" />
+                                    <div>
+                                        <label className="text-sm text-gray-700" htmlFor="terms-conditions">
+                                            Aceito a Política de Privacidade.
+                                        </label>
+                                        {errors.terms_conditions && (
+                                            <small className={errorClass}>{errors.terms_conditions}</small>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                            <button type="submit" className="btn btn-primary" disabled={processing}>Enviar</button>
+                            <button
+                                type="submit"
+                                className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={processing}
+                            >
+                                Enviar
+                            </button>
                             <div>
                                 {wasSuccessful && flash?.success && (
-                                    <small className="mt-3 text-sm bg-success">
+                                    <small className="mt-3 block text-sm font-medium text-green-700">
                                         {flash.success}
                                     </small>
                                 )}
                             </div>
                             </>
                             )}
-                        </Form>
-
-                    </div>
-                </div>
+                </Form>
             </div >
         </div >
 

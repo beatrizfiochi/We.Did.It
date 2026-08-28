@@ -119,6 +119,7 @@ php artisan route:cache
 Além da base de dados, mudar pelo menos:
 
 ```dotenv
+APP_NAME="We Did It"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://o-dominio-real
@@ -126,6 +127,12 @@ APP_URL=https://o-dominio-real
 
 O `APP_DEBUG=false` é crítico: com `true`, qualquer erro mostra o código-fonte e o
 conteúdo do `.env` a quem abrir a página.
+
+O `APP_NAME` e o `APP_URL` saem nos emails: o nome aparece no remetente, no rodapé e
+na assinatura, e o URL é a base do logo do cabeçalho (`asset()`). Com o `APP_NAME` por
+acertar, os emails saem assinados com o valor por defeito do Laravel; com o `APP_URL`
+errado, o logo dá 404 e o cabeçalho passa a ser o texto alternativo. Depois de os
+mudar, correr `php artisan config:cache`.
 
 ### Atualizar
 
