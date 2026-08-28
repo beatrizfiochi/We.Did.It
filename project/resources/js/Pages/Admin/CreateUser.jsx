@@ -37,93 +37,96 @@ export default function CreateUser() {
         >
             <Head title="Criar administrador" />
 
-            <div className="mx-auto max-w-xl px-6 pt-6">
+            {/* space-y-4 e não margem no FlashMessage: quando não há mensagem
+                ele devolve null, e o space-y só separa irmãos que existem —
+                assim não fica um espaço fantasma por cima do formulário. */}
+            <div className="mx-auto max-w-xl space-y-4 rounded-lg bg-white p-4 shadow-sm sm:p-6">
                 <FlashMessage />
+
+                <form onSubmit={submit}>
+                    <div>
+                        <InputLabel htmlFor="name" value="Nome" />
+
+                        <TextInput
+                            id="name"
+                            name="name"
+                            value={data.name}
+                            className="mt-1 block w-full"
+                            autoComplete="name"
+                            isFocused={true}
+                            onChange={(e) => setData('name', e.target.value)}
+                            required
+                        />
+
+                        <InputError message={errors.name} className="mt-2" />
+                    </div>
+
+                    <div className="mt-4">
+                        <InputLabel htmlFor="email" value="Email" />
+
+                        <TextInput
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={data.email}
+                            className="mt-1 block w-full"
+                            autoComplete="username"
+                            onChange={(e) => setData('email', e.target.value)}
+                            required
+                        />
+
+                        <InputError message={errors.email} className="mt-2" />
+                    </div>
+
+                    <div className="mt-4">
+                        <InputLabel htmlFor="password" value="Palavra-passe" />
+
+                        <TextInput
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={data.password}
+                            className="mt-1 block w-full"
+                            autoComplete="new-password"
+                            onChange={(e) => setData('password', e.target.value)}
+                            required
+                        />
+
+                        <InputError message={errors.password} className="mt-2" />
+                    </div>
+
+                    <div className="mt-4">
+                        <InputLabel
+                            htmlFor="password_confirmation"
+                            value="Confirmar palavra-passe"
+                        />
+
+                        <TextInput
+                            id="password_confirmation"
+                            type="password"
+                            name="password_confirmation"
+                            value={data.password_confirmation}
+                            className="mt-1 block w-full"
+                            autoComplete="new-password"
+                            onChange={(e) =>
+                                setData('password_confirmation', e.target.value)
+                            }
+                            required
+                        />
+
+                        <InputError
+                            message={errors.password_confirmation}
+                            className="mt-2"
+                        />
+                    </div>
+
+                    <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
+                        <PrimaryButton disabled={processing}>
+                            Criar administrador
+                        </PrimaryButton>
+                    </div>
+                </form>
             </div>
-
-            <form onSubmit={submit} className="mx-auto max-w-xl p-6">
-                <div>
-                    <InputLabel htmlFor="name" value="Nome" />
-
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Palavra-passe" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirmar palavra-passe"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Criar administrador
-                    </PrimaryButton>
-                </div>
-            </form>
         </AuthenticatedLayout>
     );
 }

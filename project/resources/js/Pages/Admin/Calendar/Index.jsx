@@ -16,6 +16,10 @@ export default function Index({ events }) {
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [deleting, setDeleting] = useState(null);
+    const actionClass =
+        'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
+    const dangerActionClass =
+        'inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-100 hover:text-red-700';
 
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } =
         useForm({ title: '', date: '' });
@@ -71,14 +75,22 @@ export default function Index({ events }) {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="flex flex-wrap gap-2">
-                    <SecondaryButton onClick={() => openEdit(row)}>
+                <div className="flex flex-wrap items-center gap-3">
+                    <button
+                        type="button"
+                        onClick={() => openEdit(row)}
+                        className={actionClass}
+                    >
                         Editar
-                    </SecondaryButton>
+                    </button>
 
-                    <DangerButton onClick={() => setDeleting(row)}>
+                    <button
+                        type="button"
+                        onClick={() => setDeleting(row)}
+                        className={dangerActionClass}
+                    >
                         Remover
-                    </DangerButton>
+                    </button>
                 </div>
             ),
         },
