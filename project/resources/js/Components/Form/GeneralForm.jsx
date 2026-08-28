@@ -44,7 +44,7 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
             <h3 className="text-center mb-3">{formTitle}</h3>
             <div className="container">
                 <div className="row justify-content-center">
-                    <div className="col-6">
+                    <div className="col-12 col-md-10 col-lg-8">
                         <Form
                             ref={formRef}
                             action={formAction}
