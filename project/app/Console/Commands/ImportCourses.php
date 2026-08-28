@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Course;
-use App\Services\CesaeCourseScraper;
+use App\Services\CourseImporter;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -19,43 +18,24 @@ class ImportCourses extends Command
      * Não regista no ActivityLog de propósito: o record() usa auth()->id(), que é
      * null na consola. Registar aqui encheria a tabela de linhas sem autor a cada
      * importação, e o log passaria a ser sobre a máquina em vez das pessoas — o
-     * que interessa saber é quem mexeu no quê pelo admin (SCRUM-105).
+     * que interessa saber é quem mexeu no quê pelo admin (SCRUM-105). O botão do
+     * admin (CourseController::import) já regista, porque aí há sempre um autor.
      */
-    public function handle(CesaeCourseScraper $scraper): int
+    public function handle(CourseImporter $importer): int
     {
         try {
-            $items = $scraper->fetch();
+            $result = $importer->import();
         } catch (Throwable $e) {
             $this->error('Falha ao importar: '.$e->getMessage());
 
             return self::FAILURE;
         }
 
-        $created = 0;
-        $updated = 0;
-
-        foreach ($items as $item) {
-            $url = $item['url'];
-            unset($item['url']);
-
-            $course = Course::where('url', $url)->first();
-
-            if ($course) {
-                // status não entra aqui: uma reimportação não deve repor a
-                // received um curso que o gestor já aprovou ou recusou.
-                $course->update($item);
-                $updated++;
-            } else {
-                Course::create([...$item, 'url' => $url, 'status' => 'received']);
-                $created++;
-            }
-        }
-
         $this->info(sprintf(
             '%d cursos encontrados, %d criados, %d atualizados.',
-            count($items),
-            $created,
-            $updated,
+            $result['total'],
+            $result['created'],
+            $result['updated'],
         ));
 
         return self::SUCCESS;
