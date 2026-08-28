@@ -39,7 +39,7 @@ export default function Courses({ newsletter, courses, course_ids }) {
         >
             <Head title="Selecionar ofertas formativas" />
 
-            <div className="mx-auto max-w-2xl space-y-4 p-6">
+            <div className="mx-auto max-w-2xl space-y-4">
                 <Link
                     href={route('admin.newsletters.index')}
                     className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
@@ -47,7 +47,7 @@ export default function Courses({ newsletter, courses, course_ids }) {
                     ← Voltar às newsletters
                 </Link>
 
-                <form onSubmit={submit} className="rounded-lg bg-white p-6 shadow">
+                <form onSubmit={submit} className="rounded-lg bg-white p-4 shadow sm:p-6">
                     {courses.length === 0 && (
                         <p className="text-sm text-gray-500">Não existem ofertas formativas disponíveis.</p>
                     )}
@@ -60,8 +60,8 @@ export default function Courses({ newsletter, courses, course_ids }) {
 
                     <ul className="divide-y divide-gray-200">
                         {courses.map((course) => (
-                            <li key={course.id} className="flex items-center justify-between py-3">
-                                <label htmlFor={`course-${course.id}`} className="flex flex-1 items-center gap-3">
+                            <li key={course.id} className="py-3">
+                                <label htmlFor={`course-${course.id}`} className="flex items-start gap-3">
                                     <input
                                         id={`course-${course.id}`}
                                         type="checkbox"
@@ -69,7 +69,7 @@ export default function Courses({ newsletter, courses, course_ids }) {
                                         onChange={() => toggleCourse(course.id)}
                                         className="rounded border-gray-300"
                                     />
-                                    <span>
+                                    <span className="min-w-0">
                                         <span className="block font-medium text-gray-900">{course.title}</span>
                                         <span className="block text-sm text-gray-500">
                                             {formatStartDate(course.start_date)}
@@ -80,7 +80,7 @@ export default function Courses({ newsletter, courses, course_ids }) {
                         ))}
                     </ul>
 
-                    <div className="mt-6 flex items-center gap-4">
+                    <div className="mt-6 flex flex-wrap items-center gap-4">
                         <PrimaryButton disabled={processing}>Guardar seleção</PrimaryButton>
 
                         {recentlySuccessful && <p className="text-sm text-gray-600">Guardado.</p>}

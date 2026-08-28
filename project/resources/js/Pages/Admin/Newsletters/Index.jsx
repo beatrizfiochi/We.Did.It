@@ -118,7 +118,7 @@ export default function Index({ newsletters }) {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <Link
                         href={route('admin.newsletters.preview', row.id)}
                         className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -190,27 +190,25 @@ export default function Index({ newsletters }) {
         >
             <Head title="Newsletter" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <FlashMessage />
+            <div className="space-y-6">
+                <FlashMessage />
 
-                    <div className="flex justify-end">
-                        <PrimaryButton onClick={openCreate}>
-                            Nova Newsletter
-                        </PrimaryButton>
-                    </div>
-
-                    <DataTable
-                        columns={columns}
-                        rows={newsletters}
-                        emptyTitle="Ainda não há newsletters criadas"
-                        emptyDescription="Cria a primeira newsletter no botão acima."
-                    />
+                <div className="flex justify-end">
+                    <PrimaryButton onClick={openCreate}>
+                        Nova Newsletter
+                    </PrimaryButton>
                 </div>
+
+                <DataTable
+                    columns={columns}
+                    rows={newsletters}
+                    emptyTitle="Ainda não há newsletters criadas"
+                    emptyDescription="Cria a primeira newsletter no botão acima."
+                />
             </div>
 
             <Modal show={showForm} onClose={closeForm} maxWidth="md">
-                <form onSubmit={submit} className="space-y-4 p-6">
+                <form onSubmit={submit} className="space-y-4 p-4 sm:p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         {editing ? 'Editar newsletter' : 'Nova newsletter'}
                     </h2>
@@ -293,12 +291,12 @@ export default function Index({ newsletters }) {
                         </div>
                     }
 
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-wrap justify-end gap-3">
                         <SecondaryButton type="button" onClick={closeForm}>
                             Cancelar
                         </SecondaryButton>
 
-                        < PrimaryButton
+                        <PrimaryButton
                             type="button"
                             disabled={processing}
                             //status=true guarda como rascunho
@@ -318,7 +316,7 @@ export default function Index({ newsletters }) {
 
             {/* confirmação em modal, e não window.confirm(), que bloqueia o browser */}
             <Modal show={deleting !== null} onClose={() => setDeleting(null)} maxWidth="md">
-                <div className="space-y-4 p-6">
+                <div className="space-y-4 p-4 sm:p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         Remover esta newsletter?
                     </h2>
@@ -327,7 +325,7 @@ export default function Index({ newsletters }) {
                         {deleting?.title} — esta ação não pode ser anulada.
                     </p>
 
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-wrap justify-end gap-3">
                         <SecondaryButton onClick={() => setDeleting(null)}>
                             Cancelar
                         </SecondaryButton>
