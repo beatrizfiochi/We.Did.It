@@ -10,7 +10,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import StatusBadge from '@/Components/StatusBadge';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
 
@@ -19,6 +19,7 @@ export default function Index({ newsletters }) {
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [deleting, setDeleting] = useState(null);
+    const [publishing, setPublishing] = useState(null);
     const actionClass =
         'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
     const dangerActionClass =
@@ -32,8 +33,8 @@ export default function Index({ newsletters }) {
     const todayDate = getToday();
 
 
-    const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors, transform } =
-        useForm({ title: '', edition: '', date: todayDate, period_start: '', period_end: '', status: false });
+    const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } =
+        useForm({ title: '', edition: '', date: todayDate, period_start: '', period_end: '' });
 
     const openCreate = () => {
         reset();
@@ -55,7 +56,6 @@ export default function Index({ newsletters }) {
             date: event.date.slice(0, 10),
             period_start: event.period_start?.slice(0, 10),
             period_end: event.period_end?.slice(0, 10),
-            status: event.status,
         });
 
         setShowForm(true);
@@ -68,15 +68,11 @@ export default function Index({ newsletters }) {
         reset();
     };
 
-    const submit = (e, status = false) => {
+    const submit = (e) => {
         e.preventDefault();
 
-        // status === true  → draft
-        // status === false → published
-        // adiciona o status no formulario a partir do respetivo botão que chama esta função
-        transform((formData) => ({ ...formData, status }));
-
-        // ações possiveis: atualizar e publicar
+        // o status deixou de vir daqui (SCRUM-116): guardar mantém sempre o
+        // rascunho, e publicar é uma ação à parte, no confirmPublish()
         const action = editing ? put : post;
 
         // route de acordo com a ação escolhida
@@ -94,6 +90,18 @@ export default function Index({ newsletters }) {
         destroy(route('admin.newsletters.destroy', deleting.id), {
             preserveScroll: true,
             onSuccess: () => setDeleting(null),
+        });
+    };
+
+    // publicar é irreversível — não há forma de voltar a rascunho — e o botão
+    // fica ao lado do de guardar, por isso passa por confirmação (SCRUM-116)
+    const confirmPublish = () => {
+        router.patch(route('admin.newsletters.publish', publishing.id), {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setPublishing(null);
+                closeForm();
+            },
         });
     };
 
@@ -294,12 +302,11 @@ export default function Index({ newsletters }) {
                         <div>
                             <InputLabel htmlFor="status" value="Estado" />
 
-                            {/* "publicada" será eliminada mais tarde nos proximo sprint(nao sera possivel editar uma publicada) */}
+                            {/* lê do registo e não do formulário: o estado
+                                deixou de ser um campo editável (SCRUM-116) */}
                             <div className="mt-1">
-                                <StatusBadge status={data.status ? 'Rascunho' : 'Publicada'} />
+                                <StatusBadge status={editing.status ? 'Rascunho' : 'Publicada'} />
                             </div>
-
-                            <InputError message={errors.status} className="mt-2" />
                         </div>
                     }
 
@@ -311,19 +318,47 @@ export default function Index({ newsletters }) {
                         <PrimaryButton
                             type="button"
                             disabled={processing}
-                            //status=true guarda como rascunho
-                            onClick={(event) => submit(event, true)}>
+                            onClick={submit}>
                             Guardar Rascunho
                         </PrimaryButton>
 
-                        {editing && // só pode publicar depois de guardar rascunho
-                            <PrimaryButton disabled={processing}>
-                                {/* entra no default do submit status=false -> publica a newsletter */}
-                                {/* {editing ? 'Guardar' : 'Criar'} */}
+                        {/* só se publica o que já está guardado, e só uma vez */}
+                        {editing && editing.status && (
+                            <PrimaryButton
+                                type="button"
+                                disabled={processing}
+                                onClick={() => setPublishing(editing)}>
                                 Publicar
-                            </PrimaryButton>}
+                            </PrimaryButton>
+                        )}
                     </div>
                 </form>
+            </Modal>
+
+            {/* publicar não tem volta: não há rota para despublicar, e a partir
+                daqui a newsletter deixa de poder ser editada ou removida */}
+            <Modal show={publishing !== null} onClose={() => setPublishing(null)} maxWidth="md">
+                <div className="space-y-4 p-4 sm:p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Publicar esta newsletter?
+                    </h2>
+
+                    <p className="text-sm text-gray-600">
+                        {publishing?.title} — edição {publishing?.edition}. Depois de
+                        publicada deixa de poder ser editada, ter conteúdos trocados ou
+                        ser removida. Esta ação não pode ser anulada.
+                    </p>
+
+                    <div className="flex flex-wrap justify-end gap-3">
+                        <SecondaryButton onClick={() => setPublishing(null)}>
+                            Cancelar
+                        </SecondaryButton>
+
+                        <PrimaryButton onClick={confirmPublish} disabled={processing}>
+                            Publicar
+                        </PrimaryButton>
+                    </div>
+                </div>
             </Modal>
 
             {/* confirmação em modal, e não window.confirm(), que bloqueia o browser */}
