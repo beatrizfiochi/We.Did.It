@@ -19,6 +19,9 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!-- fixo: o MailBrandingTest verifica o nome no cabeçalho dos emails,
+             e sem isto o valor vinha do .env de quem corre os testes -->
+        <env name="APP_NAME" value="We Did It"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>

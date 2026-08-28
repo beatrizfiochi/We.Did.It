@@ -2,7 +2,7 @@ import Dropdown from '@/Components/Dropdown';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function AuthenticatedLayout({ header, children, contentClassName = 'max-w-none' }) {
+export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
@@ -226,7 +226,10 @@ export default function AuthenticatedLayout({ header, children, contentClassName
                     </header>
 
                     <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
-                        <div className={`mx-auto w-full ${contentClassName}`}>
+                        {/* sem max-w: as tabelas do admin aproveitam a largura
+                            toda do ecrã. O <main> acima já dá o espaçamento
+                            lateral, por isso os ecrãs não repetem wrappers. */}
+                        <div className="mx-auto w-full">
                             {children}
                         </div>
                     </main>
