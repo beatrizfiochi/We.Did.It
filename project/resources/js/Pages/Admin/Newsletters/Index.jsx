@@ -118,10 +118,10 @@ export default function Index({ newsletters }) {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center justify-end gap-2">
                     <Link
                         href={route('admin.newsletters.preview', row.id)}
-                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="inline-flex min-w-32 justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-center text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                         Pré-visualizar
                     </Link>
@@ -131,7 +131,7 @@ export default function Index({ newsletters }) {
                             <span className="inline-flex rounded-md">
                                 <button
                                     type="button"
-                                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    className="inline-flex min-w-32 items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                     Conteúdos
 
@@ -167,11 +167,11 @@ export default function Index({ newsletters }) {
                         </Dropdown.Content>
                     </Dropdown>
 
-                    <SecondaryButton onClick={() => openEdit(row)}>
+                    <SecondaryButton className="min-w-24 justify-center px-3" onClick={() => openEdit(row)}>
                         Editar
                     </SecondaryButton>
 
-                    <DangerButton onClick={() => setDeleting(row)}>
+                    <DangerButton className="min-w-24 justify-center px-3" onClick={() => setDeleting(row)}>
                         Remover
                     </DangerButton>
                 </div>
