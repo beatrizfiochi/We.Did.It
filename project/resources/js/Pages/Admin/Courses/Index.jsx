@@ -6,6 +6,10 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 
 export default function Index({ courses = [] }) {
     const { post, processing } = useForm();
+    const actionClass =
+        'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
+    const dangerActionClass =
+        'inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-100 hover:text-red-700';
 
     function importCourses() {
         post(route('admin.courses.import'), { preserveScroll: true });
@@ -29,7 +33,7 @@ export default function Index({ courses = [] }) {
                 <div className="flex flex-wrap items-center gap-3">
                     <Link
                         href={route('admin.courses.edit', course.id)}
-                        className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
+                        className={actionClass}
                     >
                         Editar
                     </Link>
@@ -41,7 +45,7 @@ export default function Index({ courses = [] }) {
                                 router.delete(route('admin.courses.destroy', course.id));
                             }
                         }}
-                        className="text-sm font-semibold text-red-600 hover:text-red-900"
+                        className={dangerActionClass}
                     >
                         Remover
                     </button>
