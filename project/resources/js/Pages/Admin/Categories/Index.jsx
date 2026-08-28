@@ -11,6 +11,12 @@ import { useState } from 'react';
 export default function Index({ categories = [] }) {
     const [editingCategory, setEditingCategory] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
+    const actionClass =
+        'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
+    const dangerActionClass =
+        'inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-100 hover:text-red-700';
+    const disabledActionClass =
+        'inline-flex cursor-not-allowed items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-400 shadow-sm';
 
     const createForm = useForm({
         name: '',
@@ -94,7 +100,7 @@ export default function Index({ categories = [] }) {
                         <button
                             type="button"
                             onClick={() => startEdit(category)}
-                            className="text-sm font-semibold text-indigo-600 hover:text-indigo-900"
+                            className={actionClass}
                         >
                             Editar
                         </button>
@@ -103,12 +109,7 @@ export default function Index({ categories = [] }) {
                             type="button"
                             onClick={() => destroyCategory(category)}
                             disabled={inUse}
-                            className={
-                                'text-sm font-semibold ' +
-                                (inUse
-                                    ? 'cursor-not-allowed text-gray-400'
-                                    : 'text-red-600 hover:text-red-900')
-                            }
+                            className={inUse ? disabledActionClass : dangerActionClass}
                             title={
                                 inUse
                                     ? 'Não é possível remover uma categoria em uso.'

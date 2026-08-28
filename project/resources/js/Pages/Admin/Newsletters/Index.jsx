@@ -19,6 +19,10 @@ export default function Index({ newsletters }) {
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [deleting, setDeleting] = useState(null);
+    const actionClass =
+        'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
+    const dangerActionClass =
+        'inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-100 hover:text-red-700';
 
     // obtem a data atual do utilizador de acordo com o timezone, sem depender do UTC - referencia universal
     const getToday = () => {
@@ -118,20 +122,20 @@ export default function Index({ newsletters }) {
             key: 'actions',
             label: 'Ações',
             render: (row) => (
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-4">
                     <Link
                         href={route('admin.newsletters.preview', row.id)}
-                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className={actionClass}
                     >
                         Pré-visualizar
                     </Link>
 
                     <Dropdown>
                         <Dropdown.Trigger>
-                            <span className="inline-flex rounded-md">
+                            <span className="inline-flex">
                                 <button
                                     type="button"
-                                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    className={actionClass}
                                 >
                                     Conteúdos
 
@@ -167,13 +171,21 @@ export default function Index({ newsletters }) {
                         </Dropdown.Content>
                     </Dropdown>
 
-                    <SecondaryButton onClick={() => openEdit(row)}>
+                    <button
+                        type="button"
+                        onClick={() => openEdit(row)}
+                        className={actionClass}
+                    >
                         Editar
-                    </SecondaryButton>
+                    </button>
 
-                    <DangerButton onClick={() => setDeleting(row)}>
+                    <button
+                        type="button"
+                        onClick={() => setDeleting(row)}
+                        className={dangerActionClass}
+                    >
                         Remover
-                    </DangerButton>
+                    </button>
                 </div>
             ),
         },
@@ -190,27 +202,25 @@ export default function Index({ newsletters }) {
         >
             <Head title="Newsletter" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <FlashMessage />
+            <div className="space-y-6">
+                <FlashMessage />
 
-                    <div className="flex justify-end">
-                        <PrimaryButton onClick={openCreate}>
-                            Nova Newsletter
-                        </PrimaryButton>
-                    </div>
-
-                    <DataTable
-                        columns={columns}
-                        rows={newsletters}
-                        emptyTitle="Ainda não há newsletters criadas"
-                        emptyDescription="Cria a primeira newsletter no botão acima."
-                    />
+                <div className="flex justify-end">
+                    <PrimaryButton onClick={openCreate}>
+                        Nova Newsletter
+                    </PrimaryButton>
                 </div>
+
+                <DataTable
+                    columns={columns}
+                    rows={newsletters}
+                    emptyTitle="Ainda não há newsletters criadas"
+                    emptyDescription="Cria a primeira newsletter no botão acima."
+                />
             </div>
 
-            <Modal show={showForm} onClose={closeForm} maxWidth="md">
-                <form onSubmit={submit} className="space-y-4 p-6">
+            <Modal show={showForm} onClose={closeForm} maxWidth="2xl">
+                <form onSubmit={submit} className="space-y-4 p-4 sm:p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         {editing ? 'Editar newsletter' : 'Nova newsletter'}
                     </h2>
@@ -293,12 +303,12 @@ export default function Index({ newsletters }) {
                         </div>
                     }
 
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-wrap justify-end gap-3">
                         <SecondaryButton type="button" onClick={closeForm}>
                             Cancelar
                         </SecondaryButton>
 
-                        < PrimaryButton
+                        <PrimaryButton
                             type="button"
                             disabled={processing}
                             //status=true guarda como rascunho
@@ -318,7 +328,7 @@ export default function Index({ newsletters }) {
 
             {/* confirmação em modal, e não window.confirm(), que bloqueia o browser */}
             <Modal show={deleting !== null} onClose={() => setDeleting(null)} maxWidth="md">
-                <div className="space-y-4 p-6">
+                <div className="space-y-4 p-4 sm:p-6">
                     <h2 className="text-lg font-medium text-gray-900">
                         Remover esta newsletter?
                     </h2>
@@ -327,7 +337,7 @@ export default function Index({ newsletters }) {
                         {deleting?.title} — esta ação não pode ser anulada.
                     </p>
 
-                    <div className="flex justify-end gap-3">
+                    <div className="flex flex-wrap justify-end gap-3">
                         <SecondaryButton onClick={() => setDeleting(null)}>
                             Cancelar
                         </SecondaryButton>
