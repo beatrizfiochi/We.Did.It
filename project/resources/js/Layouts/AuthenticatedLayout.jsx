@@ -58,9 +58,9 @@ export default function AuthenticatedLayout({ header, children }) {
 
     return (
 
-        <div className="min-h-screen bg-slate-100">
-            <div className="flex min-h-screen">
-                <aside className="hidden w-72 shrink-0 border-r border-gray-200 bg-white lg:block">
+        <div className="min-h-screen bg-slate-100 print:min-h-0 print:bg-white">
+            <div className="flex min-h-screen print:block print:min-h-0">
+                <aside className="hidden w-72 shrink-0 border-r border-gray-200 bg-white lg:block print:!hidden">
                     <div className="flex h-16 items-center border-b border-gray-200 px-6">
                         <Link href={route('dashboard')} className="text-lg font-bold text-gray-900">
                             We.Did.It
@@ -96,7 +96,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </aside>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <header className="border-b border-gray-200 bg-white">
+                    <header className="border-b border-gray-200 bg-white print:hidden">
                         <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
                             <div className="flex min-w-0 flex-1 items-center gap-4">
                                 <button
@@ -225,8 +225,8 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
                     </header>
 
-                    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
-                        <div className="mx-auto max-w-7xl">
+                    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 print:p-0">
+                        <div className="mx-auto max-w-7xl print:max-w-none">
                             {children}
                         </div>
                     </main>
