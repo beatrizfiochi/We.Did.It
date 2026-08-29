@@ -54,8 +54,8 @@
 
     /*
      * em papel a newsletter lê-se numa coluna. As grelhas de dois lados
-     * (notícias, testemunhos, formações) espremiam os cartões para metade da
-     * largura da folha — com um só item ficavam ainda mais estreitos.
+     * (notícias e testemunhos) espremiam os cartões para metade da largura da
+     * folha — com um só item ficavam ainda mais estreitos.
      */
     .newsletter-document [class*="grid-cols-2"] {
         grid-template-columns: 1fr !important;
