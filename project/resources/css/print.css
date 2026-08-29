@@ -1,0 +1,90 @@
+/*
+ * Impressão da pré-visualização da newsletter (SCRUM-128).
+ *
+ * O gestor guarda a newsletter em PDF pela impressão do browser, na página
+ * /admin/newsletters/{id}/pre-visualizacao. Estas regras tratam do que muda
+ * entre o ecrã e o papel.
+ *
+ * O cromado do admin (barra lateral, cabeçalho da página, link "Voltar" e o
+ * botão "Guardar em PDF") é escondido com as variantes print: do Tailwind, no
+ * AuthenticatedLayout e no Preview.jsx. Aqui fica o que não se exprime bem em
+ * utilitários: as margens da folha, os cortes de página e as cores.
+ */
+
+@page {
+    /*
+     * 0.6 cm não é a margem visual — é o valor que faz o browser não desenhar
+     * o cabeçalho e o rodapé dele (data, título, URL da página e numeração).
+     * Sem espaço onde os pôr, o Chrome não os põe. Isso importa porque o PDF
+     * é enviado por email: o URL da área de administração ficaria gravado em
+     * todas as páginas do documento que vai para a organização.
+     *
+     * Não pode ser 0: aí a página 2 em diante fica com o conteúdo encostado
+     * ao topo, com os cartões cortados a meio. Verificado a imprimir.
+     *
+     * A margem visual das laterais vem do print:px-[1cm] no <article> do
+     * NewsletterTemplate. A de cima e de baixo tem de vir daqui: o padding
+     * interior só produz espaço na primeira e na última página.
+     */
+    margin: 0.6cm;
+}
+
+@media print {
+    /* o admin assenta num cinzento (bg-slate-100) que fica pesado em papel */
+    html,
+    body {
+        background: #ffffff;
+    }
+
+    /*
+     * por defeito o browser não imprime cores de fundo nem gradientes. A
+     * newsletter precisa delas: sem isto, o texto claro do cabeçalho colorido
+     * sairia sobre branco. O Chrome usa o prefixo -webkit-, o Firefox o padrão.
+     */
+    .newsletter-document,
+    .newsletter-document * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* a Bootstrap (CDN) define .shadow-sm com !important e ganha ao print:shadow-none */
+    .newsletter-document {
+        box-shadow: none !important;
+    }
+
+    /*
+     * em papel a newsletter lê-se numa coluna. As grelhas de dois lados
+     * (notícias, testemunhos, formações) espremiam os cartões para metade da
+     * largura da folha — com um só item ficavam ainda mais estreitos.
+     */
+    .newsletter-document [class*="grid-cols-2"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /*
+     * não partir um cartão (uma notícia, testemunho, formação ou evento) entre
+     * páginas. Nas secções inteiras não se força: uma secção maior do que uma
+     * página tem de quebrar, e forçar deixava meia folha em branco.
+     */
+    .newsletter-document section article {
+        break-inside: avoid;
+    }
+
+    /*
+     * um título não fica sozinho no fundo da página, com o conteúdo na
+     * seguinte. O section > p é o eyebrow ("ATUALIZAÇÕES", "VOZES DA
+     * COMUNIDADE"...) — a cadeia de break-after mantém eyebrow + h2 + início do
+     * conteúdo juntos.
+     */
+    .newsletter-document h1,
+    .newsletter-document h2,
+    .newsletter-document h3,
+    .newsletter-document section > p {
+        break-after: avoid;
+    }
+
+    /* nenhuma imagem ultrapassa a largura útil da página */
+    .newsletter-document img {
+        max-width: 100%;
+    }
+}
