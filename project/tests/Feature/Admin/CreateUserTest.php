@@ -24,35 +24,34 @@ class CreateUserTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guests_cannot_access_any_users_management_route(): void
+    {
+        $user = User::factory()->create();
+
+        $this->get(route('admin.news.index'))->assertRedirect(route('login'));
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+    }
+
+    public function test_authenticated_users_can_see_the_users_list(): void
+    {
+        $admin = User::factory()->create();
+        User::factory()->count(3)->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.news.index'));
+
+        $response->assertOk();
+        $response->assertInertia(
+            fn(Assert $page) => $page->component('Admin/Users/Index')
+                ->has('users', 3)
+        );
+    }
+
+
     public function test_guests_cannot_see_the_create_user_form(): void
     {
         $response = $this->get(route('admin.users.create'));
 
         $response->assertRedirect(route('login'));
-    }
-
-    public function test_guests_cannot_create_users(): void
-    {
-        $response = $this->post(route('admin.users.store'), [
-            'name' => 'Intruso',
-            'email' => 'intruso@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
-
-        $response->assertRedirect(route('login'));
-        $this->assertDatabaseMissing('users', ['email' => 'intruso@example.com']);
-        $this->assertGuest();
-    }
-
-    public function test_authenticated_users_can_see_the_create_user_form(): void
-    {
-        $admin = User::factory()->create();
-
-        $response = $this->actingAs($admin)->get(route('admin.users.create'));
-
-        $response->assertOk();
-        $response->assertInertia(fn (Assert $page) => $page->component('Admin/CreateUser'));
     }
 
     public function test_authenticated_users_can_create_other_users(): void

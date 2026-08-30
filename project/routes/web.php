@@ -44,8 +44,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
-    Route::get('users/create', [RegisteredUserController::class, 'create'])
-        ->name('users.create');
 
     Route::post('users', [RegisteredUserController::class, 'store'])
         ->name('users.store');
@@ -117,4 +115,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->names('newsletters');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
