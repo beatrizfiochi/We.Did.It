@@ -135,7 +135,7 @@ export default function Index({ users }) {
 
                 <form onSubmit={submit} className="space-y-4 p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Novo
+                        Novo utilizador
                     </h2>
 
                     <div>
