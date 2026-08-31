@@ -10,7 +10,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import StatusBadge from '@/Components/StatusBadge';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
 
@@ -35,6 +35,13 @@ export default function Index({ newsletters }) {
 
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } =
         useForm({ title: '', edition: '', date: todayDate, period_start: '', period_end: '' });
+
+    // formulário próprio, sem dados: o processing deste é que sabe se o PATCH
+    // de publicar está em curso. Com o router.patch(), o processing acima é o
+    // do formulário de edição e não desativava nada — dois cliques rápidos
+    // enviavam dois pedidos, e o segundo apanhava o 403 do que o primeiro
+    // acabou de publicar.
+    const publishForm = useForm({});
 
     const openCreate = () => {
         reset();
@@ -96,7 +103,7 @@ export default function Index({ newsletters }) {
     // publicar é irreversível — não há forma de voltar a rascunho — e o botão
     // fica ao lado do de guardar, por isso passa por confirmação (SCRUM-116)
     const confirmPublish = () => {
-        router.patch(route('admin.newsletters.publish', publishing.id), {}, {
+        publishForm.patch(route('admin.newsletters.publish', publishing.id), {
             preserveScroll: true,
             onSuccess: () => {
                 setPublishing(null);
@@ -354,7 +361,7 @@ export default function Index({ newsletters }) {
                             Cancelar
                         </SecondaryButton>
 
-                        <PrimaryButton onClick={confirmPublish} disabled={processing}>
+                        <PrimaryButton onClick={confirmPublish} disabled={publishForm.processing}>
                             Publicar
                         </PrimaryButton>
                     </div>
