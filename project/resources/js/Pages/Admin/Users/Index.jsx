@@ -10,11 +10,9 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import SecondaryButton from '@/Components/SecondaryButton';
 
-// tabela com as noticias todas e botao para ver --> modal
+// tabela comos utilizadores todos e botao para criar --> modal
 export default function Index({ users }) {
 
-    const actionClass =
-        'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
 
     // variable that holds the labels to be rendered in <DataTable/> according to keys from the users table
     const columns = [
@@ -23,7 +21,7 @@ export default function Index({ users }) {
     ];
 
     const { data, setData, post, processing, errors, reset, clearErrors } =
-        useForm({ name: '', email: '', password: '', password_confirmed: '' });
+        useForm({ name: '', email: '', password: '', password_confirmation: '' });
 
 
     const [showForm, setShowForm] = useState(false)
@@ -49,23 +47,6 @@ export default function Index({ users }) {
             onSuccess: closeForm,
         });
     };
-
-
-    // for the VIEW Modal
-    const [selectedUsers, setSelectedUsers] = useState(null)
-    const [showViewModal, setShowViewModal] = useState(false)
-
-    const handleViewUsers = (row) => {
-        setSelectedUsers(row);
-        setShowViewModal(true); // shows the row selected inside the modal
-    };
-
-    const closeViewModal = () => {
-        setShowViewModal(false);
-        setSelectedUsers(null); // turns selected view as null, closes modal
-    }
-
-
 
     return (
 
@@ -96,36 +77,6 @@ export default function Index({ users }) {
                 </section>
 
             </div>
-
-
-            {/* Modal for viewing each individual users */}
-            <Modal show={showViewModal} onClose={closeViewModal} maxWidth="lg">
-                {selectedUsers && (
-                    <div className="p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            {selectedUsers.name}
-                        </h2>
-                        <p className="text-md text-gray-500 ">
-                            <strong>Nome:</strong> {selectedUsers.name}
-                        </p>
-                        <p className="text-md text-gray-500 mb-4">
-                            <strong>Email:</strong> {selectedUsers.email}
-                        </p>
-
-
-                        <div className="mt-6 flex flex-wrap justify-end gap-3">
-
-                            <button
-                                type="button"
-                                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm hover:bg-gray-50"
-                                onClick={closeViewModal}
-                            >
-                                Fechar
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </Modal>
 
             <Modal
                 show={showForm}

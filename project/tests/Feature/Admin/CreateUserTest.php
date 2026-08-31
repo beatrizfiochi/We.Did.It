@@ -41,16 +41,30 @@ class CreateUserTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn (Assert $page) => $page->component('Admin/Users/Index')
-                ->has('users', 3)
+            fn(Assert $page) => $page->component('Admin/Users/Index')
+                ->has('users', 4) // conta com o admin que os criou
         );
     }
 
     public function test_guests_cannot_see_the_create_user_form(): void
     {
-        $response = $this->get(route('admin.users.create'));
+        $response = $this->get(route('admin.users.store'));
 
         $response->assertRedirect(route('login'));
+    }
+
+    public function test_guests_cannot_create_users(): void
+    {
+        $response = $this->post(route('admin.users.store'), [
+            'name' => 'Intruso',
+            'email' => 'intruso@cesae.pt',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response->assertRedirect(route('login'));
+        $this->assertDatabaseMissing('users', ['email' => 'intruso@cesae.pt']);
+        $this->assertGuest();
     }
 
     public function test_authenticated_users_can_create_other_users(): void
