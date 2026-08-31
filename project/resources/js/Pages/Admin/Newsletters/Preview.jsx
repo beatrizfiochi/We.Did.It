@@ -2,16 +2,18 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import NewsletterTemplate from '@/Pages/Admin/Newsletters/Partials/NewsletterTemplate';
 import { Head, Link } from '@inertiajs/react';
+import '../../../../css/print.css';
 
 export default function Preview({ newsletter }) {
     return (
         <AuthenticatedLayout header="Pré-visualização da newsletter">
-            <Head title="Pré-visualização da newsletter" />
+            <Head title={`${newsletter.title} — edição ${newsletter.edition}`} />
 
             <div className="space-y-6">
                 {/* print:hidden — nada aqui é conteúdo da newsletter, é só navegação
-                    e ações do admin. A folha de estilo da SCRUM-128 (Jéssica) trata do
-                    resto da página (sidebar, cabeçalho) na impressão. */}
+                    e ações do admin. A barra lateral e o cabeçalho do
+                    AuthenticatedLayout também saem na impressão (SCRUM-128), e o
+                    print.css trata das margens, cortes de página e cores. */}
                 <div className="flex flex-col gap-3 print:hidden sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p className="text-sm text-gray-600">

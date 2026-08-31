@@ -10,6 +10,19 @@ function formatDate(value) {
     }).format(new Date(value));
 }
 
+/**
+ * A data de início das formações não é uma coluna de data: vem do site do
+ * CESAE como texto e tanto pode ser "2026-08-28" como "A anunciar". O
+ * formatDate acima parte nesse segundo caso — devolve "Invalid Date".
+ *
+ * Mesma função que o Courses.jsx já usa no ecrã de seleção.
+ */
+function formatStartDate(rawDate) {
+    const date = new Date(rawDate);
+
+    return Number.isNaN(date.getTime()) ? rawDate : date.toLocaleDateString('pt-PT');
+}
+
 function Section({ title, eyebrow, children }) {
     return (
         <section className="border-t border-gray-200 pt-8">
@@ -59,8 +72,8 @@ export default function NewsletterTemplate({ newsletter }) {
     const newsletterDate = formatDate(newsletter.date);
 
     return (
-        <article className="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-            <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10">
+        <article className="newsletter-document overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 print:rounded-none print:shadow-none print:ring-0 print:px-[1cm]">
+            <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10 print:px-0">
                 <div className="max-w-3xl">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">
                         Newsletter interna
@@ -101,7 +114,7 @@ export default function NewsletterTemplate({ newsletter }) {
                 </div>
             </header>
 
-            <div className="space-y-10 px-6 py-8 sm:px-10 sm:py-10">
+            <div className="space-y-10 px-6 py-8 sm:px-10 sm:py-10 print:px-0 print:py-6">
                 <Section title="Notícias" eyebrow="Atualizações">
                     {news.length === 0 ? (
                         <EmptyMessage>Sem notícias selecionadas.</EmptyMessage>
@@ -119,7 +132,7 @@ export default function NewsletterTemplate({ newsletter }) {
                                             <img
                                                 src={src}
                                                 alt={item.title}
-                                                className="h-48 w-full object-cover"
+                                                className="h-48 w-full object-cover print:h-32"
                                             />
                                         )}
 
@@ -194,80 +207,42 @@ export default function NewsletterTemplate({ newsletter }) {
                     {courses.length === 0 ? (
                         <EmptyMessage>Sem formações selecionadas.</EmptyMessage>
                     ) : (
-                        <div className="grid gap-5 md:grid-cols-2">
-                            {courses.map((item) => {
-                                const src = imageUrl(item.imageUrl);
+                        <div className="space-y-3">
+                            {courses.map((item) => (
+                                <article
+                                    key={item.id}
+                                    className="rounded-lg border border-gray-200 bg-white p-4"
+                                >
+                                    <h3 className="font-bold text-gray-950">{item.title}</h3>
 
-                                return (
-                                    <article
-                                        key={item.id}
-                                        className="overflow-hidden rounded-lg border border-gray-200 bg-white"
-                                    >
-                                        {src && (
-                                            <img
-                                                src={src}
-                                                alt={item.title}
-                                                className="h-40 w-full object-cover"
-                                            />
+                                    <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
+                                        {item.start_date && (
+                                            <div className="flex gap-1">
+                                                <dt className="font-semibold text-gray-900">Início:</dt>
+                                                <dd>{formatStartDate(item.start_date)}</dd>
+                                            </div>
                                         )}
-
-                                        <div className="p-5">
-                                            <h3 className="text-lg font-bold text-gray-950">
-                                                {item.title}
-                                            </h3>
-
-                                            <dl className="mt-3 space-y-2 text-sm text-gray-600">
-                                                {item.start_date && (
-                                                    <div>
-                                                        <dt className="font-semibold text-gray-900">
-                                                            Data
-                                                        </dt>
-                                                        <dd>{item.start_date}</dd>
-                                                    </div>
-                                                )}
-
-                                                {item.location && (
-                                                    <div>
-                                                        <dt className="font-semibold text-gray-900">
-                                                            Local
-                                                        </dt>
-                                                        <dd>{item.location}</dd>
-                                                    </div>
-                                                )}
-
-                                                {item.schedule && (
-                                                    <div>
-                                                        <dt className="font-semibold text-gray-900">
-                                                            Horário
-                                                        </dt>
-                                                        <dd>{item.schedule}</dd>
-                                                    </div>
-                                                )}
-
-                                                {item.price && (
-                                                    <div>
-                                                        <dt className="font-semibold text-gray-900">
-                                                            Preço
-                                                        </dt>
-                                                        <dd>{item.price}</dd>
-                                                    </div>
-                                                )}
-                                            </dl>
-
-                                            {item.url && (
-                                                <a
-                                                    href={item.url}
-                                                    className="mt-4 inline-flex text-sm font-semibold text-indigo-600 hover:text-indigo-900"
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                >
-                                                    Ver formação
-                                                </a>
-                                            )}
-                                        </div>
-                                    </article>
-                                );
-                            })}
+                                        {item.schedule && (
+                                            <div className="flex gap-1">
+                                                <dt className="font-semibold text-gray-900">Horário:</dt>
+                                                <dd>{item.schedule}</dd>
+                                            </div>
+                                        )}
+                                        {item.location && (
+                                            <div className="flex gap-1">
+                                                <dt className="font-semibold text-gray-900">Local:</dt>
+                                                <dd>{item.location}</dd>
+                                            </div>
+                                        )}
+                                        {item.price && (
+                                            <div className="flex gap-1">
+                                                <dt className="font-semibold text-gray-900">Preço:</dt>
+                                                <dd>{item.price}</dd>
+                                            </div>
+                                        )}
+                                    </dl>
+                                </article>
+                            ))}
                         </div>
                     )}
                 </Section>
@@ -296,8 +271,8 @@ export default function NewsletterTemplate({ newsletter }) {
                 </Section>
             </div>
 
-            <footer className="border-t border-gray-200 bg-gray-50 px-6 py-5 text-sm text-gray-500 sm:px-10">
-                We.Did.It - Pré-visualização da newsletter
+            <footer className="border-t border-gray-200 bg-gray-50 px-6 py-5 text-sm text-gray-500 sm:px-10 print:px-0">
+                We.Did.It · {newsletter.title} — edição {newsletter.edition}
             </footer>
         </article>
     );
