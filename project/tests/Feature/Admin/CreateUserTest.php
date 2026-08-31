@@ -37,7 +37,7 @@ class CreateUserTest extends TestCase
         $admin = User::factory()->create();
         User::factory()->count(3)->create();
 
-        $response = $this->actingAs($admin)->get(route('admin.news.index'));
+        $response = $this->actingAs($admin)->get(route('admin.users.index'));
 
         $response->assertOk();
         $response->assertInertia(
