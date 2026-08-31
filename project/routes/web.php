@@ -119,4 +119,4 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         ->name('newsletters.publish');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

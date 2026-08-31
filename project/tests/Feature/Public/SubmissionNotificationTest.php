@@ -15,7 +15,7 @@ class SubmissionNotificationTest extends TestCase
     /**
      * @return array<string, mixed>
      */
-    private function testimonialPayload(): array
+    private function testimonial_payload(): array
     {
         return [
             'terms_conditions' => 'on',

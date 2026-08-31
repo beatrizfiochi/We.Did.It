@@ -41,11 +41,10 @@ class CreateUserTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn(Assert $page) => $page->component('Admin/Users/Index')
+            fn (Assert $page) => $page->component('Admin/Users/Index')
                 ->has('users', 3)
         );
     }
-
 
     public function test_guests_cannot_see_the_create_user_form(): void
     {

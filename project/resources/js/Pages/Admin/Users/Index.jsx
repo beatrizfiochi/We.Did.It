@@ -171,6 +171,7 @@ export default function Index({ users }) {
                             className="mt-1 block w-full"
                             onChange={(e) => setData('password', e.target.value)}
                         />
+                        <InputError message={errors.password} className="mt-2" />
                     </div>
 
                     <div>
@@ -182,7 +183,6 @@ export default function Index({ users }) {
                             className="mt-1 block w-full"
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                         />
-                        <InputError message={errors.password} className="mt-2" />
                     </div>
 
 
