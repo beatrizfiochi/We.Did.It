@@ -59,33 +59,53 @@ class NewsletterController extends Controller
     /**
      * Atualiza uma newsletter existente.
      *
-     * O status é aceite a partir do formulário (SCRUM-106), mas isso é provisório:
-     * publicar tem de bloquear a edição e, na Sprint 5, gerar o PDF. A SCRUM-116
-     * tem de retirar o status daqui e mover a mudança de estado para uma rota
-     * própria — senão ficam dois caminhos para publicar, e este não bloqueia nada.
-     *
-     * Não impede a edição de uma newsletter já publicada — mesmo motivo.
+     * O status deixou de vir daqui (SCRUM-116): publicar é uma ação própria,
+     * no publish(). Ter dois caminhos para mudar de estado significava que um
+     * deles não aplicava as regras de bloqueio.
      */
     public function update(UpdateNewsletterRequest $request, Newsletter $newsletter): RedirectResponse
     {
-        $data = $request->validated();
-
-        $newsletter->update($data);
+        $newsletter->update($request->validated());
 
         ActivityLog::record($newsletter, 'updated');
 
-        $message = $newsletter->status
-            ? 'Rascunho guardado com sucesso.'
-            : 'Newsletter atualizada com sucesso.'; // status = false -> atualizada
+        // só um rascunho chega aqui, por isso a mensagem deixou de ser condicional
+        return back()->with('success', 'Rascunho guardado com sucesso.');
+    }
 
-        return back()->with('success', $message);
+    /**
+     * Finaliza a newsletter: passa de rascunho a publicada (SCRUM-116).
+     *
+     * A partir daqui a edição fica bloqueada — o conteúdo tem de continuar a
+     * corresponder ao que foi distribuído. A pré-visualização mantém-se
+     * acessível, que é o que permite voltar a gerar o PDF (SCRUM-122).
+     *
+     * Não leva FormRequest: não recebe dados nenhuns, só o modelo pela rota.
+     *
+     * O ActivityLog regista 'updated' — o enum só tem created|updated|removed,
+     * e publicar é uma alteração de estado do mesmo registo.
+     */
+    public function publish(Newsletter $newsletter): RedirectResponse
+    {
+        $this->ensureEditable($newsletter, 'Esta newsletter já está publicada.');
+
+        $newsletter->update(['status' => Newsletter::PUBLICADA]);
+
+        ActivityLog::record($newsletter, 'updated');
+
+        return back()->with('success', 'Newsletter publicada com sucesso.');
     }
 
     /**
      * Remove uma newsletter.
+     *
+     * Bloqueado depois de publicada: uma edição distribuída é registo
+     * histórico, e a SCRUM-21 quer poder consultar todas as que já saíram.
      */
     public function destroy(Newsletter $newsletter): RedirectResponse
     {
+        $this->ensureEditable($newsletter);
+
         $newsletter->delete();
 
         ActivityLog::record($newsletter, 'removed');
@@ -121,6 +141,8 @@ class NewsletterController extends Controller
      */
     public function editCourses(Newsletter $newsletter): Response
     {
+        $this->ensureEditable($newsletter);
+
         $newsletter->load('courses:id');
 
         // start_date é uma string vinda da API externa, não uma coluna de data,
@@ -166,6 +188,8 @@ class NewsletterController extends Controller
      */
     public function editNews(Newsletter $newsletter): Response
     {
+        $this->ensureEditable($newsletter);
+
         $newsletter->load('news:id');
 
         // só as notícias aprovadas podem entrar na newsletter
@@ -211,6 +235,8 @@ class NewsletterController extends Controller
      */
     public function editTestimonials(Newsletter $newsletter): Response
     {
+        $this->ensureEditable($newsletter);
+
         $newsletter->load('testimonials:id');
 
         // só os testemunhos aprovados podem entrar na newsletter
@@ -252,6 +278,8 @@ class NewsletterController extends Controller
      */
     public function editCalendars(Newsletter $newsletter): Response
     {
+        $this->ensureEditable($newsletter);
+
         $newsletter->load('calendars:id');
 
         $calendars = Calendar::orderBy('date')->get(['id', 'date', 'title']);
@@ -276,5 +304,16 @@ class NewsletterController extends Controller
 
         return redirect()->route('admin.newsletters.calendars.edit', $newsletter)
             ->with('success', 'Eventos da agenda da newsletter atualizados com sucesso.');
+    }
+
+    /**
+     * Recusa qualquer alteração a uma newsletter já publicada (SCRUM-116).
+     *
+     * Num sítio só, para a regra não divergir entre os onze métodos que a
+     * aplicam. Devolve 403, que a página de erro da SCRUM-129 já apresenta.
+     */
+    private function ensureEditable(Newsletter $newsletter, string $message = 'Uma newsletter publicada não pode ser alterada.'): void
+    {
+        abort_if(! $newsletter->isEditable(), 403, $message);
     }
 }

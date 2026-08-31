@@ -9,10 +9,15 @@ class UpdateNewsletterRequest extends FormRequest
 {
     /**
      * Determina se o utilizador está autorizado a fazer este pedido.
+     *
+     * Uma newsletter publicada não se altera (SCRUM-116). A verificação vive
+     * aqui e não no controller porque o authorize() corre antes da validação:
+     * no controller, o pedido morria primeiro nas regras e devolvia um erro de
+     * formulário em vez do 403 que a situação é.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->route('newsletter')->isEditable();
     }
 
     /**
@@ -20,14 +25,12 @@ class UpdateNewsletterRequest extends FormRequest
      */
     public function rules(): array
     {
-        // se o utilizador ainda estiver a pensar no titulo, etc, nao permitimos que fiquem em vazio os campos?
         return [
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'edition' => ['required', 'integer', 'min:1', Rule::unique('newsletters', 'edition')->ignore($this->route('newsletter'))],
             'date' => ['required', 'date'],
             'period_start' => ['required', 'date'],
             'period_end' => ['required', 'date', 'after_or_equal:period_start'],
-            'status' => ['sometimes', 'boolean'], // permite mudar estado
         ];
     }
 
@@ -52,9 +55,6 @@ class UpdateNewsletterRequest extends FormRequest
             'period_end.required' => 'A data de fim do período é obrigatória.',
             'period_end.date' => 'A data de fim do período é inválida.',
             'period_end.after_or_equal' => 'A data de fim do período deve ser igual ou posterior à data de início.',
-
-            'status.required' => 'O status é obrigatório.',
-            'status.boolean' => 'O status deve ser verdadeiro ou falso.',
         ];
     }
 }
