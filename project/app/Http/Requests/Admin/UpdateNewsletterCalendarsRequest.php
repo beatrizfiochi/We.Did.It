@@ -2,17 +2,12 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\ForbidsPublishedNewsletters;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateNewsletterCalendarsRequest extends FormRequest
 {
-    /**
-     * Determina se o utilizador está autorizado a fazer este pedido.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
+    use ForbidsPublishedNewsletters;
 
     /**
      * Regras de validação aplicadas ao pedido.

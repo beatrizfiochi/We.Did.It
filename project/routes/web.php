@@ -113,6 +113,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::resource('newsletters', NewsletterController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->names('newsletters');
+
+    // Rota de publicação da newsletter (SCRUM-116)
+    Route::patch('newsletters/{newsletter}/finalizar', [NewsletterController::class, 'publish'])
+        ->name('newsletters.publish');
 });
 
 require __DIR__ . '/auth.php';

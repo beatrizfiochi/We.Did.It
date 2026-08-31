@@ -22,7 +22,18 @@ class NewsletterFactory extends Factory
             'period_start' => $periodStart,
             'period_end' => $periodEnd,
             'path' => null,
-            'status' => fake()->boolean(80),
+            // uma newsletter nasce sempre em rascunho, como no store() do
+            // controller. Sortear o estado tornava intermitentes os testes que
+            // dependem de a newsletter ser editável (SCRUM-116).
+            'status' => Newsletter::RASCUNHO,
         ];
+    }
+
+    /**
+     * Newsletter já publicada, para os testes de bloqueio de edição.
+     */
+    public function published(): static
+    {
+        return $this->state(fn () => ['status' => Newsletter::PUBLICADA]);
     }
 }

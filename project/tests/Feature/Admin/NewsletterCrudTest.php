@@ -32,7 +32,7 @@ class NewsletterCrudTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.newsletters.index'));
 
         $response->assertOk();
-        $response->assertInertia(fn(Assert $page) => $page->component('Admin/Newsletters/Index')->has('newsletters', 3));
+        $response->assertInertia(fn (Assert $page) => $page->component('Admin/Newsletters/Index')->has('newsletters', 3));
     }
 
     public function test_guests_cannot_access_any_newsletter_route(): void
@@ -210,65 +210,38 @@ class NewsletterCrudTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    public function test_authenticated_users_can_save_an_existing_newsletter_as_draft(): void
+    /**
+     * O update deixou de aceitar o status (SCRUM-116): editar um rascunho não
+     * lhe muda o estado, e publicar passou a ter rota própria.
+     */
+    public function test_editing_a_draft_keeps_it_a_draft(): void
     {
         $admin = User::factory()->create();
 
-        $newsletter = Newsletter::factory()->create([
-            'status' => false,
-        ]);
+        $newsletter = Newsletter::factory()->create();
 
         $response = $this->actingAs($admin)
             ->from(route('admin.newsletters.index'))
             ->put(
                 route('admin.newsletters.update', $newsletter),
                 [
-                    'title' => $newsletter->title,
+                    'title' => 'Título alterado',
                     'date' => $newsletter->date,
                     'edition' => $newsletter->edition,
                     'period_start' => $newsletter->period_start,
                     'period_end' => $newsletter->period_end,
-                    'status' => true,
+                    'status' => Newsletter::PUBLICADA,
                 ]
             );
 
         $response->assertRedirect(route('admin.newsletters.index'));
         $response->assertSessionHas('success');
 
+        // o status enviado é ignorado: só o publish() muda o estado
         $this->assertDatabaseHas('newsletters', [
             'id' => $newsletter->id,
-            'status' => true,
-        ]);
-    }
-
-    public function test_authenticated_users_can_publish_an_existing_newsletter(): void
-    {
-        $admin = User::factory()->create();
-
-        $newsletter = Newsletter::factory()->create([
-            'status' => true,
-        ]);
-
-        $response = $this->actingAs($admin)
-            ->from(route('admin.newsletters.index'))
-            ->put(
-                route('admin.newsletters.update', $newsletter),
-                [
-                    'title' => $newsletter->title,
-                    'date' => $newsletter->date,
-                    'edition' => $newsletter->edition,
-                    'period_start' => $newsletter->period_start,
-                    'period_end' => $newsletter->period_end,
-                    'status' => false,
-                ]
-            );
-
-        $response->assertRedirect(route('admin.newsletters.index'));
-        $response->assertSessionHas('success');
-
-        $this->assertDatabaseHas('newsletters', [
-            'id' => $newsletter->id,
-            'status' => Newsletter::PUBLICADA,
+            'title' => 'Título alterado',
+            'status' => Newsletter::RASCUNHO,
         ]);
     }
 
