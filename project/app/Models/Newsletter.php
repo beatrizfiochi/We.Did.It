@@ -62,6 +62,20 @@ class Newsletter extends Model
         $query->where('status', self::PUBLICADA);
     }
 
+    /**
+     * Uma newsletter publicada é o registo do que foi distribuído: deixa de
+     * poder ser alterada, para o conteúdo não divergir do PDF que já saiu
+     * (SCRUM-116).
+     *
+     * Só bloqueia a escrita. A listagem e a pré-visualização continuam
+     * abertas — é o que permite voltar a gerar o PDF de uma edição publicada
+     * (SCRUM-122).
+     */
+    public function isEditable(): bool
+    {
+        return $this->is_draft;
+    }
+
     public function news()
     {
         return $this->belongsToMany(News::class, 'news_newsletter', 'newsletter_id', 'news_id')

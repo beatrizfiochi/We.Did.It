@@ -2,32 +2,25 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\ForbidsPublishedNewsletters;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateNewsletterRequest extends FormRequest
 {
-    /**
-     * Determina se o utilizador está autorizado a fazer este pedido.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
+    use ForbidsPublishedNewsletters;
 
     /**
      * Regras de validação aplicadas ao pedido.
      */
     public function rules(): array
     {
-        // se o utilizador ainda estiver a pensar no titulo, etc, nao permitimos que fiquem em vazio os campos?
         return [
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'edition' => ['required', 'integer', 'min:1', Rule::unique('newsletters', 'edition')->ignore($this->route('newsletter'))],
             'date' => ['required', 'date'],
             'period_start' => ['required', 'date'],
             'period_end' => ['required', 'date', 'after_or_equal:period_start'],
-            'status' => ['sometimes', 'boolean'], // permite mudar estado
         ];
     }
 
@@ -52,9 +45,6 @@ class UpdateNewsletterRequest extends FormRequest
             'period_end.required' => 'A data de fim do período é obrigatória.',
             'period_end.date' => 'A data de fim do período é inválida.',
             'period_end.after_or_equal' => 'A data de fim do período deve ser igual ou posterior à data de início.',
-
-            'status.required' => 'O status é obrigatório.',
-            'status.boolean' => 'O status deve ser verdadeiro ou falso.',
         ];
     }
 }
