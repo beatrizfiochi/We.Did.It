@@ -4,7 +4,15 @@ import NewsletterTemplate from '@/Pages/Admin/Newsletters/Partials/NewsletterTem
 import { Head, Link } from '@inertiajs/react';
 import '../../../../css/print.css';
 
-export default function Preview({ newsletter }) {
+export default function Preview({ newsletter, publishedAt = null }) {
+    // Uma newsletter publicada não tem PDF guardado: volta a gerar-se a partir
+    // dos conteúdos atuais (SCRUM-122). O gestor tem de perceber que, se algo
+    // for editado depois de publicada, o PDF sai diferente do original.
+    const publishedNotice = publishedAt
+        ? `Esta newsletter foi publicada a ${new Date(publishedAt).toLocaleDateString('pt-PT')}. `
+          + 'O PDF é gerado a partir dos conteúdos atuais, não de uma cópia guardada.'
+        : null;
+
     return (
         <AuthenticatedLayout header="Pré-visualização da newsletter">
             <Head title={`${newsletter.title} — edição ${newsletter.edition}`} />
@@ -17,7 +25,8 @@ export default function Preview({ newsletter }) {
                 <div className="flex flex-col gap-3 print:hidden sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p className="text-sm text-gray-600">
-                            Confirma se os conteúdos selecionados estão corretos antes de finalizar.
+                            {publishedNotice ??
+                                'Confirma se os conteúdos selecionados estão corretos antes de finalizar.'}
                         </p>
                     </div>
 

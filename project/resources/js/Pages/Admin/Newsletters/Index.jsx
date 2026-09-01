@@ -13,6 +13,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
+// Filtro por estado feito no browser sobre a lista que já chega (mesma decisão
+// da SCRUM-112). As publicadas continuam na tabela por omissão — é dessa
+// listagem que a SCRUM-122 precisa para voltar a descarregar o PDF de uma
+// edição antiga (ver SCRUM-65).
+const STATUS_FILTERS = [
+    { key: 'all', label: 'Todas' },
+    { key: 'draft', label: 'Rascunhos' },
+    { key: 'published', label: 'Publicadas' },
+];
 
 export default function Index({ newsletters }) {
     // null = criar, objeto = editar. Um modal só para os dois casos.
@@ -20,6 +29,15 @@ export default function Index({ newsletters }) {
     const [showForm, setShowForm] = useState(false);
     const [deleting, setDeleting] = useState(null);
     const [publishing, setPublishing] = useState(null);
+    const [statusFilter, setStatusFilter] = useState('all');
+
+    // is_draft vem já interpretado na listagem; o status é um boolean cru e não
+    // se lê diretamente.
+    const visibleNewsletters = newsletters.filter((newsletter) => {
+        if (statusFilter === 'draft') return newsletter.is_draft;
+        if (statusFilter === 'published') return !newsletter.is_draft;
+        return true;
+    });
     const actionClass =
         'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
     const dangerActionClass =
@@ -100,15 +118,13 @@ export default function Index({ newsletters }) {
         });
     };
 
-    // publicar é irreversível — não há forma de voltar a rascunho — e o botão
-    // fica ao lado do de guardar, por isso passa por confirmação (SCRUM-116)
+    // publicar é irreversível — não há forma de voltar a rascunho — por isso
+    // passa por confirmação (SCRUM-116). A ação está na linha, não dentro do
+    // modal de edição.
     const confirmPublish = () => {
         publishForm.patch(route('admin.newsletters.publish', publishing.id), {
             preserveScroll: true,
-            onSuccess: () => {
-                setPublishing(null);
-                closeForm();
-            },
+            onSuccess: () => setPublishing(null),
         });
     };
 
@@ -131,11 +147,16 @@ export default function Index({ newsletters }) {
         {
             key: 'status',
             label: 'Estado',
-            render: (row) => <StatusBadge status={row.status ? 'Rascunho' : 'Publicada'}></StatusBadge>,
+            render: (row) => <StatusBadge status={row.is_draft ? 'Rascunho' : 'Publicada'} />,
         },
         {
             key: 'actions',
             label: 'Ações',
+            // As ações dependem do estado. Uma publicada é registo do que foi
+            // distribuído: não se edita, não se removem conteúdos, não se apaga
+            // (o backend recusa tudo isso com 403 — SCRUM-116). Aqui só se
+            // escondem os botões. Fica a pré-visualização, que é o que a
+            // SCRUM-122 usa para voltar a gerar o PDF.
             render: (row) => (
                 <div className="flex flex-wrap items-center gap-4">
                     <Link
@@ -145,62 +166,77 @@ export default function Index({ newsletters }) {
                         Pré-visualizar
                     </Link>
 
-                    <Dropdown>
-                        <Dropdown.Trigger>
-                            <span className="inline-flex">
-                                <button
-                                    type="button"
-                                    className={actionClass}
-                                >
-                                    Conteúdos
+                    {/* publicada: falta "Descarregar PDF", que entra com a
+                        SCRUM-122 quando o PDF passar a existir. Até lá, uma
+                        publicada só tem "Pré-visualizar". */}
+                    {row.is_draft && (
+                        <>
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <span className="inline-flex">
+                                        <button
+                                            type="button"
+                                            className={actionClass}
+                                        >
+                                            Conteúdos
 
-                                    <svg
-                                        className="ms-2 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-                            </span>
-                        </Dropdown.Trigger>
+                                            <svg
+                                                className="ms-2 h-4 w-4"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </Dropdown.Trigger>
 
-                        <Dropdown.Content align="left">
-                            <Dropdown.Link href={route('admin.newsletters.news.edit', row.id)}>
-                                Notícias
-                            </Dropdown.Link>
-                            <Dropdown.Link href={route('admin.newsletters.testimonials.edit', row.id)}>
-                                Testemunhos
-                            </Dropdown.Link>
-                            <Dropdown.Link href={route('admin.newsletters.courses.edit', row.id)}>
-                                Formações
-                            </Dropdown.Link>
-                            <Dropdown.Link href={route('admin.newsletters.calendars.edit', row.id)}>
-                                Agenda
-                            </Dropdown.Link>
-                        </Dropdown.Content>
-                    </Dropdown>
+                                <Dropdown.Content align="left">
+                                    <Dropdown.Link href={route('admin.newsletters.news.edit', row.id)}>
+                                        Notícias
+                                    </Dropdown.Link>
+                                    <Dropdown.Link href={route('admin.newsletters.testimonials.edit', row.id)}>
+                                        Testemunhos
+                                    </Dropdown.Link>
+                                    <Dropdown.Link href={route('admin.newsletters.courses.edit', row.id)}>
+                                        Formações
+                                    </Dropdown.Link>
+                                    <Dropdown.Link href={route('admin.newsletters.calendars.edit', row.id)}>
+                                        Agenda
+                                    </Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
 
-                    <button
-                        type="button"
-                        onClick={() => openEdit(row)}
-                        className={actionClass}
-                    >
-                        Editar
-                    </button>
+                            <button
+                                type="button"
+                                onClick={() => openEdit(row)}
+                                className={actionClass}
+                            >
+                                Editar
+                            </button>
 
-                    <button
-                        type="button"
-                        onClick={() => setDeleting(row)}
-                        className={dangerActionClass}
-                    >
-                        Remover
-                    </button>
+                            <button
+                                type="button"
+                                onClick={() => setPublishing(row)}
+                                className={actionClass}
+                            >
+                                Publicar
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setDeleting(row)}
+                                className={dangerActionClass}
+                            >
+                                Remover
+                            </button>
+                        </>
+                    )}
                 </div>
             ),
         },
@@ -220,7 +256,26 @@ export default function Index({ newsletters }) {
             <div className="space-y-6">
                 <FlashMessage />
 
-                <div className="flex justify-end">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por estado">
+                        {STATUS_FILTERS.map((filter) => (
+                            <button
+                                key={filter.key}
+                                type="button"
+                                aria-pressed={statusFilter === filter.key}
+                                onClick={() => setStatusFilter(filter.key)}
+                                className={
+                                    'inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold shadow-sm transition ' +
+                                    (statusFilter === filter.key
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700')
+                                }
+                            >
+                                {filter.label}
+                            </button>
+                        ))}
+                    </div>
+
                     <PrimaryButton onClick={openCreate}>
                         Nova Newsletter
                     </PrimaryButton>
@@ -228,9 +283,17 @@ export default function Index({ newsletters }) {
 
                 <DataTable
                     columns={columns}
-                    rows={newsletters}
-                    emptyTitle="Ainda não há newsletters criadas"
-                    emptyDescription="Cria a primeira newsletter no botão acima."
+                    rows={visibleNewsletters}
+                    emptyTitle={
+                        statusFilter === 'all'
+                            ? 'Ainda não há newsletters criadas'
+                            : 'Nenhuma newsletter neste estado'
+                    }
+                    emptyDescription={
+                        statusFilter === 'all'
+                            ? 'Cria a primeira newsletter no botão acima.'
+                            : 'Muda o filtro para veres as outras newsletters.'
+                    }
                 />
             </div>
 
@@ -312,7 +375,7 @@ export default function Index({ newsletters }) {
                             {/* lê do registo e não do formulário: o estado
                                 deixou de ser um campo editável (SCRUM-116) */}
                             <div className="mt-1">
-                                <StatusBadge status={editing.status ? 'Rascunho' : 'Publicada'} />
+                                <StatusBadge status={editing.is_draft ? 'Rascunho' : 'Publicada'} />
                             </div>
                         </div>
                     }
@@ -322,22 +385,14 @@ export default function Index({ newsletters }) {
                             Cancelar
                         </SecondaryButton>
 
+                        {/* publicar deixou de estar aqui: é uma ação da linha da
+                            listagem, para não ser preciso abrir "Editar" primeiro */}
                         <PrimaryButton
                             type="button"
                             disabled={processing}
                             onClick={submit}>
                             Guardar Rascunho
                         </PrimaryButton>
-
-                        {/* só se publica o que já está guardado, e só uma vez */}
-                        {editing && editing.status && (
-                            <PrimaryButton
-                                type="button"
-                                disabled={processing}
-                                onClick={() => setPublishing(editing)}>
-                                Publicar
-                            </PrimaryButton>
-                        )}
                     </div>
                 </form>
             </Modal>

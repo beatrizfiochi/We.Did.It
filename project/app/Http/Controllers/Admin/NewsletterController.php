@@ -116,6 +116,10 @@ class NewsletterController extends Controller
     /**
      * Mostra a newsletter com todos os conteúdos selecionados, para o gestor
      * poder decidir se está bem antes de finalizar (SCRUM-15, ecrã da SCRUM-114).
+     *
+     * Continua acessível depois de publicada: é assim que se volta a gerar o
+     * PDF de uma edição antiga (SCRUM-122). Não há ficheiro guardado — o PDF
+     * sai dos conteúdos atuais no momento em que se imprime.
      */
     public function preview(Newsletter $newsletter): Response
     {
@@ -133,6 +137,10 @@ class NewsletterController extends Controller
 
         return Inertia::render('Admin/Newsletters/Preview', [
             'newsletter' => $newsletter,
+            // Uma newsletter publicada deixa de poder ser editada (SCRUM-116),
+            // por isso o updated_at fica congelado no instante da publicação e
+            // serve de data de publicação sem ser preciso uma coluna nova.
+            'publishedAt' => $newsletter->is_draft ? null : $newsletter->updated_at,
         ]);
     }
 
