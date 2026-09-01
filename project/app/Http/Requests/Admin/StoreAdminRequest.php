@@ -21,6 +21,7 @@ class StoreAdminRequest extends FormRequest
      * Regras de validação aplicadas ao pedido.
      *
      * O domínio do email é requisito do cliente: as contas ficam restritas a
+     *
      * @cesae.pt e @cesaedigital.pt. O @ no início de cada domínio é essencial —
      * sem ele, ana@notcesae.pt passaria.
      *
