@@ -29,14 +29,6 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Display the form for creating an administrator account.
-     */
-    public function create(): Response
-    {
-        return Inertia::render('Admin/CreateUser');
-    }
-
-    /**
      * Store a new administrator account created from the admin area.
      *
      * @throws ValidationException
