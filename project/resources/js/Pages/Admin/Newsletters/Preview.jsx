@@ -45,7 +45,7 @@ export default function Preview({ newsletter, publishedAt = null }) {
                         </div>
 
                         <p className="text-xs text-gray-500">
-                            No destino, escolhe "Guardar como PDF".
+                            No destino escolhe «Guardar como PDF» e desliga «Cabeçalhos e rodapés».
                         </p>
                     </div>
                 </div>

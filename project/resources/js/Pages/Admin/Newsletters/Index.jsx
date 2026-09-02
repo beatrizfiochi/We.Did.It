@@ -15,8 +15,8 @@ import { useState } from 'react';
 
 // Filtro por estado feito no browser sobre a lista que já chega (mesma decisão
 // da SCRUM-112). As publicadas continuam na tabela por omissão — é dessa
-// listagem que a SCRUM-122 precisa para voltar a descarregar o PDF de uma
-// edição antiga (ver SCRUM-65).
+// listagem que a SCRUM-122 precisa para voltar a gerar o PDF de uma edição
+// antiga (ver SCRUM-65).
 const STATUS_FILTERS = [
     { key: 'all', label: 'Todas' },
     { key: 'draft', label: 'Rascunhos' },
@@ -42,6 +42,9 @@ export default function Index({ newsletters }) {
         'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
     const dangerActionClass =
         'inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-100 hover:text-red-700';
+    // publicar é uma ação importante e sem volta — não se dilui no cinzento das outras
+    const publishActionClass =
+        'inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-700 shadow-sm transition hover:bg-indigo-100';
 
     // obtem a data atual do utilizador de acordo com o timezone, sem depender do UTC - referencia universal
     const getToday = () => {
@@ -166,9 +169,9 @@ export default function Index({ newsletters }) {
                         Pré-visualizar
                     </Link>
 
-                    {/* publicada: falta "Descarregar PDF", que entra com a
-                        SCRUM-122 quando o PDF passar a existir. Até lá, uma
-                        publicada só tem "Pré-visualizar". */}
+                    {/* uma publicada só tem "Pré-visualizar": é lá dentro que está
+                        o botão de guardar em PDF (SCRUM-120), e é assim que se
+                        volta a gerar o PDF de uma edição antiga (SCRUM-122) */}
                     {row.is_draft && (
                         <>
                             <Dropdown>
@@ -223,7 +226,7 @@ export default function Index({ newsletters }) {
                             <button
                                 type="button"
                                 onClick={() => setPublishing(row)}
-                                className={actionClass}
+                                className={publishActionClass}
                             >
                                 Publicar
                             </button>

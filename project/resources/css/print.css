@@ -13,20 +13,16 @@
 
 @page {
     /*
-     * 0.6 cm não é a margem visual — é o valor que faz o browser não desenhar
-     * o cabeçalho e o rodapé dele (data, título, URL da página e numeração).
-     * Sem espaço onde os pôr, o Chrome não os põe. Isso importa porque o PDF
-     * é enviado por email: o URL da área de administração ficaria gravado em
-     * todas as páginas do documento que vai para a organização.
+     * Margem única do documento, igual nos quatro lados e em todas as páginas.
+     * O padding lateral do <article> é anulado com print:px-0 no template, por
+     * isso esta é a única margem que conta — não há nada a somar-se-lhe.
      *
-     * Não pode ser 0: aí a página 2 em diante fica com o conteúdo encostado
-     * ao topo, com os cartões cortados a meio. Verificado a imprimir.
-     *
-     * A margem visual das laterais vem do print:px-[1cm] no <article> do
-     * NewsletterTemplate. A de cima e de baixo tem de vir daqui: o padding
-     * interior só produz espaço na primeira e na última página.
+     * O cabeçalho e o rodapé do browser (data, título, URL, numeração) não se
+     * escondem por aqui: desligam-se em "Cabeçalhos e rodapés" na caixa de
+     * impressão, que é o que o Preview.jsx diz ao gestor para fazer. Importa
+     * porque o PDF vai por email para a organização.
      */
-    margin: 0.6cm;
+    margin: 1.5cm;
 }
 
 @media print {
