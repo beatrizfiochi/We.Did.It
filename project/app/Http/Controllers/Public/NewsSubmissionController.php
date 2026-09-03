@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Concerns\NotifiesManagers;
+use App\Http\Controllers\Concerns\StoresImages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNewsRequest;
 use App\Mail\NewSubmissionReceived;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class NewsSubmissionController extends Controller
 {
-    use NotifiesManagers;
+    use NotifiesManagers, StoresImages;
 
     /**
      * Display the public news submission form.
@@ -35,13 +37,22 @@ class NewsSubmissionController extends Controller
         // O except() é explícito de propósito: sem ele as chaves chegavam ao
         // create() e eram descartadas em silêncio por não estarem no #[Fillable],
         // o que se parte no dia em que alguém ligar o Model::shouldBeStrict().
-        $data = $request->safe()->except(['terms_conditions', 'image_rights']);
+        // O images está aqui pela mesma razão: são ficheiros, e quem os grava
+        // é o storeImages() logo a seguir, não o create().
+        $data = $request->safe()->except(['terms_conditions', 'image_rights', 'images']);
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('news', 'public');
-        }
+        // ou entra a notícia com as imagens todas, ou não entra nada: uma
+        // notícia gravada sem as fotos dá "enviado com sucesso" a quem
+        // submeteu e chega ao gestor sem o que a pessoa escolheu
+        $news = DB::transaction(function () use ($request, $data) {
+            $news = News::create($data);
 
-        $news = News::create($data);
+            if ($request->hasFile('images')) {
+                $this->storeImages($news, $request->file('images'), 'news');
+            }
+
+            return $news;
+        });
 
         $this->notifyManagers(new NewSubmissionReceived(
             type: 'Notícia',

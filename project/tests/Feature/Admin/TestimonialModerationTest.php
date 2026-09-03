@@ -109,20 +109,42 @@ class TestimonialModerationTest extends TestCase
         $this->assertSame('received', $testimonial->fresh()->status);
     }
 
-    public function test_a_new_image_replaces_the_old_one_on_disk(): void
+    public function test_a_new_image_is_added_alongside_the_existing_one(): void
     {
         Storage::fake('public');
         Storage::disk('public')->put('testimonials/antiga.jpg', 'conteudo');
 
+        // a factory já cria a linha em images sozinha quando 'image' vem preenchido
         $testimonial = Testimonial::factory()->create(['image' => 'testimonials/antiga.jpg']);
 
         $this->actingAs(User::factory()->create())
             ->put(route('admin.testimonials.update', $testimonial), $this->validPayload([
-                'image' => UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg'),
+                'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
             ]))
             ->assertSessionHasNoErrors();
 
-        Storage::disk('public')->assertMissing('testimonials/antiga.jpg');
-        Storage::disk('public')->assertExists($testimonial->fresh()->image);
+        // já não se substitui, acrescenta-se: a antiga fica, a nova entra
+        Storage::disk('public')->assertExists('testimonials/antiga.jpg');
+        $this->assertSame(2, $testimonial->fresh()->images()->count());
+    }
+
+    public function test_the_limit_counts_images_already_saved(): void
+    {
+        Storage::fake('public');
+
+        // 3 já gravadas: não sobra nenhuma vaga
+        $testimonial = Testimonial::factory()->withImages(3)->create();
+
+        $response = $this->actingAs(User::factory()->create())
+            ->put(route('admin.testimonials.update', $testimonial), $this->validPayload([
+                'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
+            ]));
+
+        $response->assertSessionHasErrors('images');
+        $this->assertSame(
+            'Esta submissão só pode ter 3 imagens. Remove uma antes de acrescentar.',
+            session('errors')->get('images')[0],
+        );
+        $this->assertSame(3, $testimonial->fresh()->images()->count());
     }
 }

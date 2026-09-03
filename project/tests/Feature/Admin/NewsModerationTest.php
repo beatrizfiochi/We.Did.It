@@ -128,21 +128,43 @@ class NewsModerationTest extends TestCase
         $this->assertSame('received', $news->fresh()->status);
     }
 
-    public function test_a_new_image_replaces_the_old_one_on_disk(): void
+    public function test_a_new_image_is_added_alongside_the_existing_one(): void
     {
         Storage::fake('public');
         Storage::disk('public')->put('news/antiga.jpg', 'conteudo');
 
+        // a factory já cria a linha em images sozinha quando 'image' vem preenchido
         $news = News::factory()->create(['image' => 'news/antiga.jpg']);
 
         $this->actingAs(User::factory()->create())
             ->put(route('admin.news.update', $news), $this->validPayload([
-                'image' => UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg'),
+                'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
             ]))
             ->assertSessionHasNoErrors();
 
-        Storage::disk('public')->assertMissing('news/antiga.jpg');
-        Storage::disk('public')->assertExists($news->fresh()->image);
+        // já não se substitui, acrescenta-se: a antiga fica, a nova entra
+        Storage::disk('public')->assertExists('news/antiga.jpg');
+        $this->assertSame(2, $news->fresh()->images()->count());
+    }
+
+    public function test_the_limit_counts_images_already_saved(): void
+    {
+        Storage::fake('public');
+
+        // 3 já gravadas: não sobra nenhuma vaga
+        $news = News::factory()->withImages(3)->create();
+
+        $response = $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
+            ]));
+
+        $response->assertSessionHasErrors('images');
+        $this->assertSame(
+            'Esta submissão só pode ter 3 imagens. Remove uma antes de acrescentar.',
+            session('errors')->get('images')[0],
+        );
+        $this->assertSame(3, $news->fresh()->images()->count());
     }
 
     public function test_updating_without_an_image_keeps_the_current_one(): void

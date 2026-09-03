@@ -74,7 +74,7 @@ export default function Index({ news, categories }) {
     };
 
 
-    // variables for search filter by category 
+    // variables for search filter by category
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [isCategoryOpen, setIsCategoryOpen] = useState(true); // controls dropdown open/closed
@@ -144,7 +144,7 @@ export default function Index({ news, categories }) {
                 title: editingNews.title,
                 description: editingNews.description,
                 category_id: editingNews.category_id,
-                image: editingNews.imageFile ?? undefined, // if there isnt a new imageFile it stays undefined, and doesnt update image field
+                images: editingNews.imageFiles?.length ? editingNews.imageFiles : undefined, // if there isnt a new imageFile it stays undefined, and doesnt update image field
             },
             {
                 forceFormData: true, // because a file can be input
@@ -370,23 +370,24 @@ export default function Index({ news, categories }) {
 
                             <input
                                 type="file"
-                                className={`mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-gray-800 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-widest file:text-white hover:file:bg-gray-700 ${editErrors.image ? 'text-red-600' : ''}`}
+                                multiple
+                                className={`mt-1 block w-full text-sm text-gray-700 file:mr-4 file:rounded-md file:border-0 file:bg-gray-800 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-widest file:text-white hover:file:bg-gray-700 ${editErrors.images ? 'text-red-600' : ''}`}
                                 accept="image/jpg,image/jpeg,image/png"
                                 onChange={(e) => {
-                                    const file = e.target.files[0];
+                                    const files = Array.from(e.target.files);
 
-                                    if (!file) {
+                                    if (files.length === 0) {
                                         return
                                     }
 
-                                    // front-end validation for choosing image with 2mb
-                                    // igual ao max:5120 do UpdateNewsRequest
+                                    // igual ao max:5120 do UpdateNewsRequest avaliado por ficheiro
                                     const maxSizeBytes = 5 * 1024 * 1024 // 5MB
+                                    const oversized = files.find((file) => file.size > maxSizeBytes);
 
-                                    if (file.size > maxSizeBytes) {
-                                        setEditErrors(prev => ({
+                                    if (oversized) {
+                                        setEditErrors((prev) => ({
                                             ...prev,
-                                            image: 'O ficheiro deve ter no máximo 5MB.'
+                                            images: 'Cada imagem deve ter no máximo 5MB.'
                                         }));
 
                                         // image value stays empty so it doesnt get uploaded
@@ -398,23 +399,28 @@ export default function Index({ news, categories }) {
                                     // Valid file — clear image error
                                     setEditErrors(prev => ({
                                         ...prev,
-                                        image: undefined
+                                        images: undefined
                                     }));
 
                                     setEditingNews(prev => ({
                                         ...prev,
-                                        imageFile: file
+                                        imageFiles: files
                                     }));
                                 }}
                             />
 
                             {/* Show a preview: new file if picked, otherwise the existing stored image */}
-                            {editingNews.imageFile ? (
-                                <img
-                                    src={URL.createObjectURL(editingNews.imageFile)}
-                                    alt="Preview"
-                                    className="w-32 h-auto rounded-lg mt-2"
-                                />
+                            {editingNews.imageFiles?.length > 0 ? (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {editingNews.imageFiles.map((file, i) => (
+                                        <img
+                                            key={i}
+                                            src={URL.createObjectURL(file)}
+                                            alt={`Pré-visualização ${i + 1}`}
+                                            className="h-20 w-20 rounded-lg object-cover"
+                                        />
+                                    ))}
+                                </div>
                             ) : editingNews.image ? (
                                 <img
                                     src={`/storage/${editingNews.image}`}
@@ -423,9 +429,9 @@ export default function Index({ news, categories }) {
                                 />
                             ) : null}
 
-                            {editErrors.image && (
+                            {editErrors.images && (
                                 <div className="mt-2 text-sm text-red-600">
-                                    {editErrors.image}
+                                    {editErrors.images}
                                 </div>
                             )}
                         </div>
