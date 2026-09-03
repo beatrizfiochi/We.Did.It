@@ -221,12 +221,17 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
                     </header>
 
-                    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 print:p-0">
+                    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 print:!p-0">
                         {/* sem max-w: as tabelas do admin aproveitam a largura
                             toda do ecrã. O <main> acima já dá o espaçamento
                             lateral, por isso os ecrãs não repetem wrappers.
                             O print:max-w-none deixou de ser preciso quando o
-                            max-w-7xl saiu daqui. */}
+                            max-w-7xl saiu daqui.
+
+                            print:!p-0 e não print:p-0: em impressão a folha
+                            ainda é mais larga do que o breakpoint sm, por isso
+                            o sm:px-6 continua ativo e ganhava ao p-0. Dava 6 mm
+                            a mais de margem lateral só no PDF. */}
                         <div className="mx-auto w-full">
                             {children}
                         </div>
