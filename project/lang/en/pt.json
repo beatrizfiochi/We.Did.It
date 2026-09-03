@@ -1,0 +1,9 @@
+{
+    "The password field confirmation does not match.": "A confirmação da palavra-passe não coincide.",
+    "The password field is required.": "O campo palavra-passe é obrigatório.",
+    "The email field is required.": "O campo email é obrigatório.",
+    "The email field must be a valid email address.": "O email deve ser um endereço de e-mail válido.",
+    "These credentials do not match our records.": "Estas credenciais não coincidem com os nossos registos.",
+    "This password reset token is invalid.": "Este código de recuperação de palavra-passe é inválido.",
+    "We can't find a user with that email address.": "Não conseguimos encontrar um utilizador com esse endereço de email."
+}

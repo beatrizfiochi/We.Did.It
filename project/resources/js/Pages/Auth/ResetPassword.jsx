@@ -17,7 +17,8 @@ export default function ResetPassword({ token, email }) {
         e.preventDefault();
 
         post(route('password.store'), {
-            onFinish: () => reset('password', 'password_confirmation'),
+           onSuccess: () => form.reset('password', 'password_confirmation'),
+           onError: () => form.reset('password_confirmation') // se nao coincidir apaga o input da confirmacao da password
         });
     };
 
@@ -46,9 +47,12 @@ export default function ResetPassword({ token, email }) {
                                 type="email"
                                 name="email"
                                 value={data.email}
-                                className="mt-1 block w-full"
+                              readonly
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                              text-gray-500
+                               focus:border-gray-300 focus:ring-0"
                                 autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
+                                                           
                             />
 
                             <InputError message={errors.email} className="mt-2" />
