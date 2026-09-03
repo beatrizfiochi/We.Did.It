@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Image;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,7 +31,13 @@ class UpdateNewsRequest extends FormRequest
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'string', 'min:100', 'max:1050'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'images' => [
+                'nullable',
+                'array',
+                // as que já lá estão contam: o limite é o total, não o do pedido
+                'max:'.max(0, Image::MAX_POR_SUBMISSAO - $this->route('news')->images()->count()),
+            ],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ];
     }
 
@@ -46,7 +53,7 @@ class UpdateNewsRequest extends FormRequest
             'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
-            'image.max' => 'A imagem deve ter no máximo 5 MB.',
+            'images.max' => 'Esta submissão só pode ter '.Image::MAX_POR_SUBMISSAO.' imagens. Remove uma antes de acrescentar.',
         ];
     }
 }

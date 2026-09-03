@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Image;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +27,8 @@ class StoreNewsRequest extends FormRequest
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'min:100', 'max:1050', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:5120'],
             // 'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
             // honeypot: hidden field that must stay empty; bots tend to fill every field they find
             'website' => ['prohibited'],
@@ -38,7 +40,7 @@ class StoreNewsRequest extends FormRequest
             // exclude_without: sem imagem, a autorização nem sequer é avaliada.
             // Só 'accepted' não bastava — essa regra falha também quando o campo
             // está ausente, o que tornava a autorização obrigatória sempre.
-            'image_rights' => ['exclude_without:image', 'accepted'],
+            'image_rights' => ['exclude_without:images', 'accepted'],
         ];
     }
 
@@ -53,6 +55,10 @@ class StoreNewsRequest extends FormRequest
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
+            'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
+            'images.*.image' => 'Cada ficheiro tem de ser uma imagem.',
+            'images.*.mimes' => 'As imagens têm de ser jpg, jpeg ou png.',
+            'images.*.max' => 'Cada imagem deve ter no máximo 5MB.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
         ];
     }

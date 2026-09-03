@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -76,6 +77,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('noticias/{news}', [NewsController::class, 'update'])->name('news.update');
     Route::patch('noticias/{news}/aprovar', [NewsController::class, 'approve'])->name('news.approve');
     Route::patch('noticias/{news}/recusar', [NewsController::class, 'refuse'])->name('news.refuse');
+
+    // Remoção de uma imagem, partilhada por notícias e testemunhos (SCRUM-140)
+    Route::delete('imagens/{image}', [ImageController::class, 'destroy'])->name('images.destroy');
 
     // Gestão da agenda (SCRUM-100), incluindo as newsletters onde cada evento entra
     Route::resource('agenda', CalendarController::class)

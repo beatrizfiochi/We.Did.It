@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Image;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -34,7 +35,8 @@ class StoreTestimonialRequest extends FormRequest
             'description' => ['required', 'string', 'min:100', 'max:1050'],
             // a opção "Nenhuma" do formulário envia string vazia
             'category_id' => ['nullable', 'exists:categories,id'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:5120'],
             // honeypot: campo escondido que tem de vir vazio; os bots tendem a
             // preencher tudo o que encontram. Igual ao StoreNewsRequest.
             'website' => ['prohibited'],
@@ -46,7 +48,7 @@ class StoreTestimonialRequest extends FormRequest
             // exclude_without: sem imagem, a autorização nem sequer é avaliada.
             // Só 'accepted' não bastava — essa regra falha também quando o campo
             // está ausente, o que tornava a autorização obrigatória sempre.
-            'image_rights' => ['exclude_without:image', 'accepted'],
+            'image_rights' => ['exclude_without:images', 'accepted'],
         ];
     }
 
@@ -63,8 +65,10 @@ class StoreTestimonialRequest extends FormRequest
             'title.max' => 'O título deve ter entre 5 e 255 caracteres.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
-            'image.max' => 'A imagem deve ter no máximo 5 MB.',
-            'image.mimes' => 'A imagem tem de ser um ficheiro JPG ou PNG.',
+            'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
+            'images.*.image' => 'Cada ficheiro tem de ser uma imagem.',
+            'images.*.mimes' => 'As imagens têm de ser jpg, jpeg ou png.',
+            'images.*.max' => 'Cada imagem deve ter no máximo 5MB.',
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
         ];

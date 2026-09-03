@@ -18,6 +18,13 @@ class Testimonial extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable')
+            ->orderBy('order')
+            ->orderBy('id');
+    }
+
     public function newsletters()
     {
         return $this->belongsToMany(Newsletter::class, 'newsletter_testimonial', 'testimonial_id', 'newsletter_id')

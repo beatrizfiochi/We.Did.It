@@ -38,7 +38,7 @@ class CreateUserTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(
-            fn(Assert $page) => $page->component('Admin/Users/Index')
+            fn (Assert $page) => $page->component('Admin/Users/Index')
                 ->has('users', 4) // conta com o admin que os criou
         );
     }

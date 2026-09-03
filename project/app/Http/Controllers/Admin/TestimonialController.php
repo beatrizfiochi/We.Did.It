@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Concerns\ModeratesSubmissions;
+use App\Http\Controllers\Concerns\StoresImages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateTestimonialCategoryRequest;
 use App\Http\Requests\Admin\UpdateTestimonialRequest;
@@ -16,7 +17,7 @@ use Inertia\Response;
 
 class TestimonialController extends Controller
 {
-    use ModeratesSubmissions;
+    use ModeratesSubmissions, StoresImages;
 
     /**
      * List the submitted testimonials for moderation.
@@ -41,9 +42,15 @@ class TestimonialController extends Controller
      */
     public function update(UpdateTestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $data = $this->replaceImage($request->validated(), $request, $testimonial, 'testimonials');
+        // o status não vem nas rules: editar conteúdo não muda o estado
+        // 'images' fora: são ficheiros, quem os grava é o storeImages() a seguir
+        $data = $request->safe()->except(['images']);
 
         $testimonial->update($data);
+
+        if ($request->hasFile('images')) {
+            $this->storeImages($testimonial, $request->file('images'), 'testimonials');
+        }
 
         ActivityLog::record($testimonial, 'updated');
 
