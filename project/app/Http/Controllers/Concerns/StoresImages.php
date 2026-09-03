@@ -28,6 +28,11 @@ trait StoresImages
                 $paths[] = $file->store($folder, 'public');
             }
 
+            // as linhas e o espelho entram na mesma transação: se o espelho
+            // falhasse depois de as linhas estarem gravadas, o catch apagava
+            // os ficheiros e a base de dados ficava a apontar para ficheiros
+            // que já não existem. É alcançável pela moderação, que chama isto
+            // sem transação à volta, ao contrário dos formulários públicos.
             DB::transaction(function () use ($model, $paths) {
                 // continua a numeração em vez de recomeçar: assim isto também
                 // serve para acrescentar imagens a um registo que já tem
@@ -36,9 +41,9 @@ trait StoresImages
                 foreach ($paths as $path) {
                     $model->images()->create(['path' => $path, 'order' => ++$order]);
                 }
-            });
 
-            $this->syncImageMirror($model);
+                $this->syncImageMirror($model);
+            });
         } catch (Throwable $e) {
             // os ficheiros já estão no disco e as linhas não: sem isto ficavam
             // órfãos para sempre, sem nada na base de dados a apontar-lhes

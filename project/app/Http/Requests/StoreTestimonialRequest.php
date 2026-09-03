@@ -2,12 +2,15 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\ValidatesImages;
 use App\Models\Image;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTestimonialRequest extends FormRequest
 {
+    use ValidatesImages;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -36,7 +39,7 @@ class StoreTestimonialRequest extends FormRequest
             // a opção "Nenhuma" do formulário envia string vazia
             'category_id' => ['nullable', 'exists:categories,id'],
             'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            ...$this->imageRules(),
             // honeypot: campo escondido que tem de vir vazio; os bots tendem a
             // preencher tudo o que encontram. Igual ao StoreNewsRequest.
             'website' => ['prohibited'],
@@ -58,6 +61,7 @@ class StoreTestimonialRequest extends FormRequest
     public function messages(): array
     {
         return [
+            ...$this->imageMessages(),
             'name.required' => 'O nome é obrigatório.',
             'email.required' => 'O email é obrigatório.',
             'email.email' => 'Indica um email válido.',
@@ -66,9 +70,6 @@ class StoreTestimonialRequest extends FormRequest
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
-            'images.*.image' => 'Cada ficheiro tem de ser uma imagem.',
-            'images.*.mimes' => 'As imagens têm de ser jpg, jpeg ou png.',
-            'images.*.max' => 'Cada imagem deve ter no máximo 5MB.',
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
         ];

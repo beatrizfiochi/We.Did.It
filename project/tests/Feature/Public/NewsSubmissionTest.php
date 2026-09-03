@@ -173,6 +173,26 @@ class NewsSubmissionTest extends TestCase
         Storage::disk('public')->assertDirectoryEmpty('news');
     }
 
+    /**
+     * O campo chamava-se 'image' antes da SCRUM-140.
+     *
+     * Enquanto o servidor se limitava a ignorá-lo, um formulário desatualizado
+     * submetia com sucesso e a fotografia desaparecia sem erro nenhum — e o
+     * consentimento de imagem deixava de ser avaliado, porque o
+     * exclude_without:images não encontrava o campo.
+     */
+    public function test_the_old_singular_field_is_rejected_instead_of_ignored(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('news.store'), $this->validPayload([
+            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'image_rights' => 'on',
+        ]))->assertSessionHasErrors('image');
+
+        $this->assertDatabaseCount('news', 0);
+    }
+
     public function test_the_consents_are_not_stored(): void
     {
         $this->post(route('news.store'), $this->validPayload());
