@@ -71,9 +71,28 @@ export default function NewsletterTemplate({ newsletter }) {
     const periodEnd = formatDate(newsletter.period_end);
     const newsletterDate = formatDate(newsletter.date);
 
+    /*
+     * print:!px-8 no cabeçalho, no corpo e no rodapé — não px-0.
+     *
+     * A margem do @page é a da folha; este padding é o ar dentro da faixa
+     * escura do cabeçalho. Com px-0 o título ficava colado ao bordo do azul,
+     * que era o que parecia cortado na impressão.
+     *
+     * O "!" é preciso porque em impressão a largura útil da folha (~700px)
+     * ainda é maior do que o breakpoint sm, portanto o sm:px-10 continua a
+     * aplicar-se e colide com esta regra. Sem o !important, quem ganha
+     * depende da ordem em que o Tailwind emite as duas — e essa ordem não é
+     * a mesma no npm run dev e no build, ou seja, imprimia diferente
+     * conforme o sítio.
+     *
+     * print:!mt-0 no <article>: o space-y-6 do Preview.jsx põe margem no
+     * segundo filho, e o primeiro (a barra de ações) é print:hidden mas
+     * continua a contar para o seletor. Sem isto, a primeira página começava
+     * 6 mm mais abaixo do que todas as outras.
+     */
     return (
-        <article className="newsletter-document overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 print:rounded-none print:shadow-none print:ring-0">
-            <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10 print:px-0">
+        <article className="newsletter-document overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 print:!mt-0 print:rounded-none print:shadow-none print:ring-0">
+            <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10 print:!px-8">
                 <div className="max-w-3xl">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">
                         Newsletter interna
@@ -114,7 +133,7 @@ export default function NewsletterTemplate({ newsletter }) {
                 </div>
             </header>
 
-            <div className="space-y-10 px-6 py-8 sm:px-10 sm:py-10 print:px-0 print:py-6">
+            <div className="space-y-10 px-6 py-8 sm:px-10 sm:py-10 print:!px-8 print:!py-6">
                 <Section title="Notícias" eyebrow="Atualizações">
                     {news.length === 0 ? (
                         <EmptyMessage>Sem notícias selecionadas.</EmptyMessage>
@@ -271,7 +290,7 @@ export default function NewsletterTemplate({ newsletter }) {
                 </Section>
             </div>
 
-            <footer className="border-t border-gray-200 bg-gray-50 px-6 py-5 text-sm text-gray-500 sm:px-10 print:px-0">
+            <footer className="border-t border-gray-200 bg-gray-50 px-6 py-5 text-sm text-gray-500 sm:px-10 print:!px-8">
                 We.Did.It · {newsletter.title} — edição {newsletter.edition}
             </footer>
         </article>
