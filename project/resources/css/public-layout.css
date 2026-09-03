@@ -129,11 +129,17 @@
 @media (max-width: 768px) {
     .public-nav {
         gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .public-links {
         gap: 14px;
-        overflow-x: auto;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow-x: visible;
+        white-space: normal;
     }
 
     .public-links a {
