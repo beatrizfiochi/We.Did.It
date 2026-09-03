@@ -54,31 +54,34 @@ export default function DataTable({
 
             <div className="divide-y divide-gray-200 sm:hidden">
                 {rows.map((row, rowIndex) => (
-                    <article key={row.id ?? rowIndex} className="p-4">
-                        <dl className="space-y-3">
-                        {columns.map((column) => (
-                            <div
-                                key={column.key}
-                                className={
-                                    column.label
-                                        ? 'grid grid-cols-[7rem_minmax(0,1fr)] gap-3 text-sm'
-                                        : 'text-sm'
-                                }
-                            >
-                                {column.label && (
-                                    <dt className="font-semibold uppercase tracking-wide text-gray-500">
-                                        {column.label}
-                                    </dt>
-                                )}
+                    <article key={row.id ?? rowIndex} className="space-y-3 p-4">
+                        {columns.map((column) => {
+                            const content = column.render
+                                ? column.render(row)
+                                : row[column.key];
 
-                                <dd className="min-w-0 break-words text-gray-800">
-                                    {column.render
-                                        ? column.render(row)
-                                        : row[column.key]}
-                                </dd>
-                            </div>
-                        ))}
-                        </dl>
+                            if (!column.label) {
+                                return (
+                                    <div key={column.key} className="text-sm text-gray-800">
+                                        {content}
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <dl key={column.key}>
+                                    <div className="grid grid-cols-[7rem_minmax(0,1fr)] gap-3 text-sm">
+                                        <dt className="font-semibold uppercase tracking-wide text-gray-500">
+                                            {column.label}
+                                        </dt>
+
+                                        <dd className="min-w-0 break-words text-gray-800">
+                                            {content}
+                                        </dd>
+                                    </div>
+                                </dl>
+                            );
+                        })}
                     </article>
                 ))}
             </div>

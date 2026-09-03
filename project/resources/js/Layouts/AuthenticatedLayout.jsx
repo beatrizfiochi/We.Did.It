@@ -92,7 +92,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <header className="border-b border-gray-200 bg-white print:hidden">
-                        <div className="flex min-h-16 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+                        <div className="flex min-h-16 items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:h-16 lg:px-8 lg:py-0">
                             <div className="flex min-w-0 flex-1 items-center gap-4">
                                 <button
                                     type="button"
@@ -129,6 +129,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Área de administração
                                     </p>
 
+                                    {/* Mobile precisa quebrar títulos longos; em ecrãs maiores pode truncar. */}
                                     <div className="text-lg font-semibold leading-tight text-gray-900 sm:truncate">
                                         {header ?? 'Painel Administrativo'}
                                     </div>
