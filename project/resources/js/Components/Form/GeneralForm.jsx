@@ -158,8 +158,19 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                 <div className="mb-3 flex items-start gap-2">
                                     <input type="checkbox" className={checkboxClass} id="terms-conditions" name="terms_conditions" />
                                     <div>
+                                        {/* este componente serve os formulários de notícias e de
+                                            testemunhos — o link à Política de Privacidade cobre os dois
+                                            pedidos do cliente de uma vez (SCRUM-138) */}
                                         <label className="text-sm text-gray-700" htmlFor="terms-conditions">
-                                            Aceito a Política de Privacidade.
+                                            Aceito a{' '}
+                                            <a
+                                                href="https://www.cesaedigital.pt/fldrSite/pages/privacyPolicy.aspx"
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="font-semibold text-indigo-600 hover:text-indigo-800"
+                                            >
+                                                Política de Privacidade
+                                            </a>.
                                         </label>
                                         {errors.terms_conditions && (
                                             <small className={errorClass}>{errors.terms_conditions}</small>
