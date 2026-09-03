@@ -49,7 +49,7 @@ class SubmissionNotificationTest extends TestCase
 
         Mail::assertSent(
             NewSubmissionReceived::class,
-            fn(NewSubmissionReceived $mail) => $mail->hasTo($manager->email)
+            fn (NewSubmissionReceived $mail) => $mail->hasTo($manager->email)
                 && $mail->type === 'Testemunho'
                 && $mail->authorName === 'Maria Silva',
         );
@@ -64,7 +64,7 @@ class SubmissionNotificationTest extends TestCase
 
         Mail::assertSent(
             NewSubmissionReceived::class,
-            fn(NewSubmissionReceived $mail) => $mail->hasTo($manager->email)
+            fn (NewSubmissionReceived $mail) => $mail->hasTo($manager->email)
                 && $mail->type === 'Notícia'
                 // as notícias não têm autor
                 && $mail->authorName === null,
@@ -83,7 +83,7 @@ class SubmissionNotificationTest extends TestCase
         Mail::assertSentCount(1);
         Mail::assertSent(
             NewSubmissionReceived::class,
-            fn(NewSubmissionReceived $mail) => $mail->hasTo($first->email)
+            fn (NewSubmissionReceived $mail) => $mail->hasTo($first->email)
                 && $mail->hasTo($second->email),
         );
     }
@@ -98,7 +98,7 @@ class SubmissionNotificationTest extends TestCase
 
         Mail::assertSent(
             NewSubmissionReceived::class,
-            fn(NewSubmissionReceived $mail) => $mail->hasTo($active->email)
+            fn (NewSubmissionReceived $mail) => $mail->hasTo($active->email)
                 && ! $mail->hasTo($inactive->email),
         );
     }
