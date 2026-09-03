@@ -13,16 +13,33 @@
 
 @page {
     /*
-     * Margem única do documento, igual nos quatro lados e em todas as páginas.
-     * O padding lateral do <article> é anulado com print:px-0 no template, por
-     * isso esta é a única margem que conta — não há nada a somar-se-lhe.
+     * 2.5 cm em cima e em baixo, 1.5 cm dos lados.
+     *
+     * Não é simetria por acaso. Nos lados, 1.5 cm é onde a faixa escura do
+     * cabeçalho encosta: o <article> não tem padding, o fundo colorido vai
+     * de margem a margem, e o ar à volta do texto vem do print:!px-8 no
+     * NewsletterTemplate — 1.5 + 0.8 = 2.3 cm até à letra.
+     *
+     * Em cima e em baixo não há esse padding a somar-se: a partir da segunda
+     * página o conteúdo recomeça rente à margem.
+     *
+     * Os 2.5 cm são maiores do que parecem precisos porque o topo de uma
+     * página tanto pode ser texto como uma fotografia. Uma linha de texto
+     * traz ar próprio — a altura da linha acima das letras — e uma foto que
+     * enche o cartão de bordo a bordo não traz nenhum: com a mesma margem, a
+     * foto parece colada e o texto não. Os 2.5 cm são o número em que a foto
+     * respira; para o texto sobra um pouco, e isso não se nota.
+     *
+     * Não custam página nenhuma: o documento dá as mesmas cinco com 2, 2.5
+     * ou 3 cm. Medido, não estimado — a altura que se perde é a do espaço
+     * que já sobrava no fundo das páginas.
      *
      * O cabeçalho e o rodapé do browser (data, título, URL, numeração) não se
      * escondem por aqui: desligam-se em "Cabeçalhos e rodapés" na caixa de
      * impressão, que é o que o Preview.jsx diz ao gestor para fazer. Importa
      * porque o PDF vai por email para a organização.
      */
-    margin: 1.5cm;
+    margin: 2.5cm 1.5cm;
 }
 
 @media print {
