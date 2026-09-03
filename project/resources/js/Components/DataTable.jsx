@@ -60,7 +60,7 @@ export default function DataTable({
                                 ? column.render(row)
                                 : row[column.key];
 
-                            if (!column.label) {
+                            if (!column.label || column.key === 'actions') {
                                 return (
                                     <div key={column.key} className="text-sm text-gray-800">
                                         {content}

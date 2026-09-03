@@ -129,7 +129,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Área de administração
                                     </p>
 
-                                    {/* Mobile precisa quebrar títulos longos; em ecrãs maiores pode truncar. */}
+                                    {/* Em mobile o título quebra; a partir de 640px pode truncar. */}
                                     <div className="text-lg font-semibold leading-tight text-gray-900 sm:truncate">
                                         {header ?? 'Painel Administrativo'}
                                     </div>
