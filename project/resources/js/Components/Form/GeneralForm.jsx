@@ -91,11 +91,15 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                 <input
                                                     className={inputClass}
                                                     type="file"
-                                                    // key changes (0 → 1) so React treats this as a new input, not the old one 
+                                                    // key changes (0 → 1) so React treats this as a new input, not the old one
                                                     // it deletes the old DOM node (with the file inside) and mounts a fresh, empty one
                                                     key={fileInputKey}
                                                     accept="image/jpg,image/jpeg,image/png"
-                                                    name={item.name}
+                                                    multiple
+                                                    // o [] é o que faz o campo chegar ao servidor como array, que é o
+                                                    // que as regras 'images' e 'images.*' esperam (SCRUM-140). Sem ele
+                                                    // o ficheiro chegava com o nome antigo e era descartado em silêncio
+                                                    name={`${item.name}[]`}
                                                     onChange={handleFileChange}
                                                 />
                                                 // if type is a textarea sets sizing rules 
@@ -124,8 +128,14 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                             {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagem</button></div>}
 
                                         </div>
-                                        {/* if there is an error associated to item, it shows under input */}
-                                        {errors[item.name] && <small className={errorClass}>{errors[item.name]}</small>}
+                                        {/* Os erros de ficheiro chegam por posição — images.0, images.1 —
+                                            além do erro do conjunto, em images. Mostrar só errors[item.name]
+                                            deixava o utilizador a escolher um PDF e a não ver aviso nenhum. */}
+                                        {Object.entries(errors)
+                                            .filter(([key]) => key === item.name || key.startsWith(`${item.name}.`))
+                                            .map(([key, message]) => (
+                                                <small key={key} className={errorClass}>{message}</small>
+                                            ))}
                                     </div>
                                 ))}
 

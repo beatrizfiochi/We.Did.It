@@ -14,7 +14,7 @@ export default function InsertForm({ categories }) {
             { name: 'title', label: 'Título', type: 'text' },
             { name: 'description', label: 'Descrição', type: 'textarea' },
             { name: 'category_id', label: 'Categoria', type: 'select' },
-            { name: 'image', label: 'Imagem', type: 'file' },
+            { name: 'images', label: 'Imagens (até 3)', type: 'file' },
         ]
 
 
@@ -33,7 +33,9 @@ export default function InsertForm({ categories }) {
         const name = dataForm.get('name')
         const title = dataForm.get('title')
         const description = dataForm.get('description')
-        const image = dataForm.get('image')
+        // getAll e não get: o campo é images[] e pode trazer até 3. Um input de
+        // ficheiro vazio ainda submete uma entrada de tamanho 0, daí o filtro
+        const images = dataForm.getAll('images[]').filter((file) => file.size > 0)
 
         const image_rights = dataForm.get('image_rights'); // to be checked in case of uploaded image
         const terms_conditions = dataForm.get('terms_conditions');
@@ -61,8 +63,16 @@ export default function InsertForm({ categories }) {
             newErrors['description'] = "A Descrição deve ter entre 100 e 1050 caracteres."
         }
 
-        // if image was picked, needs to check image rights checkmark
-        if (image && image.size > 0) {
+        // if images were picked, needs to check image rights checkmark
+        if (images.length > 0) {
+            // os três limites espelham o StoreTestimonialRequest: max:3 no
+            // conjunto, max:5120 (5 MB) por ficheiro
+            if (images.length > 3) {
+                newErrors['images'] = "Podes enviar no máximo 3 imagens."
+            } else if (images.some((file) => file.size > 5 * 1024 * 1024)) {
+                newErrors['images'] = "Cada imagem deve ter no máximo 5 MB."
+            }
+
             if (!image_rights) {
                 newErrors['image_rights'] = "É necessário autorizar a utilização da imagem.";
             }
