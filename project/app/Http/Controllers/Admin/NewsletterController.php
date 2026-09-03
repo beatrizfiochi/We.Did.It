@@ -140,6 +140,12 @@ class NewsletterController extends Controller
             // Uma newsletter publicada deixa de poder ser editada (SCRUM-116),
             // por isso o updated_at fica congelado no instante da publicação e
             // serve de data de publicação sem ser preciso uma coluna nova.
+            //
+            // Isto depende do bloqueio da 116 e de mais nada. Se um dia deixarmos
+            // editar uma publicada — corrigir uma gralha antes de reenviar, por
+            // exemplo — o updated_at passa a ser a data da correção e esta linha
+            // começa a mentir sem dar erro. Nessa altura tem de passar a coluna
+            // própria (published_at), preenchida no publish().
             'publishedAt' => $newsletter->is_draft ? null : $newsletter->updated_at,
         ]);
     }
