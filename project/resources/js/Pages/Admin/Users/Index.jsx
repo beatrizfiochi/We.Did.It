@@ -63,19 +63,13 @@ export default function Index({ users }) {
                 </PrimaryButton>
             </div>
 
-            <div className="flex justify-center mt-5">
-
-                <section className="w-full max-w-2xl">
-
-
-                    <DataTable
-                        columns={columns}
-                        rows={users} // shows according to what is set in the filter areas
-                        emptyTitle="Ainda não há administradores"
-                        emptyDescription="Cria o primeiro administrador no botão acima."
-                    />
-                </section>
-
+            <div className="mt-5">
+                <DataTable
+                    columns={columns}
+                    rows={users} // shows according to what is set in the filter areas
+                    emptyTitle="Ainda não há administradores"
+                    emptyDescription="Cria o primeiro administrador no botão acima."
+                />
             </div>
 
             <Modal
