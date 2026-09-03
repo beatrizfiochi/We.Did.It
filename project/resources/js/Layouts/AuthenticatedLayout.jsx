@@ -129,8 +129,13 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Área de administração
                                     </p>
 
-                                    {/* Em mobile o título quebra; a partir de 640px pode truncar. */}
-                                    <div className="text-lg font-semibold leading-tight text-gray-900 sm:truncate">
+                                    {/* Em mobile o título quebra; a partir de 640px pode truncar.
+
+                                        O break-words não é decoração: sem truncate a caixa
+                                        deixa de cortar, e um título de uma palavra só —
+                                        "Administradores" — não tem onde quebrar e passa por
+                                        baixo do botão do utilizador. */}
+                                    <div className="break-words text-lg font-semibold leading-tight text-gray-900 sm:truncate">
                                         {header ?? 'Painel Administrativo'}
                                     </div>
                                 </div>
