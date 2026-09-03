@@ -68,11 +68,11 @@ export default function InsertForm({ categories }) {
 
     return (
         <PublicLayout>
-            <Head title="Inserir uma notícia" />
+            <Head title="Adicionar notícia" />
 
             <div>
                 <GeneralForm
-                    formTitle="Inserir uma Notícia"
+                    formTitle="Adicionar Notícia"
                     formMethod="POST"
                     formAction={route('news.store')}
                     fields={fields}
