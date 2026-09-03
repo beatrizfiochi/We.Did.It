@@ -108,10 +108,8 @@ class TestimonialSubmissionTest extends TestCase
     {
         Storage::fake('public');
 
-        // create() com o mime à mão em vez de image(): o image() precisa da
-        // extensão GD, que não está instalada, e a validação olha para o mime
         $this->post(route('testimonials.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->create('testemunho.jpg', 100, 'image/jpeg'),
+            'images' => [UploadedFile::fake()->create('testemunho.jpg', 100, 'image/jpeg')],
             'image_rights' => 'on',
         ]))->assertSessionHasNoErrors();
 
@@ -126,8 +124,8 @@ class TestimonialSubmissionTest extends TestCase
         Storage::fake('public');
 
         $this->post(route('testimonials.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf'),
-        ]))->assertSessionHasErrors('image');
+            'images' => [UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf')],
+        ]))->assertSessionHasErrors('images.0');
 
         $this->assertDatabaseCount('testimonials', 0);
     }
@@ -137,8 +135,8 @@ class TestimonialSubmissionTest extends TestCase
         Storage::fake('public');
 
         $this->post(route('testimonials.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->create('grande.jpg', 5121, 'image/jpeg'),
-        ]))->assertSessionHasErrors('image');
+            'images' => [UploadedFile::fake()->create('grande.jpg', 5121, 'image/jpeg')],
+        ]))->assertSessionHasErrors('images.0');
     }
 
     public function test_the_honeypot_field_blocks_the_submission(): void
@@ -191,7 +189,7 @@ class TestimonialSubmissionTest extends TestCase
         Storage::fake('public');
 
         $this->post(route('testimonials.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'images' => [UploadedFile::fake()->image('foto.jpg')],
         ]))->assertSessionHasErrors('image_rights');
 
         $this->assertDatabaseCount('testimonials', 0);
@@ -202,11 +200,15 @@ class TestimonialSubmissionTest extends TestCase
         Storage::fake('public');
 
         $this->post(route('testimonials.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'images' => [UploadedFile::fake()->image('foto.jpg')],
             'image_rights' => 'on',
         ]))->assertSessionHasNoErrors();
 
-        $this->assertDatabaseCount('testimonials', 1);
+        $testimonial = Testimonial::first();
+
+        $this->assertNotNull($testimonial);
+        $this->assertSame(1, $testimonial->images()->count());
+        $this->assertSame($testimonial->images()->value('path'), $testimonial->image);
     }
 
     public function test_the_consents_are_not_stored(): void

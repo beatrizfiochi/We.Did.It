@@ -94,7 +94,7 @@ class NewsSubmissionTest extends TestCase
         Storage::fake('public');
 
         $this->post(route('news.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'images' => [UploadedFile::fake()->image('foto.jpg')],
         ]))->assertSessionHasErrors('image_rights');
 
         $this->assertDatabaseCount('news', 0);
@@ -105,11 +105,92 @@ class NewsSubmissionTest extends TestCase
         Storage::fake('public');
 
         $this->post(route('news.store'), $this->validPayload([
-            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'images' => [UploadedFile::fake()->image('foto.jpg')],
             'image_rights' => 'on',
         ]))->assertSessionHasNoErrors();
 
-        $this->assertDatabaseCount('news', 1);
+        $news = News::first();
+
+        $this->assertNotNull($news);
+        $this->assertSame(1, $news->images()->count());
+        $this->assertSame($news->images()->value('path'), $news->image);
+    }
+
+    public function test_up_to_three_images_are_stored_in_order(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('news.store'), $this->validPayload([
+            'images' => [
+                UploadedFile::fake()->image('a.jpg'),
+                UploadedFile::fake()->image('b.jpg'),
+                UploadedFile::fake()->image('c.jpg'),
+            ],
+            'image_rights' => 'on',
+        ]))->assertSessionHasNoErrors();
+
+        $news = News::first();
+
+        $this->assertSame(3, $news->images()->count());
+        $this->assertSame([1, 2, 3], $news->images()->orderBy('order')->pluck('order')->all());
+        // a coluna antiga continua a espelhar a primeira, para os ecrãs que ainda a leem
+        $this->assertSame($news->images()->orderBy('order')->value('path'), $news->image);
+    }
+
+    public function test_a_fourth_image_is_rejected(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('news.store'), $this->validPayload([
+            'images' => [
+                UploadedFile::fake()->image('a.jpg'),
+                UploadedFile::fake()->image('b.jpg'),
+                UploadedFile::fake()->image('c.jpg'),
+                UploadedFile::fake()->image('d.jpg'),
+            ],
+            'image_rights' => 'on',
+        ]))->assertSessionHasErrors('images');
+
+        $this->assertDatabaseCount('news', 0);
+    }
+
+    public function test_an_invalid_file_among_valid_ones_rejects_the_whole_submission(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('news.store'), $this->validPayload([
+            'images' => [
+                UploadedFile::fake()->image('a.jpg'),
+                UploadedFile::fake()->create('b.pdf', 100, 'application/pdf'),
+                UploadedFile::fake()->image('c.jpg'),
+            ],
+            'image_rights' => 'on',
+        ]))->assertSessionHasErrors('images.1');
+
+        $this->assertDatabaseCount('news', 0);
+        // nenhum dos três ficheiros pode ficar órfão no disco: a validação
+        // falha antes de o storeImages() correr, por isso nada devia ter sido gravado
+        Storage::disk('public')->assertDirectoryEmpty('news');
+    }
+
+    /**
+     * O campo chamava-se 'image' antes da SCRUM-140.
+     *
+     * Enquanto o servidor se limitava a ignorá-lo, um formulário desatualizado
+     * submetia com sucesso e a fotografia desaparecia sem erro nenhum — e o
+     * consentimento de imagem deixava de ser avaliado, porque o
+     * exclude_without:images não encontrava o campo.
+     */
+    public function test_the_old_singular_field_is_rejected_instead_of_ignored(): void
+    {
+        Storage::fake('public');
+
+        $this->post(route('news.store'), $this->validPayload([
+            'image' => UploadedFile::fake()->image('foto.jpg'),
+            'image_rights' => 'on',
+        ]))->assertSessionHasErrors('image');
+
+        $this->assertDatabaseCount('news', 0);
     }
 
     public function test_the_consents_are_not_stored(): void

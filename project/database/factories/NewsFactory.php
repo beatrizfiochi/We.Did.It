@@ -21,4 +21,28 @@ class NewsFactory extends Factory
             'status' => fake()->randomElement(['received', 'received', 'received', 'accepted', 'accepted', 'refused']),
         ];
     }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (News $news) {
+            // mantém a coluna antiga e a tabela nova a dizer o mesmo:
+            // é o estado em que a migração de dados deixa a produção
+            if ($news->image) {
+                $news->images()->create(['path' => $news->image, 'order' => 1]);
+            }
+        });
+    }
+
+    public function withImages(int $count = 3): static
+    {
+        return $this->state(['image' => null])->afterCreating(function (News $news) use ($count) {
+            $paths = collect(range(1, $count))->map(fn ($order) => [
+                'path' => 'news/'.fake()->uuid().'.jpg',
+                'order' => $order,
+            ]);
+
+            $news->images()->createMany($paths->all());
+            $news->update(['image' => $paths->first()['path']]);
+        });
+    }
 }

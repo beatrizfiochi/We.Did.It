@@ -128,21 +128,124 @@ class NewsModerationTest extends TestCase
         $this->assertSame('received', $news->fresh()->status);
     }
 
-    public function test_a_new_image_replaces_the_old_one_on_disk(): void
+    public function test_a_new_image_is_added_alongside_the_existing_one(): void
     {
         Storage::fake('public');
         Storage::disk('public')->put('news/antiga.jpg', 'conteudo');
 
+        // a factory já cria a linha em images sozinha quando 'image' vem preenchido
         $news = News::factory()->create(['image' => 'news/antiga.jpg']);
+
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
+            ]))
+            ->assertSessionHasNoErrors();
+
+        // já não se substitui, acrescenta-se: a antiga fica, a nova entra
+        Storage::disk('public')->assertExists('news/antiga.jpg');
+        $this->assertSame(2, $news->fresh()->images()->count());
+    }
+
+    /**
+     * As linhas em images e a coluna espelho têm de entrar juntas.
+     *
+     * A moderação chama o storeImages() sem transação à volta, ao contrário
+     * dos formulários públicos — se o espelho falhasse depois das linhas já
+     * gravadas, ficavam linhas a apontar para ficheiros que o catch apagou.
+     */
+    public function test_a_failure_writing_the_mirror_rolls_back_the_images(): void
+    {
+        Storage::fake('public');
+        $this->withoutExceptionHandling();
+
+        $news = News::factory()->create(['image' => null]);
+
+        // 1ª escrita: o update do conteúdo no controlador.
+        // 2ª escrita: o syncImageMirror, que é o que queremos ver falhar.
+        $escritas = 0;
+        News::updating(function () use (&$escritas) {
+            $escritas++;
+
+            if ($escritas === 2) {
+                throw new \RuntimeException('falha simulada ao gravar o espelho');
+            }
+        });
+
+        try {
+            $this->actingAs(User::factory()->create())
+                ->put(route('admin.news.update', $news), $this->validPayload([
+                    'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
+                ]));
+
+            $this->fail('A exceção do espelho devia ter subido.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('falha simulada ao gravar o espelho', $e->getMessage());
+        }
+
+        $this->assertSame(2, $escritas);
+        $this->assertSame(0, $news->fresh()->images()->count());
+        $this->assertNull($news->fresh()->image);
+        Storage::disk('public')->assertDirectoryEmpty('news');
+    }
+
+    /**
+     * As mensagens por ficheiro estavam traduzidas só nas submissões públicas,
+     * e um moderador que anexasse um PDF via o inglês do Laravel, com o nome
+     * cru do campo: "The images.0 field must be an image."
+     */
+    public function test_the_per_file_messages_are_in_portuguese(): void
+    {
+        Storage::fake('public');
+
+        $news = News::factory()->create(['image' => null]);
+
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'images' => [UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf')],
+            ]))
+            ->assertSessionHasErrors('images.0');
+
+        $this->assertContains(
+            'Cada ficheiro tem de ser uma imagem.',
+            session('errors')->get('images.0'),
+        );
+    }
+
+    /** O campo chamava-se 'image' antes da SCRUM-140: recusa em vez de ignorar. */
+    public function test_the_old_singular_field_is_rejected_instead_of_ignored(): void
+    {
+        Storage::fake('public');
+
+        $news = News::factory()->create(['image' => null]);
 
         $this->actingAs(User::factory()->create())
             ->put(route('admin.news.update', $news), $this->validPayload([
                 'image' => UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg'),
             ]))
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasErrors('image');
 
-        Storage::disk('public')->assertMissing('news/antiga.jpg');
-        Storage::disk('public')->assertExists($news->fresh()->image);
+        $this->assertSame(0, $news->fresh()->images()->count());
+    }
+
+    public function test_the_limit_counts_images_already_saved(): void
+    {
+        Storage::fake('public');
+
+        // 3 já gravadas: não sobra nenhuma vaga
+        $news = News::factory()->withImages(3)->create();
+
+        $response = $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
+            ]));
+
+        $response->assertSessionHasErrors('images');
+        $this->assertSame(
+            'Esta submissão só pode ter 3 imagens. Remove uma antes de acrescentar.',
+            session('errors')->get('images')[0],
+        );
+        $this->assertSame(3, $news->fresh()->images()->count());
     }
 
     public function test_updating_without_an_image_keeps_the_current_one(): void

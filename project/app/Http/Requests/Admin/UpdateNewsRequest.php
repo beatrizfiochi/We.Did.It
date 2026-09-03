@@ -2,11 +2,15 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\ValidatesImages;
+use App\Models\Image;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateNewsRequest extends FormRequest
 {
+    use ValidatesImages;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,11 +30,17 @@ class UpdateNewsRequest extends FormRequest
      */
     public function rules(): array
     {
+        // as que já lá estão contam: o limite é o total da submissão, não o
+        // número de ficheiros deste pedido
+        $existing = $this->route('news')->images()->count();
+        $available = max(0, Image::MAX_POR_SUBMISSAO - $existing);
+
         return [
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'string', 'min:100', 'max:1050'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'images' => ['nullable', 'array', 'max:'.$available],
+            ...$this->imageRules(),
         ];
     }
 
@@ -40,13 +50,14 @@ class UpdateNewsRequest extends FormRequest
     public function messages(): array
     {
         return [
+            ...$this->imageMessages(),
             'title.required' => 'O título é obrigatório.',
             'title.min' => 'O título deve ter entre 5 e 255 caracteres.',
             'title.max' => 'O título deve ter entre 5 e 255 caracteres.',
             'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
-            'image.max' => 'A imagem deve ter no máximo 5 MB.',
+            'images.max' => 'Esta submissão só pode ter '.Image::MAX_POR_SUBMISSAO.' imagens. Remove uma antes de acrescentar.',
         ];
     }
 }

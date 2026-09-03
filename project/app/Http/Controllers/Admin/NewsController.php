@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Concerns\ModeratesSubmissions;
+use App\Http\Controllers\Concerns\StoresImages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateNewsRequest;
 use App\Models\ActivityLog;
@@ -15,7 +16,7 @@ use Inertia\Response;
 
 class NewsController extends Controller
 {
-    use ModeratesSubmissions;
+    use ModeratesSubmissions, StoresImages;
 
     /**
      * List the submitted news for moderation.
@@ -41,9 +42,14 @@ class NewsController extends Controller
     public function update(UpdateNewsRequest $request, News $news): RedirectResponse
     {
         // o status não vem nas rules: editar conteúdo não muda o estado
-        $data = $this->replaceImage($request->validated(), $request, $news, 'news');
+        // 'images' fora: são ficheiros, quem os grava é o storeImages() a seguir
+        $data = $request->safe()->except(['images']);
 
         $news->update($data);
+
+        if ($request->hasFile('images')) {
+            $this->storeImages($news, $request->file('images'), 'news');
+        }
 
         ActivityLog::record($news, 'updated');
 

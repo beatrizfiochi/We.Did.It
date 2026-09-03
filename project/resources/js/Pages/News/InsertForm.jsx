@@ -12,7 +12,7 @@ export default function InsertForm({ categories }) {
             { name: 'title', label: 'Título', type: 'text' },
             { name: 'description', label: 'Descrição', type: 'textarea' },
             { name: 'category_id', label: 'Categoria', type: 'select' },
-            { name: 'image', label: 'Imagem', type: 'file' },
+            { name: 'images', label: 'Imagens (até 3)', type: 'file' },
         ]
 
     const [clientErrors, setClientErrors] = useState({})
@@ -27,7 +27,9 @@ export default function InsertForm({ categories }) {
 
         const title = dataForm.get('title')
         const description = dataForm.get('description')
-        const image = dataForm.get('image')
+        // getAll e não get: o campo é images[] e pode trazer até 3. Um input de
+        // ficheiro vazio ainda submete uma entrada de tamanho 0, daí o filtro
+        const images = dataForm.getAll('images[]').filter((file) => file.size > 0)
 
         const image_rights = dataForm.get('image_rights')
         const terms_conditions = dataForm.get('terms_conditions')
@@ -42,10 +44,13 @@ export default function InsertForm({ categories }) {
             newErrors['description'] = "A Descrição deve ter entre 100 e 1050 caracteres."
         }
 
-        if (image && image.size > 0) {
-            // igual ao max:2048 do StoreNewsRequest
-            if (image.size > 2 * 1024 * 1024) {
-                newErrors['image'] = "A imagem deve ter no máximo 2 MB."
+        if (images.length > 0) {
+            // os três limites espelham o StoreNewsRequest: max:3 no conjunto,
+            // max:5120 (5 MB) por ficheiro
+            if (images.length > 3) {
+                newErrors['images'] = "Podes enviar no máximo 3 imagens."
+            } else if (images.some((file) => file.size > 5 * 1024 * 1024)) {
+                newErrors['images'] = "Cada imagem deve ter no máximo 5 MB."
             }
 
             if (!image_rights) {

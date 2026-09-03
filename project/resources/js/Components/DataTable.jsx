@@ -52,6 +52,15 @@ export default function DataTable({
                 </table>
             </div>
 
+            {/*
+                Abaixo dos 640px a tabela dá lugar a cartões: seis colunas não
+                encolhem num telemóvel.
+
+                Depende de a coluna de ações se chamar 'actions' — é a chave que
+                faz os botões saírem sem etiqueta ao lado. Uma coluna de ações
+                com outro nome fica com os botões dentro de um <dl>, e só no
+                telemóvel, que é onde ninguém olha primeiro.
+            */}
             <div className="divide-y divide-gray-200 sm:hidden">
                 {rows.map((row, rowIndex) => (
                     <article key={row.id ?? rowIndex} className="space-y-3 p-4">
@@ -59,6 +68,13 @@ export default function DataTable({
                             const content = column.render
                                 ? column.render(row)
                                 : row[column.key];
+
+                            // numa tabela uma célula vazia não se nota; num cartão
+                            // fica uma linha inteira só com a etiqueta, e lê-se como
+                            // se a página não tivesse carregado
+                            if (content === null || content === undefined || content === '') {
+                                return null;
+                            }
 
                             if (!column.label || column.key === 'actions') {
                                 return (
