@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Newsletter;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -118,6 +119,23 @@ class NewsletterPublishTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.newsletters.preview', $newsletter))
             ->assertOk();
+    }
+
+    /**
+     * A pré-visualização de uma publicada avisa o gestor de que o PDF é gerado
+     * dos conteúdos atuais (SCRUM-122). Nos rascunhos não há aviso.
+     */
+    public function test_the_preview_marks_a_published_newsletter_with_its_publish_date(): void
+    {
+        $admin = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->get(route('admin.newsletters.preview', Newsletter::factory()->create()))
+            ->assertInertia(fn (Assert $page) => $page->where('publishedAt', null));
+
+        $this->actingAs($admin)
+            ->get(route('admin.newsletters.preview', Newsletter::factory()->published()->create()))
+            ->assertInertia(fn (Assert $page) => $page->whereNot('publishedAt', null));
     }
 
     public function test_the_listing_shows_drafts_and_published_alike(): void

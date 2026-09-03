@@ -72,7 +72,7 @@ export default function NewsletterTemplate({ newsletter }) {
     const newsletterDate = formatDate(newsletter.date);
 
     return (
-        <article className="newsletter-document overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 print:rounded-none print:shadow-none print:ring-0 print:px-[1cm]">
+        <article className="newsletter-document overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 print:rounded-none print:shadow-none print:ring-0">
             <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10 print:px-0">
                 <div className="max-w-3xl">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">
