@@ -1,6 +1,4 @@
-{{-- blade-formatter-disable --}}
-<img src="public/images\logo-email.png" alt="CESAE Digital"className="public-brand__logo"/>
-                           
+{{-- blade-formatter-disable --}}                       
 <x-mail::message>
 # Olá!
 

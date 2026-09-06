@@ -16,7 +16,7 @@ class ResetPasswordRequest extends FormRequest
     {
         return [
             'token' => ['required'],
-            'email' => ['required', 'email', 'ends_with:@cesae.pt,@cesaedigital.pt'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ];
     }
@@ -28,7 +28,6 @@ class ResetPasswordRequest extends FormRequest
 
             'email.required' => 'O email é obrigatório.',
             'email.email' => 'O email inserido é inválido.',
-            'email.ends_with' => 'O email tem de ser do domínio @cesae.pt ou @cesaedigital.pt.',
 
             'password.required' => 'A palavra-passe é obrigatória.',
             'password.confirmed' => 'A confirmação da palavra-passe não coincide.',

@@ -17,8 +17,8 @@ export default function ResetPassword({ token, email }) {
         e.preventDefault();
 
         post(route('password.store'), {
-           onSuccess: () => form.reset('password', 'password_confirmation'),
-           onError: () => form.reset('password_confirmation') // se nao coincidir apaga o input da confirmacao da password
+            onSuccess: () => reset('password', 'password_confirmation'),
+            onError: () => reset('password_confirmation') // se nao coincidir apaga o input da confirmacao da password
         });
     };
 
@@ -42,17 +42,15 @@ export default function ResetPassword({ token, email }) {
                         <div>
                             <InputLabel htmlFor="email" value="Email" />
 
-                            <TextInput
+                            <input
                                 id="email"
                                 type="email"
                                 name="email"
                                 value={data.email}
-                              readonly
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
-                              text-gray-500
-                               focus:border-gray-300 focus:ring-0"
+                                readOnly
+                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                              text-gray-500 focus:border-gray-300 focus:ring-0"
                                 autoComplete="username"
-                                                           
                             />
 
                             <InputError message={errors.email} className="mt-2" />
