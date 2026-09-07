@@ -294,4 +294,63 @@ class NewsletterNewsSelectionTest extends TestCase
             ->where('newsletter.news.0.images.0.path', $news->fresh()->image)
         );
     }
+
+    // ---- Filtro por período pela data do evento (SCRUM-145) ----
+
+    /**
+     * O cliente sublinhou isto na reunião de 02/09: o filtro por período tem
+     * de olhar para quando o evento aconteceu, não para quando a notícia foi
+     * submetida.
+     *
+     * O filtro em si é JavaScript e não tem rede. O que se pode travar é o
+     * degrau antes: que a coluna sai do editNews, que restringe as colunas à
+     * mão. Sem ela, o filtro compara contra undefined — as notícias somem da
+     * lista e não há erro nenhum a dizer porquê.
+     */
+    public function test_the_selection_screen_carries_the_event_date(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+
+        News::factory()->create([
+            'status' => 'accepted',
+            'event_start_date' => '2026-05-12',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.newsletters.news.edit', $newsletter))
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->where('news.0.event_start_date', fn ($data) => str_starts_with($data, '2026-05-12'))
+            );
+    }
+
+    /**
+     * A data do evento é independente da de submissão: uma notícia submetida
+     * hoje pode ser sobre um evento de há meses. É esse o caso que o filtro
+     * tem de saber distinguir, e é o que se partia se alguém voltasse a usar
+     * o created_at.
+     */
+    public function test_the_event_date_is_independent_of_the_submission_date(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+
+        $news = News::factory()->create([
+            'status' => 'accepted',
+            'event_start_date' => '2026-01-20',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.newsletters.news.edit', $newsletter))
+            ->assertInertia(function (Assert $page) use ($news) {
+                $page->where('news.0.event_start_date', fn ($data) => str_starts_with($data, '2026-01-20'));
+
+                $this->assertNotSame(
+                    $news->created_at->format('Y-m-d'),
+                    '2026-01-20',
+                    'A notícia tem de ter sido submetida noutro dia, senão o teste não distingue as duas datas.'
+                );
+            });
+    }
 }

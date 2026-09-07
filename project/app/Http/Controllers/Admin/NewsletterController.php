@@ -217,7 +217,7 @@ class NewsletterController extends Controller
         $news = News::where('status', 'accepted')
             ->with(['category:id,name', 'images:id,imageable_id,imageable_type,path'])
             ->latest()
-            ->get(['id', 'category_id', 'title', 'image', 'created_at']);
+            ->get(['id', 'category_id', 'title', 'image', 'created_at', 'event_start_date']);
 
         return Inertia::render('Admin/Newsletters/News', [
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
