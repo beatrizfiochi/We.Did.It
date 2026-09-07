@@ -11,6 +11,33 @@ function formatDate(value) {
 }
 
 /**
+ * O período em que o evento aconteceu (SCRUM-145).
+ *
+ * Sem data de fim é um dia único. Com data de fim, e se o mês e o ano forem
+ * os mesmos, escreve-se "12 a 15 de maio de 2026" em vez de repetir o mês
+ * duas vezes — é como se escreve em português e poupa espaço no cartão.
+ */
+function formatEventPeriod(start, end) {
+    if (!start) {
+        return null;
+    }
+
+    const inicio = new Date(start);
+
+    if (!end) {
+        return formatDate(start);
+    }
+
+    const fim = new Date(end);
+
+    if (inicio.getMonth() === fim.getMonth() && inicio.getFullYear() === fim.getFullYear()) {
+        return `${inicio.getDate()} a ${formatDate(end)}`;
+    }
+
+    return `${formatDate(start)} a ${formatDate(end)}`;
+}
+
+/**
  * A data de início das formações não é uma coluna de data: vem do site do
  * CESAE como texto e tanto pode ser "2026-08-28" como "A anunciar". O
  * formatDate acima parte nesse segundo caso — devolve "Invalid Date".
@@ -159,6 +186,12 @@ export default function NewsletterTemplate({ newsletter }) {
                                             <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
                                                 {item.category?.name ?? 'Sem categoria'}
                                             </p>
+
+                                            {formatEventPeriod(item.event_start_date, item.event_end_date) && (
+                                                <p className="mt-1 text-xs text-gray-500">
+                                                    {formatEventPeriod(item.event_start_date, item.event_end_date)}
+                                                </p>
+                                            )}
 
                                             <h3 className="mt-2 text-xl font-bold text-gray-950">
                                                 {item.title}
