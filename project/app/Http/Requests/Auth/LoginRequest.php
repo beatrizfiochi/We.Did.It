@@ -50,6 +50,19 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // uma conta desativada não entra (SCRUM-146). O logout é logo a seguir
+        // ao attempt: deixá-la autenticada e bloquear mais à frente deixava uma
+        // sessão válida aberta para quem já não devia ter acesso
+        if (! Auth::user()->status) {
+            Auth::logout();
+
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Esta conta está desativada. Fala com outro administrador.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
