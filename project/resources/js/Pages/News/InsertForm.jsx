@@ -32,6 +32,13 @@ export default function InsertForm({ categories }) {
 
         const inicio = dataForm.get('event_start_date')
         const fim = dataForm.get('event_end_date')
+
+        // Compara em UTC porque o servidor também está em UTC
+        // (config/app.php:68, sem APP_TIMEZONE a sobrepor). Os dois coincidem
+        // por causa dessa configuração, não por desenho: se algum dia passar a
+        // Europe/Lisbon, deixam de coincidir na primeira hora do dia — aqui
+        // ainda é ontem e no servidor já é hoje, e o cliente passa a recusar
+        // uma data que o servidor aceitaria.
         const hoje = new Date().toISOString().slice(0, 10)
 
         // getAll e não get: o campo é images[] e pode trazer até 3. Um input de
