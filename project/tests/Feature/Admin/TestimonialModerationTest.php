@@ -58,6 +58,22 @@ class TestimonialModerationTest extends TestCase
             );
     }
 
+    public function test_the_list_includes_every_submitted_image(): void
+    {
+        // não só a coluna espelho: o modal de moderação mostra as imagens
+        // todas, para o gestor poder remover uma sem recusar a submissão
+        // inteira (SCRUM-142)
+        Testimonial::factory()->withImages(3)->create();
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('admin.testimonials.index'))
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->has('testimonials.0.images', 3)
+                    ->has('testimonials.0.images.0.path')
+            );
+    }
+
     public function test_testimonials_can_be_approved(): void
     {
         $testimonial = Testimonial::factory()->create(['status' => 'received']);
