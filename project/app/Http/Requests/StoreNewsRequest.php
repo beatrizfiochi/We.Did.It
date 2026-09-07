@@ -20,6 +20,23 @@ class StoreNewsRequest extends FormRequest
     }
 
     /**
+     * Fim igual ao início é um evento de um dia, e um dia único guarda o fim a
+     * null — é isso que distingue os dois casos em todo o lado, sem coluna a
+     * dizer qual é qual (SCRUM-145).
+     *
+     * O formulário nunca produz este estado, porque deixa o campo vazio. Um
+     * pedido feito à mão ao endpoint produzia, e o after_or_equal aceitava:
+     * ficava gravado fim = início, e o cartão da newsletter escrevia
+     * "12 a 12 de maio de 2026".
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->event_end_date && $this->event_end_date === $this->event_start_date) {
+            $this->merge(['event_end_date' => null]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -44,6 +61,8 @@ class StoreNewsRequest extends FormRequest
             // Só 'accepted' não bastava — essa regra falha também quando o campo
             // está ausente, o que tornava a autorização obrigatória sempre.
             'image_rights' => ['exclude_without:images', 'accepted'],
+            'event_start_date' => ['required', 'date', 'before_or_equal:today'],
+            'event_end_date' => ['nullable', 'date', 'after_or_equal:event_start_date'],
         ];
     }
 
@@ -61,6 +80,12 @@ class StoreNewsRequest extends FormRequest
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
             'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
+
+            'event_start_date.required' => 'A data do evento é obrigatória.',
+            'event_start_date.date' => 'A data do evento é inválida.',
+            'event_start_date.before_or_equal' => 'A data do evento não pode ser no futuro.',
+            'event_end_date.date' => 'A data de fim é inválida.',
+            'event_end_date.after_or_equal' => 'A data de fim não pode ser anterior à data do evento.',
         ];
     }
 }

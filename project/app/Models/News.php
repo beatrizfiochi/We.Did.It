@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['category_id', 'title', 'description', 'image', 'status'])]
+#[Fillable(['category_id', 'title', 'description', 'image', 'status', 'event_start_date', 'event_end_date'])]
 class News extends Model
 {
     use HasFactory;
 
     protected $table = 'news';
+
+    protected $casts = [
+        'event_start_date' => 'date',
+        'event_end_date' => 'date',
+    ];
 
     public function category()
     {

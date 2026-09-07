@@ -69,8 +69,11 @@ export default function News({ newsletter, news, news_ids, selected_images, cate
     const filteredNews = news.filter((item) => {
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(item.category_id);
 
-        const publishedOn = item.created_at.slice(0, 10);
-        const matchesPeriod = (!periodStart || publishedOn >= periodStart) && (!periodEnd || publishedOn <= periodEnd);
+        // o cliente pediu o filtro por quando o evento aconteceu, não por quando a
+        // notícia foi submetida (SCRUM-145). A coluna é `date`, chega já como
+        // AAAA-MM-DD e compara-se como string, tal como os inputs do período
+        const eventDate = item.event_start_date;
+        const matchesPeriod = (!periodStart || eventDate >= periodStart) && (!periodEnd || eventDate <= periodEnd);
 
         return matchesCategory && matchesPeriod;
     });
@@ -137,7 +140,9 @@ export default function News({ newsletter, news, news_ids, selected_images, cate
                                             />
                                             <span className="min-w-0 flex-1">
                                                 <span className="block font-medium text-gray-900">{item.title}</span>
-                                                <span className="block text-sm text-gray-500">{new Date(item.created_at).toLocaleDateString('pt-PT')}</span>
+                                                <span className="block text-sm text-gray-500">
+                                                    {new Date(item.event_start_date).toLocaleDateString('pt-PT')}
+                                                </span>
                                                 <span className="block text-sm text-gray-500">
                                                     {item.category ? item.category.name : 'Sem categoria'}
                                                 </span>

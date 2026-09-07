@@ -52,6 +52,7 @@ class NewsCrudTest extends TestCase
                 'title' => $news->title,
                 'description' => $news->description,
                 'category_id' => $category->id,
+                'event_start_date' => $news->event_start_date->format('Y-m-d'),
             ]);
 
         $this->assertDatabaseHas('news', ['id' => $news->id, 'category_id' => $category->id]);

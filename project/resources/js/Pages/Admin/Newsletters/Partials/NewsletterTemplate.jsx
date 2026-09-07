@@ -1,13 +1,60 @@
+/**
+ * Só os AAAA-MM-DD do valor, como três números.
+ *
+ * O servidor manda as datas em ISO com hora zero em UTC — "2026-05-12T00:00:00Z".
+ * Passar isso a new Date() e depois formatar dá o dia no fuso do browser, e a
+ * oeste de Greenwich a meia-noite UTC ainda é o dia anterior: em São Paulo o
+ * dia 12 aparecia como 11. Confirmado a correr o formatador em vários fusos.
+ *
+ * Trabalhar sobre a string evita o problema todo: não há instante nenhum a
+ * converter, só o dia do calendário que o servidor escreveu.
+ */
+function dateParts(value) {
+    const [ano, mes, dia] = value.slice(0, 10).split('-').map(Number);
+
+    return { ano, mes, dia };
+}
+
 function formatDate(value) {
     if (!value) {
         return 'Data por definir';
     }
 
+    const { ano, mes, dia } = dateParts(value);
+
     return new Intl.DateTimeFormat('pt-PT', {
         day: '2-digit',
         month: 'long',
         year: 'numeric',
-    }).format(new Date(value));
+    }).format(new Date(ano, mes - 1, dia));
+}
+
+/**
+ * O período em que o evento aconteceu (SCRUM-145).
+ *
+ * Sem data de fim é um dia único. Com data de fim, e se o mês e o ano forem
+ * os mesmos, escreve-se "12 a 15 de maio de 2026" em vez de repetir o mês
+ * duas vezes — é como se escreve em português e poupa espaço no cartão.
+ */
+function formatEventPeriod(start, end) {
+    if (!start) {
+        return null;
+    }
+
+    if (!end) {
+        return formatDate(start);
+    }
+
+    // comparação sobre os números da string, pela mesma razão do dateParts:
+    // um new Date() aqui trazia o fuso do browser para dentro da decisão
+    const inicio = dateParts(start);
+    const fim = dateParts(end);
+
+    if (inicio.mes === fim.mes && inicio.ano === fim.ano) {
+        return `${inicio.dia} a ${formatDate(end)}`;
+    }
+
+    return `${formatDate(start)} a ${formatDate(end)}`;
 }
 
 /**
@@ -201,6 +248,12 @@ export default function NewsletterTemplate({ newsletter }) {
                                             <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
                                                 {item.category?.name ?? 'Sem categoria'}
                                             </p>
+
+                                            {formatEventPeriod(item.event_start_date, item.event_end_date) && (
+                                                <p className="mt-1 text-xs text-gray-500">
+                                                    {formatEventPeriod(item.event_start_date, item.event_end_date)}
+                                                </p>
+                                            )}
 
                                             <h3 className="mt-2 text-xl font-bold text-gray-950">
                                                 {item.title}

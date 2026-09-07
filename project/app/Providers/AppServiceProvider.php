@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
                 ->subject('Recuperar a palavra-passe')
                 ->markdown('emails.reset-password.resetPassword', [
                     'url' => $url,
-                    'count' => config('auth.passwords.' . config('auth.defaults.passwords') . '.expire'),
+                    'count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire'),
                 ]);
         }));
     }

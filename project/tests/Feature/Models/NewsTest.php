@@ -20,6 +20,7 @@ class NewsTest extends TestCase
             'category_id' => $category->id,
             'title' => 'Título da notícia',
             'description' => 'Descrição da notícia',
+            'event_start_date' => '2026-05-12',
             'image' => null,
             'status' => 'received',
         ]);

@@ -23,6 +23,7 @@ class NewsModerationTest extends TestCase
             'title' => 'Abertura das inscrições para o próximo ano',
             'description' => str_repeat('Detalhes sobre as inscrições. ', 5),
             'category_id' => '',
+            'event_start_date' => '2026-05-12',
         ], $overrides);
     }
 
@@ -257,6 +258,65 @@ class NewsModerationTest extends TestCase
             ->put(route('admin.news.update', $news), $this->validPayload());
 
         $this->assertSame('news/atual.jpg', $news->fresh()->image);
+    }
+
+    /**
+     * As mesmas regras de data no lado da moderação (SCRUM-145).
+     *
+     * Está aqui porque já aconteceu uma vez o contrário: as mensagens por
+     * ficheiro foram traduzidas nas submissões públicas e ficaram por
+     * traduzir nas edições, e só se descobriu na revisão.
+     */
+    public function test_the_moderation_validates_the_event_dates(): void
+    {
+        $news = News::factory()->create();
+        $admin = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'event_start_date' => '2026-05-12',
+                'event_end_date' => '2026-05-10',
+            ]))
+            ->assertSessionHasErrors('event_end_date');
+
+        $payload = $this->validPayload();
+        unset($payload['event_start_date']);
+
+        $this->actingAs($admin)
+            ->put(route('admin.news.update', $news), $payload)
+            ->assertSessionHasErrors('event_start_date');
+    }
+
+    /** Como na submissão: fim igual ao início é um dia único, e grava null. */
+    public function test_the_moderation_stores_a_null_end_when_it_equals_the_start(): void
+    {
+        $news = News::factory()->create();
+
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'event_start_date' => '2026-05-12',
+                'event_end_date' => '2026-05-12',
+            ]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($news->fresh()->event_end_date);
+    }
+
+    public function test_the_moderation_can_correct_the_event_dates(): void
+    {
+        $news = News::factory()->create(['event_start_date' => '2026-01-01', 'event_end_date' => null]);
+
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'event_start_date' => '2026-05-12',
+                'event_end_date' => '2026-05-15',
+            ]))
+            ->assertSessionHasNoErrors();
+
+        $news->refresh();
+
+        $this->assertSame('2026-05-12', $news->event_start_date->format('Y-m-d'));
+        $this->assertSame('2026-05-15', $news->event_end_date->format('Y-m-d'));
     }
 
     public function test_the_content_is_validated(): void
