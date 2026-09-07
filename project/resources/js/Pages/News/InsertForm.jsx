@@ -11,6 +11,8 @@ export default function InsertForm({ categories }) {
         [
             { name: 'title', label: 'Título', type: 'text' },
             { name: 'description', label: 'Descrição', type: 'textarea' },
+            { name: 'event_start_date', label: 'Data do evento', type: 'date' },
+            { name: 'event_end_date', label: 'Data de fim (só se durou mais do que um dia)', type: 'date' },
             { name: 'category_id', label: 'Categoria', type: 'select' },
             { name: 'images', label: 'Imagens (até 3)', type: 'file' },
         ]
@@ -27,6 +29,11 @@ export default function InsertForm({ categories }) {
 
         const title = dataForm.get('title')
         const description = dataForm.get('description')
+
+        const inicio = dataForm.get('event_start_date')
+        const fim = dataForm.get('event_end_date')
+        const hoje = new Date().toISOString().slice(0, 10)
+
         // getAll e não get: o campo é images[] e pode trazer até 3. Um input de
         // ficheiro vazio ainda submete uma entrada de tamanho 0, daí o filtro
         const images = dataForm.getAll('images[]').filter((file) => file.size > 0)
@@ -42,6 +49,14 @@ export default function InsertForm({ categories }) {
 
         if (description.length < 100 || description.length > 1050) {
             newErrors['description'] = "A Descrição deve ter entre 100 e 1050 caracteres."
+        }
+
+        if (!inicio) {
+            newErrors['event_start_date'] = "A data do evento é obrigatória."
+        } else if (inicio > hoje) {
+            newErrors['event_start_date'] = "A data do evento não pode ser no futuro."
+        } else if (fim && fim < inicio) {
+            newErrors['event_end_date'] = "A data de fim não pode ser anterior à data do evento."
         }
 
         if (images.length > 0) {

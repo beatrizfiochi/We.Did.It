@@ -41,6 +41,8 @@ class UpdateNewsRequest extends FormRequest
             'category_id' => ['nullable', 'exists:categories,id'],
             'images' => ['nullable', 'array', 'max:'.$available],
             ...$this->imageRules(),
+            'event_start_date' => ['required', 'date', 'before_or_equal:today'],
+            'event_end_date' => ['nullable', 'date', 'after_or_equal:event_start_date'],
         ];
     }
 
@@ -58,6 +60,11 @@ class UpdateNewsRequest extends FormRequest
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'images.max' => 'Esta submissão só pode ter '.Image::MAX_POR_SUBMISSAO.' imagens. Remove uma antes de acrescentar.',
+            'event_start_date.required' => 'A data do evento é obrigatória.',
+            'event_start_date.date' => 'A data do evento é inválida.',
+            'event_start_date.before_or_equal' => 'A data do evento não pode ser no futuro.',
+            'event_end_date.date' => 'A data de fim é inválida.',
+            'event_end_date.after_or_equal' => 'A data de fim não pode ser anterior à data do evento.',
         ];
     }
 }

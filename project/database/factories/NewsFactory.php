@@ -19,6 +19,8 @@ class NewsFactory extends Factory
             'description' => fake()->paragraphs(3, true),
             'image' => fake()->boolean(70) ? 'news/'.fake()->uuid().'.jpg' : null,
             'status' => fake()->randomElement(['received', 'received', 'received', 'accepted', 'accepted', 'refused']),
+            'event_start_date' => fake()->dateTimeBetween('-6 months', 'now')->format('Y-m-d'),
+            'event_end_date' => null,
         ];
     }
 
@@ -43,6 +45,18 @@ class NewsFactory extends Factory
 
             $news->images()->createMany($paths->all());
             $news->update(['image' => $paths->first()['path']]);
+        });
+    }
+
+    public function withDateRange(): static
+    {
+        return $this->state(function () {
+            $inicio = fake()->dateTimeBetween('-6 months', '-1 week');
+
+            return [
+                'event_start_date' => $inicio->format('Y-m-d'),
+                'event_end_date' => fake()->dateTimeBetween($inicio, '+3 days')->format('Y-m-d'),
+            ];
         });
     }
 }

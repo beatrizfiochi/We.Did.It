@@ -9,6 +9,11 @@ import { Head, router } from "@inertiajs/react";
 
 // tabela com as noticias todas e botao para ver --> modal
 export default function Index({ news, categories }) {
+
+    // o <input type="date"> só aceita AAAA-MM-DD; o servidor manda a data
+    // completa em ISO por causa do $casts do model
+    const paraInput = (data) => (data ? data.slice(0, 10) : '');
+
     const actionClass =
         'inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-indigo-50 hover:text-indigo-700';
     const approveActionClass =
@@ -144,6 +149,8 @@ export default function Index({ news, categories }) {
                 title: editingNews.title,
                 description: editingNews.description,
                 category_id: editingNews.category_id,
+                event_start_date: paraInput(editingNews.event_start_date),
+                event_end_date: paraInput(editingNews.event_end_date) || null,
                 images: editingNews.imageFiles?.length ? editingNews.imageFiles : undefined, // if there isnt a new imageFile it stays undefined, and doesnt update image field
             },
             {
@@ -257,6 +264,13 @@ export default function Index({ news, categories }) {
                             <strong>Categoria:</strong> {selectedNews.category?.name ?? "N/a"}
                         </p>
 
+                        <p className="text-sm text-gray-500 mb-2">
+                            <strong>Data do evento:</strong>{' '}
+                            {selectedNews.event_end_date
+                                ? `${paraInput(selectedNews.event_start_date)} a ${paraInput(selectedNews.event_end_date)}`
+                                : paraInput(selectedNews.event_start_date)}
+                        </p>
+
                         <p className="text-sm text-gray-500 mb-4">
                             <strong>Estado:</strong> {selectedNews.status}
                         </p>
@@ -361,6 +375,46 @@ export default function Index({ news, categories }) {
                             {editErrors.category_id && (
                                 <div className="mt-2 text-sm text-red-600">
                                     {editErrors.category_id}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700">Data do evento</label>
+                            <input
+                                type="date"
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500
+                        focus:ring-indigo-500 ${editErrors.event_start_date ? 'border-red-500' : ''}`}
+                                value={paraInput(editingNews.event_start_date)}
+                                onChange={(e) =>
+                                    setEditingNews({ ...editingNews, event_start_date: e.target.value })
+                                }
+                            />
+
+                            {editErrors.event_start_date && (
+                                <div className="mt-2 text-sm text-red-600">
+                                    {editErrors.event_start_date}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Data de fim <span className="font-normal text-gray-500">(só se durou mais do que um dia)</span>
+                            </label>
+                            <input
+                                type="date"
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500
+                        focus:ring-indigo-500 ${editErrors.event_end_date ? 'border-red-500' : ''}`}
+                                value={paraInput(editingNews.event_end_date)}
+                                onChange={(e) =>
+                                    setEditingNews({ ...editingNews, event_end_date: e.target.value || null })
+                                }
+                            />
+
+                            {editErrors.event_end_date && (
+                                <div className="mt-2 text-sm text-red-600">
+                                    {editErrors.event_end_date}
                                 </div>
                             )}
                         </div>

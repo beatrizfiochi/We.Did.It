@@ -44,6 +44,8 @@ class StoreNewsRequest extends FormRequest
             // Só 'accepted' não bastava — essa regra falha também quando o campo
             // está ausente, o que tornava a autorização obrigatória sempre.
             'image_rights' => ['exclude_without:images', 'accepted'],
+            'event_start_date' => ['required', 'date', 'before_or_equal:today'],
+            'event_end_date' => ['nullable', 'date', 'after_or_equal:event_start_date'],
         ];
     }
 
@@ -61,6 +63,12 @@ class StoreNewsRequest extends FormRequest
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
             'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
+
+            'event_start_date.required' => 'A data do evento é obrigatória.',
+            'event_start_date.date' => 'A data do evento é inválida.',
+            'event_start_date.before_or_equal' => 'A data do evento não pode ser no futuro.',
+            'event_end_date.date' => 'A data de fim é inválida.',
+            'event_end_date.after_or_equal' => 'A data de fim não pode ser anterior à data do evento.',
         ];
     }
 }

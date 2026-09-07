@@ -37,6 +37,7 @@ class SubmissionNotificationTest extends TestCase
             'title' => 'Abertura das inscrições para o próximo ano',
             'description' => str_repeat('Detalhes sobre as inscrições. ', 5),
             'category_id' => '',
+            'event_start_date' => '2026-05-12',
         ];
     }
 

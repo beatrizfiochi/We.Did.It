@@ -21,6 +21,7 @@ class NewsSubmissionTest extends TestCase
             'description' => str_repeat('Um parágrafo com bastante conteúdo. ', 5),
             // o cliente exige consentimento explícito; é validado mas não guardado
             'terms_conditions' => 'on',
+            'event_start_date' => '2026-05-12',
         ], $overrides);
     }
 
@@ -191,6 +192,69 @@ class NewsSubmissionTest extends TestCase
         ]))->assertSessionHasErrors('image');
 
         $this->assertDatabaseCount('news', 0);
+    }
+
+    /**
+     * O cliente pediu na reunião de 02/09 que a notícia diga quando o evento
+     * aconteceu, que é diferente de quando foi submetida (SCRUM-145).
+     */
+    public function test_the_event_date_is_required(): void
+    {
+        $payload = $this->validPayload();
+        unset($payload['event_start_date']);
+
+        $this->post(route('news.store'), $payload)
+            ->assertSessionHasErrors('event_start_date');
+
+        $this->assertDatabaseCount('news', 0);
+    }
+
+    public function test_the_end_date_cannot_be_before_the_start(): void
+    {
+        $this->post(route('news.store'), $this->validPayload([
+            'event_start_date' => '2026-05-12',
+            'event_end_date' => '2026-05-10',
+        ]))->assertSessionHasErrors('event_end_date');
+
+        $this->assertDatabaseCount('news', 0);
+    }
+
+    /**
+     * O fim a null é o que distingue um dia único de um intervalo — não há
+     * coluna a dizer qual é qual, e por isso o null tem de ficar garantido.
+     */
+    public function test_a_single_day_event_stores_a_null_end_date(): void
+    {
+        $this->post(route('news.store'), $this->validPayload([
+            'event_start_date' => '2026-05-12',
+        ]))->assertSessionHasNoErrors();
+
+        $news = News::first();
+
+        $this->assertSame('2026-05-12', $news->event_start_date->format('Y-m-d'));
+        $this->assertNull($news->event_end_date);
+    }
+
+    public function test_an_event_date_in_the_future_is_rejected(): void
+    {
+        $this->post(route('news.store'), $this->validPayload([
+            'event_start_date' => now()->addDay()->format('Y-m-d'),
+        ]))->assertSessionHasErrors('event_start_date');
+
+        $this->assertDatabaseCount('news', 0);
+    }
+
+    public function test_a_date_range_is_stored_as_given(): void
+    {
+        $this->post(route('news.store'), $this->validPayload([
+            'event_start_date' => '2026-05-12',
+            'event_end_date' => '2026-05-15',
+        ]))->assertSessionHasNoErrors();
+
+        $news = News::first();
+
+        $this->assertSame('2026-05-12', $news->event_start_date->format('Y-m-d'));
+        $this->assertSame('2026-05-15', $news->event_end_date->format('Y-m-d'));
     }
 
     public function test_the_consents_are_not_stored(): void
