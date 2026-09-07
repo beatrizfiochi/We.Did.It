@@ -5,7 +5,6 @@ import { Form, usePage } from "@inertiajs/react";
 // component for a form that holds customized props, including the labels and input types.
 // Any page that imports this component, defines its own submitFunction and validation rules.
 export default function GeneralForm({ formTitle, formMethod, formAction, fields = [], submitFunction, clientErrors = {}, categoryList = [] }) {
-
     // dá acesso ao getFormData() do <Form>, para a validação do cliente poder
     // ler os campos no onBefore sem depender de um evento de DOM
     const formRef = useRef(null)
@@ -18,8 +17,12 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
     const errors = { ...serverErrors, ...clientErrors }
 
     const [imageUploaded, setImageUploaded] = useState(false)
+    const [imagePreview, setImagePreview] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([]) // preview da fila das 3 imagens escolhidas
     const [fileInputKey, setFileInputKey] = useState(0)
     const [imageRights, setImageRights] = useState(false)
+    const fileInputRef = useRef(null) // referencia do input dos ficheiros
+
     const [wasSuccessful, setWasSuccessful] = useState(false)
     const inputClass =
         'mt-1 block w-full rounded-md border-gray-300 text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500'
@@ -29,20 +32,69 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
     // checks if there is more than "0" files coming from the target(the input from the form that holds the image)
     function handleFileChange(event) {
-        const hasFile = event.target.files.length > 0
-        setImageUploaded(hasFile)
-        if (!hasFile) {
+        const newFiles = Array.from(event.target.files)
+
+        // combina os ficheiros selecionados
+        const combined = [...selectedFiles, ...newFiles].slice(0, 3)
+
+        // sobrepoe o <input> tradicional para permitir escolher 3 ficheiros
+        const dataTransfer = new DataTransfer()
+        combined.forEach((file) => dataTransfer.items.add(file)) // mapea entre os 3 escolhidos
+        if (fileInputRef.current) {
+            fileInputRef.current.files = dataTransfer.files
+        }
+
+        setSelectedFiles(combined)
+        setImageUploaded(combined.length > 0)
+
+        // se nao houver imagens a checkbox de direitos de imagem fica desligado
+        if (combined.length === 0) {
             setImageRights(false)
         }
+
+        // cada imagem gera uma string URL diferente, e este URL é apagado sempre que a respetiva imagem seja alterada
+        imagePreview.forEach((url) => URL.revokeObjectURL(url))
+        setImagePreview(combined.map((file) => URL.createObjectURL(file)))
     }
 
     function handleRemoveImage() {
         setImageUploaded(false);
         setImageRights(false);
+        setSelectedFiles([]) // limpa o preview
         setFileInputKey(prev => prev + 1); // to "trick" react into checking the new state of the file, going from 0 to 1, and updating the state to a empty
+
+        imagePreview.forEach((url) => URL.revokeObjectURL(url))
+        setImagePreview([])
     }
 
+    /**
+     * Permite eliminar uma imagem do grupo escolhido
+     * @param {*} index 
+     */
+    function handleRemoveOneImage(index) {
+        // o preview atualizado vai filtrar entre os ficheiros selecionados verificando o key "i" se for diferente da imagem escolhida (index)
+        /*a funcao "filter()" pede obrigatoriamente argumentos do value e index.
+        O value pela configuração Eslint poderia ser declarado como um underscore "_" - uma variável não usada. */
+        const updated = selectedFiles.filter((urlValue, i) => i != index)
 
+        // sobrepoe o <input> tradicional para permitir escolher 3 ficheiros
+        const dataTransfer = new DataTransfer()
+        updated.forEach((file) => dataTransfer.items.add(file)) // mapea entre os 3 escolhidos
+        if (fileInputRef.current) {
+            fileInputRef.current.files = dataTransfer.files
+        }
+
+        // exclui a imagem escolhida
+        URL.revokeObjectURL(imagePreview[index])
+        const updatedPreviews = imagePreview.filter((urlValue, i) => i !== index)
+
+        setSelectedFiles(updated)
+        setImagePreview(updatedPreviews)
+        setImageUploaded(updated.length > 0)
+        if (updated.length === 0) {
+            setImageRights(false)
+        }
+    }
 
     return (
         <div className="mt-5 mx-auto">
@@ -68,7 +120,7 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                     onChange={() => setWasSuccessful(false)}
                     className="rounded-lg bg-white p-4 text-gray-900 shadow sm:p-6">
                     {({ processing }) => (
-                            <>
+                        <>
                             {/* Honeypot: invisível para pessoas, presente no DOM para bots
                                 que preenchem tudo o que encontram. Só tem efeito se o
                                 FormRequest do destino marcar 'website' como prohibited —
@@ -88,21 +140,45 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                             {/* labelType[index] connects the labelType array to iterate on same positions as fields */}
                                             {/* if the type is file, onChange(if uploaded a file or removed) calls function */}
                                             {item.type === 'file' ? (
-                                                <input
-                                                    className={inputClass}
-                                                    type="file"
-                                                    // key changes (0 → 1) so React treats this as a new input, not the old one
-                                                    // it deletes the old DOM node (with the file inside) and mounts a fresh, empty one
-                                                    key={fileInputKey}
-                                                    accept="image/jpg,image/jpeg,image/png"
-                                                    multiple
-                                                    // o [] é o que faz o campo chegar ao servidor como array, que é o
-                                                    // que as regras 'images' e 'images.*' esperam (SCRUM-140). Sem ele
-                                                    // o ficheiro chegava com o nome antigo e era descartado em silêncio
-                                                    name={`${item.name}[]`}
-                                                    onChange={handleFileChange}
-                                                />
-                                                // if type is a textarea sets sizing rules 
+                                                <>
+                                                    <input
+                                                        className={inputClass}
+                                                        type="file"
+                                                        // key changes (0 → 1) so React treats this as a new input, not the old one
+                                                        // it deletes the old DOM node (with the file inside) and mounts a fresh, empty one
+                                                        key={fileInputKey}
+                                                        ref={fileInputRef}
+                                                        accept="image/jpg,image/jpeg,image/png"
+                                                        multiple
+                                                        // o [] é o que faz o campo chegar ao servidor como array, que é o
+                                                        // que as regras 'images' e 'images.*' esperam (SCRUM-140). Sem ele
+                                                        // o ficheiro chegava com o nome antigo e era descartado em silêncio
+                                                        name={`${item.name}[]`}
+                                                        onChange={handleFileChange}
+                                                    />
+
+                                                    {/* Fila das images preview */}
+                                                    {imagePreview.length > 0 && (
+                                                        <div className="mt-2 grid grid-cols-3 gap-2">
+                                                            {imagePreview.map((url, i) => // cada imagem gera uma string URL diferente
+                                                                <div key={i} className="relative">
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={`Pré-visualização ${i + 1}`}
+                                                                        className="h-24 w-full rounded-md border border-gray-200 object-cover"
+                                                                    />
+
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleRemoveOneImage(i)}
+                                                                        className="absolute top-1 right-1 rounded-full bg-black/60 text-white w-5 h-5 text-xs leading-5">
+                                                                        x
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </>
 
                                             ) : item.type === 'textarea' ? (
 
@@ -125,44 +201,51 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                 <input className={inputClass} type={item.type} name={item.name} />
                                             )}
 
-                                            {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagem</button></div>}
+                                            {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagens</button></div>}
 
                                         </div>
                                         {/* Os erros de ficheiro chegam por posição — images.0, images.1 —
                                             além do erro do conjunto, em images. Mostrar só errors[item.name]
                                             deixava o utilizador a escolher um PDF e a não ver aviso nenhum. */}
-                                        {Object.entries(errors)
-                                            .filter(([key]) => key === item.name || key.startsWith(`${item.name}.`))
-                                            .map(([key, message]) => (
-                                                <small key={key} className={errorClass}>{message}</small>
-                                            ))}
+                                        {
+                                            Object.entries(errors)
+                                                .filter(([key]) => key === item.name || key.startsWith(`${item.name}.`))
+                                                .map(([key, message]) => (
+                                                    <small key={key} className={errorClass}>{message}</small>
+                                                ))
+                                        }
                                     </div>
                                 ))}
 
 
 
                                 {/* image rights - only enabled once a file is picked */}
-                                <div className="mb-3 flex items-start gap-2">
-                                    <input
-                                        type="checkbox"
-                                        className={checkboxClass}
-                                        id="image_rights"
-                                        name="image_rights"
-                                        // if checked it means imageRights is true
-                                        checked={imageRights}
-                                        // since the image is now controlled by checked, if user tickes it it becomes false and vice-versa
-                                        onChange={(click) => setImageRights(click.target.checked)}
-                                        disabled={!imageUploaded}
-                                    />
-                                    <div>
-                                        <label className="text-sm text-gray-700" htmlFor="image_rights">
-                                            Autorizo a utilização desta imagem para as finalidades relacionadas a este formulário.
-                                        </label>
-                                        {imageUploaded && errors.image_rights && (
+                                {imageUploaded && (
+                                    <div className="mb-3 flex items-start gap-2">
+                                        <input
+                                            type="checkbox"
+                                            className={checkboxClass}
+                                            id="image_rights"
+                                            name="image_rights"
+                                            // if checked it means imageRights is true
+                                            checked={imageRights}
+                                            // since the image is now controlled by checked, if user tickes it it becomes false and vice-versa
+                                            onChange={(click) => setImageRights(click.target.checked)}
+                                            disabled={!imageUploaded}
+                                        />
+
+                                        <div>
+                                            <label className="text-sm text-gray-700" htmlFor="image_rights">
+                                                Autorizo a utilização {
+                                                    selectedFiles.length === 1
+                                                        ? 'desta imagem'
+                                                        : 'destas imagens'
+                                                } para as finalidades relacionadas a este formulário.
+                                            </label>
                                             <small className={errorClass}>{errors.image_rights}</small>
-                                        )}
-                                    </div>
-                                </div>
+                                        </div>
+
+                                    </div>)}
 
                                 {/* terms and conditions */}
                                 <div className="mb-3 flex items-start gap-2">
@@ -180,7 +263,8 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                 className="font-semibold text-indigo-600 hover:text-indigo-800"
                                             >
                                                 Política de Privacidade
-                                            </a>.
+                                            </a>.*
+
                                         </label>
                                         {errors.terms_conditions && (
                                             <small className={errorClass}>{errors.terms_conditions}</small>
@@ -202,8 +286,8 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                     </small>
                                 )}
                             </div>
-                            </>
-                            )}
+                        </>
+                    )}
                 </Form>
             </div >
         </div >

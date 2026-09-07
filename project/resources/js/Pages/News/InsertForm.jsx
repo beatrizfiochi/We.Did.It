@@ -9,9 +9,9 @@ export default function InsertForm({ categories }) {
     // campos do formulário, na mesma forma que o InsertForm dos testemunhos usa
     const fields =
         [
-            { name: 'title', label: 'Título', type: 'text' },
-            { name: 'description', label: 'Descrição', type: 'textarea' },
-            { name: 'event_start_date', label: 'Data do evento', type: 'date' },
+            { name: 'title', label: 'Título*', type: 'text' },
+            { name: 'description', label: 'Descrição*', type: 'textarea' },
+            { name: 'event_start_date', label: 'Data do evento*', type: 'date' },
             { name: 'event_end_date', label: 'Data de fim (só se durou mais do que um dia)', type: 'date' },
             { name: 'category_id', label: 'Categoria', type: 'select' },
             { name: 'images', label: 'Imagens (até 3)', type: 'file' },
