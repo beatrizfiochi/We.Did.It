@@ -70,12 +70,16 @@ class NewsletterEventDatesTest extends TestCase
      */
     public function test_the_factory_range_state_produces_an_end_after_the_start(): void
     {
-        $news = News::factory()->withDateRange()->create();
+        // 30 e não um: o dateTimeBetween original devolvia a mesma data cerca
+        // de 1 em 200 vezes, e uma corrida só não apanhava isso
+        foreach (range(1, 30) as $i) {
+            $news = News::factory()->withDateRange()->create();
 
-        $this->assertNotNull($news->event_end_date);
-        $this->assertTrue(
-            $news->event_end_date->greaterThanOrEqualTo($news->event_start_date),
-            'A data de fim do estado withDateRange ficou antes da de início.'
-        );
+            $this->assertNotNull($news->event_end_date);
+            $this->assertTrue(
+                $news->event_end_date->greaterThan($news->event_start_date),
+                'O withDateRange gerou um intervalo de um dia só, que não é um intervalo.'
+            );
+        }
     }
 }

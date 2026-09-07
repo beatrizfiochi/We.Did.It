@@ -20,6 +20,23 @@ class StoreNewsRequest extends FormRequest
     }
 
     /**
+     * Fim igual ao início é um evento de um dia, e um dia único guarda o fim a
+     * null — é isso que distingue os dois casos em todo o lado, sem coluna a
+     * dizer qual é qual (SCRUM-145).
+     *
+     * O formulário nunca produz este estado, porque deixa o campo vazio. Um
+     * pedido feito à mão ao endpoint produzia, e o after_or_equal aceitava:
+     * ficava gravado fim = início, e o cartão da newsletter escrevia
+     * "12 a 12 de maio de 2026".
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->event_end_date && $this->event_end_date === $this->event_start_date) {
+            $this->merge(['event_end_date' => null]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

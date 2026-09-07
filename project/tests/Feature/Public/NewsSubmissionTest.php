@@ -235,6 +235,24 @@ class NewsSubmissionTest extends TestCase
         $this->assertNull($news->event_end_date);
     }
 
+    /**
+     * O after_or_equal aceita fim == início, e o formulário nunca produz isso
+     * porque deixa o campo vazio. Um pedido feito à mão produzia, e o cartão
+     * da newsletter escrevia "12 a 12 de maio de 2026".
+     */
+    public function test_an_end_date_equal_to_the_start_is_stored_as_null(): void
+    {
+        $this->post(route('news.store'), $this->validPayload([
+            'event_start_date' => '2026-05-12',
+            'event_end_date' => '2026-05-12',
+        ]))->assertSessionHasNoErrors();
+
+        $news = News::first();
+
+        $this->assertSame('2026-05-12', $news->event_start_date->format('Y-m-d'));
+        $this->assertNull($news->event_end_date);
+    }
+
     public function test_an_event_date_in_the_future_is_rejected(): void
     {
         $this->post(route('news.store'), $this->validPayload([

@@ -53,9 +53,15 @@ class NewsFactory extends Factory
         return $this->state(function () {
             $inicio = fake()->dateTimeBetween('-6 months', '-1 week');
 
+            // pelo menos um dia depois, e não dateTimeBetween($inicio, ...):
+            // esse devolvia a mesma data cerca de 1 em 200 vezes, e um
+            // intervalo de um dia só não é um intervalo — era um teste
+            // instável à espera de acontecer
+            $fim = (clone $inicio)->modify('+'.fake()->numberBetween(1, 3).' days');
+
             return [
                 'event_start_date' => $inicio->format('Y-m-d'),
-                'event_end_date' => fake()->dateTimeBetween($inicio, '+3 days')->format('Y-m-d'),
+                'event_end_date' => $fim->format('Y-m-d'),
             ];
         });
     }
