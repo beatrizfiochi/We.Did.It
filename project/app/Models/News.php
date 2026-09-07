@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\NewsNewsletter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,7 @@ class News extends Model
     public function newsletters()
     {
         return $this->belongsToMany(Newsletter::class, 'news_newsletter', 'news_id', 'newsletter_id')
-            ->withPivot('order');
+            ->using(NewsNewsletter::class)
+            ->withPivot('order', 'image_ids');
     }
 }

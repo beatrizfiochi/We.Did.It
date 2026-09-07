@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\NewsletterTestimonial;
+use App\Models\Pivots\NewsNewsletter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,13 +81,15 @@ class Newsletter extends Model
     public function news()
     {
         return $this->belongsToMany(News::class, 'news_newsletter', 'newsletter_id', 'news_id')
-            ->withPivot('order');
+            ->using(NewsNewsletter::class)
+            ->withPivot('order', 'image_ids');
     }
 
     public function testimonials()
     {
         return $this->belongsToMany(Testimonial::class, 'newsletter_testimonial', 'newsletter_id', 'testimonial_id')
-            ->withPivot('order');
+            ->using(NewsletterTestimonial::class)
+            ->withPivot('order', 'image_ids');
     }
 
     public function courses()

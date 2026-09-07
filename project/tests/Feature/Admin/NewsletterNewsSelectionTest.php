@@ -139,4 +139,159 @@ class NewsletterNewsSelectionTest extends TestCase
 
         $response->assertSessionHasErrors('news_ids.0');
     }
+
+    // ---- Escolha das imagens que saem, por edição (SCRUM-143) ----
+
+    public function test_the_screen_sends_each_news_images_and_the_current_choice(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        $chosen = $news->images->pluck('id')->take(2)->all();
+        $newsletter->news()->attach($news->id, ['order' => 1, 'image_ids' => $chosen]);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.news.edit', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('news.0.images', 3)
+            ->where('selected_images.'.$news->id, $chosen)
+        );
+    }
+
+    public function test_the_chosen_images_are_saved_in_the_pivot(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        $chosen = $news->images->pluck('id')->take(2)->all();
+
+        $this->actingAs($admin)->put(route('admin.newsletters.news.update', $newsletter), [
+            'news_ids' => [$news->id],
+            'image_ids' => [$news->id => $chosen],
+        ]);
+
+        $this->assertSame($chosen, $newsletter->fresh()->news->first()->pivot->image_ids);
+    }
+
+    public function test_the_image_order_is_the_order_they_were_chosen(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        $reversed = $news->images->pluck('id')->reverse()->values()->all();
+
+        $this->actingAs($admin)->put(route('admin.newsletters.news.update', $newsletter), [
+            'news_ids' => [$news->id],
+            'image_ids' => [$news->id => $reversed],
+        ]);
+
+        $this->assertSame($reversed, $newsletter->fresh()->news->first()->pivot->image_ids);
+    }
+
+    public function test_changing_the_image_selection_replaces_the_previous(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        $ids = $news->images->pluck('id')->all();
+        $newsletter->news()->attach($news->id, ['order' => 1, 'image_ids' => [$ids[0], $ids[1]]]);
+
+        $this->actingAs($admin)->put(route('admin.newsletters.news.update', $newsletter), [
+            'news_ids' => [$news->id],
+            'image_ids' => [$news->id => [$ids[2]]],
+        ]);
+
+        $this->assertSame([$ids[2]], $newsletter->fresh()->news->first()->pivot->image_ids);
+    }
+
+    public function test_a_news_can_be_selected_with_no_images(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+
+        $this->actingAs($admin)->put(route('admin.newsletters.news.update', $newsletter), [
+            'news_ids' => [$news->id],
+            'image_ids' => [$news->id => []],
+        ]);
+
+        $this->assertSame([], $newsletter->fresh()->news->first()->pivot->image_ids);
+    }
+
+    public function test_images_that_belong_to_another_news_are_dropped(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(2)->create(['status' => 'accepted']);
+        $other = News::factory()->withImages(2)->create(['status' => 'accepted']);
+
+        $mine = $news->images->first()->id;
+        $foreign = $other->images->first()->id;
+
+        $this->actingAs($admin)->put(route('admin.newsletters.news.update', $newsletter), [
+            'news_ids' => [$news->id],
+            'image_ids' => [$news->id => [$mine, $foreign]],
+        ]);
+
+        $this->assertSame([$mine], $newsletter->fresh()->news->first()->pivot->image_ids);
+    }
+
+    public function test_more_than_three_images_per_news_is_rejected(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->create(['status' => 'accepted']);
+
+        $response = $this->actingAs($admin)->put(route('admin.newsletters.news.update', $newsletter), [
+            'news_ids' => [$news->id],
+            'image_ids' => [$news->id => [1, 2, 3, 4]],
+        ]);
+
+        $response->assertSessionHasErrors('image_ids.'.$news->id);
+    }
+
+    public function test_the_preview_shows_only_the_chosen_images(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        $chosen = $news->images->pluck('id')->take(2)->all();
+        $newsletter->news()->attach($news->id, ['order' => 1, 'image_ids' => $chosen]);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.preview', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('newsletter.news.0.images', 2)
+            ->where('newsletter.news.0.images.0.id', $chosen[0])
+            ->where('newsletter.news.0.images.1.id', $chosen[1])
+        );
+    }
+
+    public function test_the_preview_hides_the_image_when_none_were_chosen(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        $newsletter->news()->attach($news->id, ['order' => 1, 'image_ids' => []]);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.preview', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page->has('newsletter.news.0.images', 0));
+    }
+
+    public function test_a_draft_without_a_saved_choice_keeps_the_mirror_image(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $news = News::factory()->withImages(3)->create(['status' => 'accepted']);
+        // pivot sem image_ids: o estado das edições anteriores ao SCRUM-143
+        $newsletter->news()->attach($news->id, ['order' => 1]);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.preview', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('newsletter.news.0.images', 1)
+            ->where('newsletter.news.0.images.0.path', $news->fresh()->image)
+        );
+    }
 }
