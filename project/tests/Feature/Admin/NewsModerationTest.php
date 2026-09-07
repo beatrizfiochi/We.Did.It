@@ -55,6 +55,41 @@ class NewsModerationTest extends TestCase
             );
     }
 
+    public function test_the_list_includes_every_submitted_image(): void
+    {
+        // não só a coluna espelho: o modal de moderação mostra as imagens
+        // todas, para o gestor poder remover uma sem recusar a submissão
+        // inteira (SCRUM-142)
+        News::factory()->withImages(3)->create();
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('admin.news.index'))
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->has('news.0.images', 3)
+                    ->has('news.0.images.0.path')
+            );
+    }
+
+    public function test_removing_one_image_does_not_change_the_moderation_status(): void
+    {
+        // o pedido do SCRUM-142: uma imagem imprópria não obriga a recusar a
+        // notícia inteira. A remoção em si é a admin.images.destroy que já
+        // existe (ImageDeletionTest); aqui só confirma que o estado da
+        // moderação não é tocado por ela.
+        $news = News::factory()->withImages(3)->create(['status' => 'received']);
+        $imagem = $news->images()->first();
+
+        $this->actingAs(User::factory()->create())
+            ->delete(route('admin.images.destroy', $imagem))
+            ->assertSessionHasNoErrors();
+
+        $news->refresh();
+
+        $this->assertSame('received', $news->status);
+        $this->assertSame(2, $news->images()->count());
+    }
+
     public function test_the_list_can_be_filtered_by_status(): void
     {
         News::factory()->create(['status' => 'received']);

@@ -24,7 +24,9 @@ class NewsController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/News/Index', [
-            'news' => News::with('category:id,name')
+            // 'images' também vem: a listagem mostra-as todas no modal de
+            // detalhe, não só a espelho (SCRUM-142)
+            'news' => News::with(['category:id,name', 'images'])
                 ->when(
                     $request->string('status')->toString(),
                     fn ($query, $status) => $query->where('status', $status),
