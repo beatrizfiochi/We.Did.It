@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -75,13 +76,24 @@ class RegisteredUserController extends Controller
     {
         abort_if($user->is($request->user()), 403, 'Não podes desativar a tua própria conta.');
 
-        if ($user->status && User::active()->count() === 1) {
-            abort(403, 'Tem de ficar pelo menos um administrador ativo.');
-        }
+        // A contagem e a escrita têm de ser atómicas. Sem o lock, dois pedidos
+        // simultâneos liam ambos "dois ativos", ambos passavam a guarda e a
+        // aplicação ficava sem administradores — um estado que já não se
+        // desfaz pela aplicação, só com acesso direto à base de dados.
+        //
+        // O lockForUpdate é ignorado em silêncio pelo SQLite dos testes; quem
+        // o cumpre é o MySQL, que é onde isto corre.
+        DB::transaction(function () use ($user) {
+            $ativos = User::active()->lockForUpdate()->count();
 
-        $user->update(['status' => ! $user->status]);
+            if ($user->status && $ativos === 1) {
+                abort(403, 'Tem de ficar pelo menos um administrador ativo.');
+            }
 
-        ActivityLog::record($user, 'updated');
+            $user->update(['status' => ! $user->status]);
+
+            ActivityLog::record($user, 'updated');
+        });
 
         return back()->with('success', $user->status
             ? 'Administrador ativado.'
