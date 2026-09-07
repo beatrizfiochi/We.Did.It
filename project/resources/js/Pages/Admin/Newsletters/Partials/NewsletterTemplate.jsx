@@ -61,6 +61,24 @@ function imageUrl(path) {
     return `/storage/${path}`;
 }
 
+/**
+ * URLs das imagens que este item traz nesta edição, já pela ordem escolhida.
+ * O controller (preview) resolve a relação `images` para a escolha da pivot
+ * (SCRUM-143); aqui é só mapear para /storage. Fallback ao `image` espelho
+ * para quem chamar o template fora do preview.
+ */
+function editionImages(item) {
+    const images = item.images ?? [];
+
+    if (images.length > 0) {
+        return images.map((image) => imageUrl(image.path)).filter(Boolean);
+    }
+
+    const mirror = imageUrl(item.image);
+
+    return mirror ? [mirror] : [];
+}
+
 export default function NewsletterTemplate({ newsletter }) {
     const news = newsletter.news ?? [];
     const testimonials = newsletter.testimonials ?? [];
@@ -140,19 +158,32 @@ export default function NewsletterTemplate({ newsletter }) {
                     ) : (
                         <div className="grid gap-6 lg:grid-cols-2">
                             {news.map((item) => {
-                                const src = imageUrl(item.image);
+                                const [hero, ...rest] = editionImages(item);
 
                                 return (
                                     <article
                                         key={item.id}
                                         className="overflow-hidden rounded-lg border border-gray-200 bg-white"
                                     >
-                                        {src && (
+                                        {hero && (
                                             <img
-                                                src={src}
+                                                src={hero}
                                                 alt={item.title}
                                                 className="h-48 w-full object-cover print:h-32"
                                             />
+                                        )}
+
+                                        {rest.length > 0 && (
+                                            <div className="grid grid-cols-2 gap-1 p-1">
+                                                {rest.map((src) => (
+                                                    <img
+                                                        key={src}
+                                                        src={src}
+                                                        alt={item.title}
+                                                        className="h-24 w-full object-cover print:h-20"
+                                                    />
+                                                ))}
+                                            </div>
                                         )}
 
                                         <div className="p-5">
@@ -181,7 +212,7 @@ export default function NewsletterTemplate({ newsletter }) {
                     ) : (
                         <div className="grid gap-5 md:grid-cols-2">
                             {testimonials.map((item) => {
-                                const src = imageUrl(item.image);
+                                const [avatar, ...rest] = editionImages(item);
 
                                 return (
                                     <article
@@ -189,9 +220,9 @@ export default function NewsletterTemplate({ newsletter }) {
                                         className="rounded-lg border border-gray-200 bg-gray-50 p-5"
                                     >
                                         <div className="flex gap-4">
-                                            {src && (
+                                            {avatar && (
                                                 <img
-                                                    src={src}
+                                                    src={avatar}
                                                     alt={item.name}
                                                     className="h-16 w-16 shrink-0 rounded-full object-cover"
                                                 />
@@ -213,6 +244,19 @@ export default function NewsletterTemplate({ newsletter }) {
                                                 <p className="mt-3 text-sm font-semibold text-gray-900">
                                                     {item.name}
                                                 </p>
+
+                                                {rest.length > 0 && (
+                                                    <div className="mt-3 flex gap-2">
+                                                        {rest.map((src) => (
+                                                            <img
+                                                                key={src}
+                                                                src={src}
+                                                                alt={item.name}
+                                                                className="h-14 w-14 rounded object-cover"
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </article>
