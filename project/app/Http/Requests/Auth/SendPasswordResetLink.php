@@ -12,7 +12,11 @@ class SendPasswordResetLink extends FormRequest
         return true;
     }
 
-    // ResetPasswordRequest
+    /**
+     * Só o formato do email. Se existe conta com esse endereço não se valida
+     * aqui de propósito: dizê-lo a quem não tem sessão revelava quais os
+     * emails registados no sistema.
+     */
     public function rules(): array
     {
         return ['email' => ['required', 'email']];
