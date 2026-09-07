@@ -40,7 +40,7 @@ export default function ForgotPassword({ status }) {
                     <form onSubmit={submit}>
                         <TextInput
                             id="email"
-                            type="email"
+                            type="text" // para permitir a mensagem customizada vinda do Request
                             name="email"
                             value={data.email}
                             className="mt-1 block w-full"
