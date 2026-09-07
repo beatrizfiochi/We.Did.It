@@ -29,6 +29,11 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            // explícito e não só o default da migração: sem isto o modelo em
+            // memória fica com status a null depois do create(), porque o
+            // Eloquent não relê a linha, e o actingAs() passa esse objeto ao
+            // EnsureUserIsActive, que expulsava toda a gente nos testes
+            'status' => true,
             'remember_token' => Str::random(10),
         ];
     }

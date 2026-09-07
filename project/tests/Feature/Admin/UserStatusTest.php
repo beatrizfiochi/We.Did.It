@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Http\Middleware\EnsureUserIsActive;
 use App\Mail\NewSubmissionReceived;
 use App\Models\ActivityLog;
 use App\Models\Category;
@@ -86,12 +87,16 @@ class UserStatusTest extends TestCase
 
     /**
      * Sem administradores ativos ninguém volta a entrar em lado nenhum, e não
-     * há como resolver pela aplicação.
+     * há como resolver pela aplicação — só com acesso direto à base de dados.
      *
-     * Só se chega aqui com duas sessões abertas ao mesmo tempo: o A desativa o
-     * B, e o B — cuja sessão continua viva, porque o estado só é verificado no
-     * login — tenta desativar o A. Aí o alvo não é o próprio, a guarda de
-     * autodesativação não dispara, e é esta que trava.
+     * Esta guarda é a segunda linha de defesa, e por isso o teste desliga o
+     * EnsureUserIsActive de propósito. Com o middleware ligado o cenário não
+     * existe: um desativado não chega a fazer pedido nenhum, e um ativo que
+     * tente desativar o último ativo está a tentar desativar-se a si próprio,
+     * o que a primeira guarda já apanha.
+     *
+     * Fica na mesma porque o middleware pode ser removido, ou uma rota pode
+     * nascer fora do grupo web, e aí é isto que trava.
      */
     public function test_the_last_active_admin_cannot_be_deactivated(): void
     {
@@ -103,13 +108,32 @@ class UserStatusTest extends TestCase
         $this->assertFalse((bool) $b->fresh()->status);
         $this->assertSame(1, User::active()->count());
 
-        // o B, com a sessão ainda viva, tenta desativar o A
-        $this->actingAs($b->fresh())
+        // o B, já desativado, tenta desativar o A
+        $this->withoutMiddleware(EnsureUserIsActive::class)
+            ->actingAs($b->fresh())
             ->patch(route('admin.users.status', $a))
             ->assertForbidden();
 
         $this->assertTrue((bool) $a->fresh()->status);
         $this->assertSame(1, User::active()->count());
+    }
+
+    /**
+     * O que a guarda acima deixou de precisar de cobrir: desativar alguém já
+     * não lhe deixa a sessão aberta até ao fim do SESSION_LIFETIME.
+     */
+    public function test_an_open_session_ends_as_soon_as_the_account_is_deactivated(): void
+    {
+        $a = User::factory()->create();
+        $b = User::factory()->create();
+
+        $this->actingAs($a)->patch(route('admin.users.status', $b));
+
+        $this->actingAs($b->fresh())
+            ->get(route('admin.news.index'))
+            ->assertRedirect(route('login'));
+
+        $this->assertGuest();
     }
 
     /**
