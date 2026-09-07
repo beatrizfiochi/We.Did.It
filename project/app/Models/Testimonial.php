@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\NewsletterTestimonial;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class Testimonial extends Model
     public function newsletters()
     {
         return $this->belongsToMany(Newsletter::class, 'newsletter_testimonial', 'testimonial_id', 'newsletter_id')
-            ->withPivot('order');
+            ->using(NewsletterTestimonial::class)
+            ->withPivot('order', 'image_ids');
     }
 }

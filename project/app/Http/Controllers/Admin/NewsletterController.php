@@ -13,10 +13,12 @@ use App\Models\ActivityLog;
 use App\Models\Calendar;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\Image;
 use App\Models\News;
 use App\Models\Newsletter;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -124,11 +126,15 @@ class NewsletterController extends Controller
     public function preview(Newsletter $newsletter): Response
     {
         $newsletter->load([
-            'news' => fn ($q) => $q->with('category')->orderByPivot('order'),
-            'testimonials' => fn ($q) => $q->with('category')->orderByPivot('order'),
+            'news' => fn ($q) => $q->with(['category', 'images'])->orderByPivot('order'),
+            'testimonials' => fn ($q) => $q->with(['category', 'images'])->orderByPivot('order'),
             'calendars' => fn ($q) => $q->orderBy('date'),
             'courses',
         ]);
+
+        // deixa em `images` de cada item só as escolhidas para esta edição
+        $this->resolveEditionImages($newsletter->news);
+        $this->resolveEditionImages($newsletter->testimonials);
 
         // start_date é string livre vinda da API externa, não dá para ordenar em SQL
         $newsletter->setRelation('courses', $newsletter->courses
@@ -206,9 +212,10 @@ class NewsletterController extends Controller
 
         $newsletter->load('news:id');
 
-        // só as notícias aprovadas podem entrar na newsletter
+        // só as notícias aprovadas podem entrar na newsletter. As imagens vão
+        // todas (até 3): o gestor escolhe quais saem nesta edição (SCRUM-143).
         $news = News::where('status', 'accepted')
-            ->with('category:id,name')
+            ->with(['category:id,name', 'images:id,imageable_id,imageable_type,path'])
             ->latest()
             ->get(['id', 'category_id', 'title', 'image', 'created_at']);
 
@@ -216,6 +223,11 @@ class NewsletterController extends Controller
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
             'news' => $news,
             'news_ids' => $newsletter->news->pluck('id'),
+            // { news_id: [image_id, …] } — a escolha desta edição. null quando
+            // ainda não foi feita: o ecrã trata isso como "todas".
+            'selected_images' => $newsletter->news->mapWithKeys(
+                fn ($item) => [$item->id => $item->pivot->image_ids]
+            ),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
@@ -225,12 +237,16 @@ class NewsletterController extends Controller
      */
     public function updateNews(UpdateNewsletterNewsRequest $request, Newsletter $newsletter): RedirectResponse
     {
-        $ids = $request->validated()['news_ids'] ?? [];
+        $data = $request->validated();
+        $ids = $data['news_ids'] ?? [];
 
-        // a ordem de chegada é a ordem em que saem na newsletter; começa em 1
-        // para acompanhar o NewsletterSeeder
+        $ownImages = News::whereIn('id', $ids)
+            ->with('images:id,imageable_id,imageable_type')
+            ->get()
+            ->mapWithKeys(fn ($item) => [$item->id => $item->images->pluck('id')->all()]);
+
         $newsletter->news()->sync(
-            collect($ids)->mapWithKeys(fn ($id, $i) => [$id => ['order' => $i + 1]])
+            $this->contentSyncPayload($ids, $data['image_ids'] ?? [], $ownImages)
         );
 
         // regista a newsletter, não os conteúdos: o enum só tem
@@ -255,7 +271,7 @@ class NewsletterController extends Controller
 
         // só os testemunhos aprovados podem entrar na newsletter
         $testimonials = Testimonial::where('status', 'accepted')
-            ->with('category:id,name')
+            ->with(['category:id,name', 'images:id,imageable_id,imageable_type,path'])
             ->latest()
             ->get(['id', 'category_id', 'title', 'name', 'image', 'created_at']);
 
@@ -263,6 +279,9 @@ class NewsletterController extends Controller
             'newsletter' => $newsletter->only(['id', 'title', 'edition']),
             'testimonials' => $testimonials,
             'testimonial_ids' => $newsletter->testimonials->pluck('id'),
+            'selected_images' => $newsletter->testimonials->mapWithKeys(
+                fn ($item) => [$item->id => $item->pivot->image_ids]
+            ),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
@@ -272,12 +291,16 @@ class NewsletterController extends Controller
      */
     public function updateTestimonials(UpdateNewsletterTestimonialsRequest $request, Newsletter $newsletter): RedirectResponse
     {
-        $ids = $request->validated()['testimonial_ids'] ?? [];
+        $data = $request->validated();
+        $ids = $data['testimonial_ids'] ?? [];
 
-        // a ordem de chegada é a ordem em que saem na newsletter; começa em 1
-        // para acompanhar o NewsletterSeeder
+        $ownImages = Testimonial::whereIn('id', $ids)
+            ->with('images:id,imageable_id,imageable_type')
+            ->get()
+            ->mapWithKeys(fn ($item) => [$item->id => $item->images->pluck('id')->all()]);
+
         $newsletter->testimonials()->sync(
-            collect($ids)->mapWithKeys(fn ($id, $i) => [$id => ['order' => $i + 1]])
+            $this->contentSyncPayload($ids, $data['image_ids'] ?? [], $ownImages)
         );
 
         // regista a newsletter, não os conteúdos: o enum só tem
@@ -285,6 +308,72 @@ class NewsletterController extends Controller
         ActivityLog::record($newsletter, 'updated');
 
         return back()->with('success', 'Testemunhos da newsletter atualizados com sucesso.');
+    }
+
+    /**
+     * Monta o payload do sync() de notícias/testemunhos numa edição.
+     *
+     * A ordem de chegada dos ids é a ordem em que saem (order começa em 1, para
+     * acompanhar o NewsletterSeeder). O image_ids guarda, por item, os ids das
+     * imagens escolhidas para esta edição — só as que são mesmo daquele item,
+     * no máximo 3, pela ordem em que a pessoa as escolheu (SCRUM-143).
+     *
+     * @param  array<int, int>  $ids
+     * @param  array<int|string, array<int, int>>  $imageSelection
+     * @param  Collection<int, array<int, int>>  $ownImages
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function contentSyncPayload(array $ids, array $imageSelection, $ownImages)
+    {
+        return collect($ids)->mapWithKeys(function ($id, $i) use ($imageSelection, $ownImages) {
+            $chosen = $imageSelection[$id] ?? null;
+
+            if (is_array($chosen)) {
+                $chosen = collect($chosen)
+                    ->map(fn ($imageId) => (int) $imageId)
+                    ->intersect($ownImages[$id] ?? [])
+                    ->unique()
+                    ->take(Image::MAX_POR_SUBMISSAO)
+                    ->values()
+                    ->all();
+            }
+
+            return [$id => ['order' => $i + 1, 'image_ids' => $chosen]];
+        });
+    }
+
+    /**
+     * Reduz a relação `images` de cada item às imagens escolhidas para esta
+     * edição (pivot.image_ids), pela ordem escolhida (SCRUM-143).
+     *
+     * pivot.image_ids null (rascunho anterior a esta feature): fica só a
+     * imagem espelho, que é o que a pré-visualização mostrava antes.
+     * pivot.image_ids []: sai sem imagem nenhuma.
+     *
+     * @param  Collection  $items
+     */
+    private function resolveEditionImages($items): void
+    {
+        foreach ($items as $item) {
+            $chosen = $item->pivot->image_ids;
+
+            if ($chosen === null) {
+                $mirror = $item->images->firstWhere('path', $item->image)
+                    ?? $item->images->first();
+
+                $item->setRelation('images', $mirror ? collect([$mirror]) : collect());
+
+                continue;
+            }
+
+            $item->setRelation(
+                'images',
+                collect($chosen)
+                    ->map(fn ($id) => $item->images->firstWhere('id', $id))
+                    ->filter()
+                    ->values()
+            );
+        }
     }
 
     /**

@@ -61,6 +61,24 @@ function imageUrl(path) {
     return `/storage/${path}`;
 }
 
+/**
+ * URLs das imagens que este item traz nesta edição, já pela ordem escolhida.
+ * O controller (preview) resolve a relação `images` para a escolha da pivot
+ * (SCRUM-143); aqui é só mapear para /storage. Fallback ao `image` espelho
+ * para quem chamar o template fora do preview.
+ */
+function editionImages(item) {
+    const images = item.images ?? [];
+
+    if (images.length > 0) {
+        return images.map((image) => imageUrl(image.path)).filter(Boolean);
+    }
+
+    const mirror = imageUrl(item.image);
+
+    return mirror ? [mirror] : [];
+}
+
 export default function NewsletterTemplate({ newsletter }) {
     const news = newsletter.news ?? [];
     const testimonials = newsletter.testimonials ?? [];
@@ -140,19 +158,43 @@ export default function NewsletterTemplate({ newsletter }) {
                     ) : (
                         <div className="grid gap-6 lg:grid-cols-2">
                             {news.map((item) => {
-                                const src = imageUrl(item.image);
+                                const [hero, ...rest] = editionImages(item);
 
                                 return (
                                     <article
                                         key={item.id}
                                         className="overflow-hidden rounded-lg border border-gray-200 bg-white"
                                     >
-                                        {src && (
+                                        {hero && (
                                             <img
-                                                src={src}
+                                                src={hero}
                                                 alt={item.title}
                                                 className="h-48 w-full object-cover print:h-32"
                                             />
+                                        )}
+
+                                        {rest.length > 0 && (
+                                            // flex e não grid-cols-2: a regra do print.css que colapsa
+                                            // as grelhas de 2 colunas em papel faz match por substring
+                                            // (apanha lg:/md:grid-cols-2) e também apanhava esta,
+                                            // empilhando as miniaturas a toda a largura no PDF.
+                                            //
+                                            // Largura por imagem, não fixa a 50%: com 1 só imagem em
+                                            // `rest` (o caso de 2 imagens no total) ela ocupa o bloco
+                                            // inteiro em vez de deixar metade em branco — um dos três
+                                            // casos pedidos na reunião com o cliente (revisão SCRUM-143)
+                                            <div className="flex gap-1 p-1">
+                                                {rest.map((src) => (
+                                                    <img
+                                                        key={src}
+                                                        src={src}
+                                                        alt={item.title}
+                                                        className={`h-24 shrink-0 grow-0 object-cover print:h-20 ${
+                                                            rest.length === 1 ? 'w-full' : 'w-1/2'
+                                                        }`}
+                                                    />
+                                                ))}
+                                            </div>
                                         )}
 
                                         <div className="p-5">
@@ -181,7 +223,7 @@ export default function NewsletterTemplate({ newsletter }) {
                     ) : (
                         <div className="grid gap-5 md:grid-cols-2">
                             {testimonials.map((item) => {
-                                const src = imageUrl(item.image);
+                                const [avatar, ...rest] = editionImages(item);
 
                                 return (
                                     <article
@@ -189,9 +231,9 @@ export default function NewsletterTemplate({ newsletter }) {
                                         className="rounded-lg border border-gray-200 bg-gray-50 p-5"
                                     >
                                         <div className="flex gap-4">
-                                            {src && (
+                                            {avatar && (
                                                 <img
-                                                    src={src}
+                                                    src={avatar}
                                                     alt={item.name}
                                                     className="h-16 w-16 shrink-0 rounded-full object-cover"
                                                 />
@@ -213,6 +255,19 @@ export default function NewsletterTemplate({ newsletter }) {
                                                 <p className="mt-3 text-sm font-semibold text-gray-900">
                                                     {item.name}
                                                 </p>
+
+                                                {rest.length > 0 && (
+                                                    <div className="mt-3 flex gap-2">
+                                                        {rest.map((src) => (
+                                                            <img
+                                                                key={src}
+                                                                src={src}
+                                                                alt={item.name}
+                                                                className="h-14 w-14 rounded object-cover"
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </article>

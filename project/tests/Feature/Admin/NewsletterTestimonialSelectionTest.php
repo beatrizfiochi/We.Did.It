@@ -140,4 +140,115 @@ class NewsletterTestimonialSelectionTest extends TestCase
 
         $response->assertSessionHasErrors('testimonial_ids.0');
     }
+
+    // ---- Escolha das imagens que saem, por edição (SCRUM-143) ----
+
+    public function test_the_screen_sends_each_testimonial_images_and_the_current_choice(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->withImages(3)->create(['status' => 'accepted']);
+        $chosen = $testimonial->images->pluck('id')->take(2)->all();
+        $newsletter->testimonials()->attach($testimonial->id, ['order' => 1, 'image_ids' => $chosen]);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.testimonials.edit', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('testimonials.0.images', 3)
+            ->where('selected_images.'.$testimonial->id, $chosen)
+        );
+    }
+
+    public function test_the_chosen_images_are_saved_in_the_pivot(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->withImages(3)->create(['status' => 'accepted']);
+        $chosen = $testimonial->images->pluck('id')->take(2)->all();
+
+        $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
+            'testimonial_ids' => [$testimonial->id],
+            'image_ids' => [$testimonial->id => $chosen],
+        ]);
+
+        $this->assertSame($chosen, $newsletter->fresh()->testimonials->first()->pivot->image_ids);
+    }
+
+    public function test_changing_the_image_selection_replaces_the_previous(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->withImages(3)->create(['status' => 'accepted']);
+        $ids = $testimonial->images->pluck('id')->all();
+        $newsletter->testimonials()->attach($testimonial->id, ['order' => 1, 'image_ids' => [$ids[0], $ids[1]]]);
+
+        $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
+            'testimonial_ids' => [$testimonial->id],
+            'image_ids' => [$testimonial->id => [$ids[2]]],
+        ]);
+
+        $this->assertSame([$ids[2]], $newsletter->fresh()->testimonials->first()->pivot->image_ids);
+    }
+
+    public function test_a_testimonial_can_be_selected_with_no_images(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->withImages(2)->create(['status' => 'accepted']);
+
+        $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
+            'testimonial_ids' => [$testimonial->id],
+            'image_ids' => [$testimonial->id => []],
+        ]);
+
+        $this->assertSame([], $newsletter->fresh()->testimonials->first()->pivot->image_ids);
+    }
+
+    public function test_images_that_belong_to_another_testimonial_are_dropped(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->withImages(2)->create(['status' => 'accepted']);
+        $other = Testimonial::factory()->withImages(2)->create(['status' => 'accepted']);
+
+        $mine = $testimonial->images->first()->id;
+        $foreign = $other->images->first()->id;
+
+        $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
+            'testimonial_ids' => [$testimonial->id],
+            'image_ids' => [$testimonial->id => [$mine, $foreign]],
+        ]);
+
+        $this->assertSame([$mine], $newsletter->fresh()->testimonials->first()->pivot->image_ids);
+    }
+
+    public function test_more_than_three_images_per_testimonial_is_rejected(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->create(['status' => 'accepted']);
+
+        $response = $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
+            'testimonial_ids' => [$testimonial->id],
+            'image_ids' => [$testimonial->id => [1, 2, 3, 4]],
+        ]);
+
+        $response->assertSessionHasErrors('image_ids.'.$testimonial->id);
+    }
+
+    public function test_the_preview_shows_only_the_chosen_testimonial_images(): void
+    {
+        $admin = User::factory()->create();
+        $newsletter = Newsletter::factory()->create();
+        $testimonial = Testimonial::factory()->withImages(3)->create(['status' => 'accepted']);
+        $chosen = $testimonial->images->pluck('id')->take(1)->all();
+        $newsletter->testimonials()->attach($testimonial->id, ['order' => 1, 'image_ids' => $chosen]);
+
+        $response = $this->actingAs($admin)->get(route('admin.newsletters.preview', $newsletter));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('newsletter.testimonials.0.images', 1)
+            ->where('newsletter.testimonials.0.images.0.id', $chosen[0])
+        );
+    }
 }
