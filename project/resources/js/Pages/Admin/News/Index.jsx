@@ -125,7 +125,27 @@ export default function Index({ news, categories }) {
     const closeViewModal = () => {
         setShowViewModal(false);
         setSelectedNews(null); // turns selected view as null, closes modal
+        setConfirmingImageId(null);
     }
+
+    // remoção de imagens individuais na moderação: uma imagem imprópria não
+    // obriga a recusar a submissão inteira (SCRUM-142). Confirmação inline
+    // por imagem em vez de window.confirm(), que bloqueia o browser, e sem
+    // empilhar outro <Modal> por cima do de visualização.
+    const [confirmingImageId, setConfirmingImageId] = useState(null);
+
+    const handleDeleteImage = (image) => {
+        router.delete(route('admin.images.destroy', image.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                // atualiza o modal aberto sem esperar pela recarga da tabela
+                setSelectedNews((prev) =>
+                    prev ? { ...prev, images: prev.images.filter((img) => img.id !== image.id) } : prev
+                );
+                setConfirmingImageId(null);
+            },
+        });
+    };
 
 
 
@@ -279,10 +299,51 @@ export default function Index({ news, categories }) {
                             {selectedNews.description}
                         </p>
 
-                        {selectedNews.image && (
-                            <img src={`/storage/${selectedNews.image}`}
-                                alt={selectedNews.title}
-                                className="w-full h-auto rounded-lg mb-4" />
+                        {selectedNews.images?.length > 0 && (
+                            <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                {selectedNews.images.map((image) => (
+                                    <div key={image.id} className="relative">
+                                        <img
+                                            src={`/storage/${image.path}`}
+                                            alt={selectedNews.title}
+                                            className="h-32 w-full rounded-lg object-cover"
+                                        />
+
+                                        {confirmingImageId === image.id ? (
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-black/70 p-2 text-center">
+                                                <p className="text-xs font-semibold text-white">
+                                                    Remover esta imagem?
+                                                </p>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        type="button"
+                                                        className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-700"
+                                                        onClick={() => handleDeleteImage(image)}
+                                                    >
+                                                        Remover
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="rounded bg-white px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+                                                        onClick={() => setConfirmingImageId(null)}
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="absolute right-1 top-1 rounded-full bg-white/90 p-1 text-red-600 shadow hover:bg-white"
+                                                onClick={() => setConfirmingImageId(image.id)}
+                                                aria-label="Remover imagem"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         )}
 
                         <div className="mt-6 flex flex-wrap justify-end gap-3">
@@ -461,7 +522,13 @@ export default function Index({ news, categories }) {
                                 }}
                             />
 
-                            {/* Show a preview: new file if picked, otherwise the existing stored image */}
+                            {/*
+                                Pré-visualização: ficheiros novos se já foram escolhidos, senão as
+                                imagens já guardadas (todas, não só a espelho — o modal de Ver já
+                                mostra a galeria toda, e mostrar aqui só uma dava a entender que só
+                                havia uma). Sem botão de remover: quem edita está a acrescentar
+                                imagens, não a geri-las — isso é o modal de Ver (SCRUM-142).
+                            */}
                             {editingNews.imageFiles?.length > 0 ? (
                                 <div className="mt-2 flex flex-wrap gap-2">
                                     {editingNews.imageFiles.map((file, i) => (
@@ -473,12 +540,17 @@ export default function Index({ news, categories }) {
                                         />
                                     ))}
                                 </div>
-                            ) : editingNews.image ? (
-                                <img
-                                    src={`/storage/${editingNews.image}`}
-                                    alt="Imagem atual"
-                                    className="w-32 h-auto rounded-lg mt-2"
-                                />
+                            ) : editingNews.images?.length > 0 ? (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {editingNews.images.map((image) => (
+                                        <img
+                                            key={image.id}
+                                            src={`/storage/${image.path}`}
+                                            alt="Imagem atual"
+                                            className="h-20 w-20 rounded-lg object-cover"
+                                        />
+                                    ))}
+                                </div>
                             ) : null}
 
                             {editErrors.images && (
