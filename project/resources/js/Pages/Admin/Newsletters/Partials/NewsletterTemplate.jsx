@@ -174,13 +174,24 @@ export default function NewsletterTemplate({ newsletter }) {
                                         )}
 
                                         {rest.length > 0 && (
-                                            <div className="grid grid-cols-2 gap-1 p-1">
+                                            // flex e não grid-cols-2: a regra do print.css que colapsa
+                                            // as grelhas de 2 colunas em papel faz match por substring
+                                            // (apanha lg:/md:grid-cols-2) e também apanhava esta,
+                                            // empilhando as miniaturas a toda a largura no PDF.
+                                            //
+                                            // Largura por imagem, não fixa a 50%: com 1 só imagem em
+                                            // `rest` (o caso de 2 imagens no total) ela ocupa o bloco
+                                            // inteiro em vez de deixar metade em branco — um dos três
+                                            // casos pedidos na reunião com o cliente (revisão SCRUM-143)
+                                            <div className="flex gap-1 p-1">
                                                 {rest.map((src) => (
                                                     <img
                                                         key={src}
                                                         src={src}
                                                         alt={item.title}
-                                                        className="h-24 w-full object-cover print:h-20"
+                                                        className={`h-24 shrink-0 grow-0 object-cover print:h-20 ${
+                                                            rest.length === 1 ? 'w-full' : 'w-1/2'
+                                                        }`}
                                                     />
                                                 ))}
                                             </div>
