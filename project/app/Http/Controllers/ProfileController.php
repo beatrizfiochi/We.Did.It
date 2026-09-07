@@ -6,11 +6,19 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
+/**
+ * Não há eliminação da própria conta, e a ausência é deliberada.
+ *
+ * O ciclo de vida dos administradores é gerido por outro administrador
+ * (SCRUM-146): desativa-se, com confirmação e com guardas, e o histórico de
+ * atividade sobrevive. O "Delete Account" do Breeze contornava tudo isso —
+ * chamava $user->delete(), e o logs.user_id tem onDelete('cascade'), por isso
+ * apagava também o registo de quem aprovou e publicou o quê.
+ */
 class ProfileController extends Controller
 {
     /**
@@ -38,26 +46,5 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
     }
 }

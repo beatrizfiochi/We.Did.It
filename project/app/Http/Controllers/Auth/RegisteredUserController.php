@@ -9,6 +9,8 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -60,5 +62,41 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         return back()->with('success', 'Administrador criado com sucesso.');
+    }
+
+    /**
+     * Ativa ou desativa uma conta de administrador (SCRUM-146).
+     *
+     * Não há eliminação: a tabela logs tem onDelete('cascade') no user_id, por
+     * isso apagar um administrador levava com ele todo o histórico de atividade
+     * — quem aprovou o quê, quem publicou o quê. Uma conta desativada não entra
+     * e não recebe avisos, mas continua a dar nome às operações que fez.
+     */
+    public function toggleStatus(Request $request, User $user): RedirectResponse
+    {
+        abort_if($user->is($request->user()), 403, 'Não podes desativar a tua própria conta.');
+
+        // A contagem e a escrita têm de ser atómicas. Sem o lock, dois pedidos
+        // simultâneos liam ambos "dois ativos", ambos passavam a guarda e a
+        // aplicação ficava sem administradores — um estado que já não se
+        // desfaz pela aplicação, só com acesso direto à base de dados.
+        //
+        // O lockForUpdate é ignorado em silêncio pelo SQLite dos testes; quem
+        // o cumpre é o MySQL, que é onde isto corre.
+        DB::transaction(function () use ($user) {
+            $ativos = User::active()->lockForUpdate()->count();
+
+            if ($user->status && $ativos === 1) {
+                abort(403, 'Tem de ficar pelo menos um administrador ativo.');
+            }
+
+            $user->update(['status' => ! $user->status]);
+
+            ActivityLog::record($user, 'updated');
+        });
+
+        return back()->with('success', $user->status
+            ? 'Administrador ativado.'
+            : 'Administrador desativado.');
     }
 }
