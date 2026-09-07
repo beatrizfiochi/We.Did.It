@@ -4,17 +4,17 @@ import { useState } from "react"
 import PublicLayout from "@/Layouts/PublicLayout"
 
 
-export default function InsertForm({ categories }) {
+export default function InsertForm({ categories, maxImagens }) {
 
     // campos do formulário, na mesma forma que o InsertForm dos testemunhos usa
     const fields =
         [
-            { name: 'title', label: 'Título*', type: 'text' },
-            { name: 'description', label: 'Descrição*', type: 'textarea' },
-            { name: 'event_start_date', label: 'Data do evento*', type: 'date' },
+            { name: 'title', label: 'Título', type: 'text', required: true },
+            { name: 'description', label: 'Descrição', type: 'textarea', required: true },
+            { name: 'event_start_date', label: 'Data do evento', type: 'date', required: true },
             { name: 'event_end_date', label: 'Data de fim (só se durou mais do que um dia)', type: 'date' },
             { name: 'category_id', label: 'Categoria', type: 'select' },
-            { name: 'images', label: 'Imagens (até 3)', type: 'file' },
+            { name: 'images', label: `Imagens (até ${maxImagens})`, type: 'file' },
         ]
 
     const [clientErrors, setClientErrors] = useState({})
@@ -69,8 +69,8 @@ export default function InsertForm({ categories }) {
         if (images.length > 0) {
             // os três limites espelham o StoreNewsRequest: max:3 no conjunto,
             // max:5120 (5 MB) por ficheiro
-            if (images.length > 3) {
-                newErrors['images'] = "Podes enviar no máximo 3 imagens."
+            if (images.length > maxImagens) {
+                newErrors['images'] = `Podes enviar no máximo ${maxImagens} imagens.`
             } else if (images.some((file) => file.size > 5 * 1024 * 1024)) {
                 newErrors['images'] = "Cada imagem deve ter no máximo 5 MB."
             }
@@ -106,6 +106,7 @@ export default function InsertForm({ categories }) {
                     clientErrors={clientErrors}
                     categoryList={categories}
                     submitFunction={insertNews}
+                    maxImagens={maxImagens}
                 />
             </div>
         </PublicLayout>

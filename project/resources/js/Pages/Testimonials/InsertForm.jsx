@@ -9,10 +9,10 @@ export default function InsertForm({ categories }) {
     // Variables that hold arrays with the labels and input type and name 
     const fields =
         [
-            { name: 'name', label: 'Nome*', type: 'text' },
-            { name: 'email', label: 'Email*', type: 'email' },
-            { name: 'title', label: 'Título*', type: 'text' },
-            { name: 'description', label: 'Descrição*', type: 'textarea' },
+            { name: 'name', label: 'Nome', type: 'text', required: true },
+            { name: 'email', label: 'Email', type: 'email', required: true },
+            { name: 'title', label: 'Título', type: 'text', required: true },
+            { name: 'description', label: 'Descrição', type: 'textarea', required: true },
             { name: 'category_id', label: 'Categoria', type: 'select' },
             { name: 'images', label: 'Imagens (até 3)', type: 'file' },
         ]
