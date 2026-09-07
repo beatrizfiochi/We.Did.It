@@ -287,6 +287,21 @@ class NewsModerationTest extends TestCase
             ->assertSessionHasErrors('event_start_date');
     }
 
+    /** Como na submissão: fim igual ao início é um dia único, e grava null. */
+    public function test_the_moderation_stores_a_null_end_when_it_equals_the_start(): void
+    {
+        $news = News::factory()->create();
+
+        $this->actingAs(User::factory()->create())
+            ->put(route('admin.news.update', $news), $this->validPayload([
+                'event_start_date' => '2026-05-12',
+                'event_end_date' => '2026-05-12',
+            ]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($news->fresh()->event_end_date);
+    }
+
     public function test_the_moderation_can_correct_the_event_dates(): void
     {
         $news = News::factory()->create(['event_start_date' => '2026-01-01', 'event_end_date' => null]);

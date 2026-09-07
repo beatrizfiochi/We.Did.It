@@ -383,8 +383,7 @@ export default function Index({ news, categories }) {
                             <label className="block text-sm font-medium text-gray-700">Data do evento</label>
                             <input
                                 type="date"
-                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500
-                        focus:ring-indigo-500 ${editErrors.event_start_date ? 'border-red-500' : ''}`}
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${editErrors.event_start_date ? 'border-red-500' : ''}`}
                                 value={paraInput(editingNews.event_start_date)}
                                 onChange={(e) =>
                                     setEditingNews({ ...editingNews, event_start_date: e.target.value })
@@ -404,8 +403,7 @@ export default function Index({ news, categories }) {
                             </label>
                             <input
                                 type="date"
-                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500
-                        focus:ring-indigo-500 ${editErrors.event_end_date ? 'border-red-500' : ''}`}
+                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${editErrors.event_end_date ? 'border-red-500' : ''}`}
                                 value={paraInput(editingNews.event_end_date)}
                                 onChange={(e) =>
                                     setEditingNews({ ...editingNews, event_end_date: e.target.value || null })
