@@ -96,27 +96,6 @@
         break-after: avoid;
     }
 
-    /*
-     * as imagens em papel ocupam metade da largura, centradas.
-     *
-     * A coluna útil da A4 são 18 cm (21 menos as margens laterais), e em papel
-     * a grelha colapsa para uma coluna — por isso uma imagem 16/9 dava quase
-     * 10 cm de altura, e o bloco de três dava 17. Com o texto por baixo, um
-     * cartão passava dos 21 cm; como não pode partir (regra acima), não cabia
-     * a seguir ao cabeçalho e saltava inteiro, deixando a primeira página só
-     * com o título da newsletter.
-     *
-     * Limitar a largura e não a proporção é de propósito: o enquadramento e o
-     * recorte ficam iguais aos da pré-visualização, só que mais pequenos. Mudar
-     * a proporção em papel voltava a dar duas imagens diferentes do mesmo
-     * conteúdo, que é o que o ecrã de pré-visualização existe para evitar.
-     */
-    .newsletter-document .newsletter-images {
-        max-width: 11cm !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
     /* nenhuma imagem ultrapassa a largura útil da página */
     .newsletter-document img {
         max-width: 100%;

@@ -143,7 +143,7 @@ function ImageLayout({ images, alt }) {
 
     if (visibleImages.length === 1) {
         return (
-            <div className="newsletter-images bg-gray-50 p-3">
+            <div className="bg-gray-50 p-3">
                 <ImageFrame
                     src={visibleImages[0]}
                     alt={alt}
@@ -155,7 +155,7 @@ function ImageLayout({ images, alt }) {
 
     if (visibleImages.length === 2) {
         return (
-            <div className="newsletter-images flex gap-3 bg-gray-50 p-3">
+            <div className="flex gap-3 bg-gray-50 p-3">
                 {visibleImages.map((src, index) => (
                     <div key={src} className="min-w-0 flex-1">
                         <ImageFrame
@@ -170,7 +170,7 @@ function ImageLayout({ images, alt }) {
     }
 
     return (
-        <div className="newsletter-images space-y-3 bg-gray-50 p-3">
+        <div className="space-y-3 bg-gray-50 p-3">
             <ImageFrame
                 src={visibleImages[0]}
                 alt={`${alt} - imagem 1`}
@@ -245,17 +245,17 @@ export default function NewsletterTemplate({ newsletter }) {
      */
     return (
         <article className="newsletter-document overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-200 print:!mt-0 print:rounded-none print:shadow-none print:ring-0">
-            <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10 print:!px-8">
+            <header className="bg-gradient-to-br from-[#0d2740] to-[#243b73] px-6 py-8 text-white sm:px-10 print:!px-8 print:!py-5">
                 <div className="max-w-3xl">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200">
                         Newsletter interna
                     </p>
 
-                    <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl">
+                    <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl print:!text-3xl">
                         {newsletter.title}
                     </h1>
 
-                    <div className="mt-6 grid gap-3 text-sm text-gray-200 sm:grid-cols-3">
+                    <div className="mt-6 grid gap-3 text-sm text-gray-200 sm:grid-cols-3 print:!mt-4">
                         <div>
                             <p className="text-xs uppercase tracking-wide text-gray-400">
                                 Edição
