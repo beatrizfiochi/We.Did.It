@@ -1,6 +1,7 @@
 
 import { useRef, useState } from "react";
 import { Form, usePage } from "@inertiajs/react";
+import SecondaryButton from "../SecondaryButton";
 
 // component for a form that holds customized props, including the labels and input types.
 // Any page that imports this component, defines its own submitFunction and validation rules.
@@ -97,6 +98,7 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
 
         setSelectedFiles(updated)
         setImagePreview(updatedPreviews)
+        setImageWarning(null)
         setImageUploaded(updated.length > 0)
         if (updated.length === 0) {
             setImageRights(false)
@@ -199,6 +201,7 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                     )}
                                                 </>
 
+
                                             ) : item.type === 'textarea' ? (
 
                                                 <textarea className={inputClass} rows={4} name={item.name} aria-required={item.required} />
@@ -221,9 +224,8 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                 <input className={inputClass} type={item.type} name={item.name} aria-required={item.required} />
                                             )}
 
-                                            {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagens</button></div>}
-
                                         </div>
+
                                         {/* Os erros de ficheiro chegam por posição — images.0, images.1 —
                                             além do erro do conjunto, em images. Mostrar só errors[item.name]
                                             deixava o utilizador a escolher um PDF e a não ver aviso nenhum. */}
@@ -234,6 +236,12 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                     <small key={key} className={errorClass}>{message}</small>
                                                 ))
                                         }
+                                        {item.type === 'file' && imageWarning && (
+                                            <SecondaryButton onClick={() => setImageWarning(null)} aria-label="Fechar aviso" className="mb-3">Ok</SecondaryButton>
+                                        )}
+
+                                        {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagens</button></div>}
+
                                     </div>
                                 ))}
 

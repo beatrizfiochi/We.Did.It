@@ -4,7 +4,7 @@ import { useState } from "react"
 import PublicLayout from "@/Layouts/PublicLayout"
 
 
-export default function InsertForm({ categories }) {
+export default function InsertForm({ categories, maxImagens }) {
 
     // Variables that hold arrays with the labels and input type and name 
     const fields =
@@ -67,7 +67,7 @@ export default function InsertForm({ categories }) {
         if (images.length > 0) {
             // os três limites espelham o StoreTestimonialRequest: max:3 no
             // conjunto, max:5120 (5 MB) por ficheiro
-            if (images.length > 3) {
+            if (images.length > maxImagens) {
                 newErrors['images'] = "Podes enviar no máximo 3 imagens."
             } else if (images.some((file) => file.size > 5 * 1024 * 1024)) {
                 newErrors['images'] = "Cada imagem deve ter no máximo 5 MB."
@@ -112,6 +112,7 @@ export default function InsertForm({ categories }) {
                     clientErrors={clientErrors}
                     categoryList={categories}
                     submitFunction={insertTestimonial}
+                    maxImagens={maxImagens}
                 />
             </div>
         </PublicLayout>

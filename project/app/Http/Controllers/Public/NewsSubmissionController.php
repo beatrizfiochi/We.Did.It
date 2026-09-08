@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNewsRequest;
 use App\Mail\NewSubmissionReceived;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\News;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ class NewsSubmissionController extends Controller
     {
         return Inertia::render('News/InsertForm', [
             'categories' => Category::all(['id', 'name']),
+            'maxImagens' => Image::MAX_POR_SUBMISSAO,
         ]);
     }
 
