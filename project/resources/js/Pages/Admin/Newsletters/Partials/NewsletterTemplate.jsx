@@ -203,7 +203,7 @@ function TestimonialContent({ item }) {
                 {item.title}
             </h3>
 
-            <p className="mt-2 text-sm leading-6 text-gray-700">
+            <p className="mt-2 text-sm leading-6 text-gray-700 print:!text-xs print:!leading-4">
                 {item.description}
             </p>
 
@@ -317,7 +317,7 @@ export default function NewsletterTemplate({ newsletter }) {
                                                 {item.title}
                                             </h3>
 
-                                            <p className="mt-3 text-sm leading-6 text-gray-700">
+                                            <p className="mt-3 text-sm leading-6 text-gray-700 print:!text-xs print:!leading-4">
                                                 {item.description}
                                             </p>
                                         </div>
