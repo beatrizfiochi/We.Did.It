@@ -114,6 +114,14 @@ export default function PublicLayout({ children }) {
                         </a>
                     </div>
                 </div>
+
+                {/* quem construiu isto vive aqui e não no rodapé do documento
+                    da newsletter: esse sai no PDF que o CESAE envia a toda a
+                    comunidade, e é do cliente, não nosso */}
+                <p className="public-footer__credits">
+                    <Link href={route('creditos')}>Desenvolvido por</Link>{' '}
+                    Beatriz Fiochi, Luana Matos, Leida Dupret e Jéssica Amorim
+                </p>
             </footer>
         </div>
     );

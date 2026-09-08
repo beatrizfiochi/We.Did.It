@@ -24,6 +24,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Créditos da equipa. Fora da navegação de propósito: chega-se lá pelo rodapé.
+Route::get('/creditos', function () {
+    return Inertia::render('Creditos');
+})->name('creditos');
+
 // public news submission form (SCRUM-77), rendered by the News/InsertForm page
 Route::get('/noticias/nova', [NewsSubmissionController::class, 'create'])->name('news.create');
 
