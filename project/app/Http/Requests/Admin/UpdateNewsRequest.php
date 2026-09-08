@@ -50,7 +50,7 @@ class UpdateNewsRequest extends FormRequest
         // as que já lá estão contam: o limite é o total da submissão, não o
         // número de ficheiros deste pedido
         $existing = $this->route('news')->images()->count();
-        $available = max(0, Image::MAX_POR_SUBMISSAO - $existing);
+        $available = max(0, Image::MAX_POR_SUBMISSAO_NOTICIAS - $existing);
 
         return [
             'title' => ['required', 'string', 'min:5', 'max:255'],
@@ -76,7 +76,7 @@ class UpdateNewsRequest extends FormRequest
             'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
-            'images.max' => 'Esta submissão só pode ter '.Image::MAX_POR_SUBMISSAO.' imagens. Remove uma antes de acrescentar.',
+            'images.max' => 'Esta submissão só pode ter '.Image::contagem(Image::MAX_POR_SUBMISSAO_NOTICIAS).'. Remove uma antes de acrescentar.',
             'event_start_date.required' => 'A data do evento é obrigatória.',
             'event_start_date.date' => 'A data do evento é inválida.',
             'event_start_date.before_or_equal' => 'A data do evento não pode ser no futuro.',

@@ -125,7 +125,11 @@ class TestimonialModerationTest extends TestCase
         $this->assertSame('received', $testimonial->fresh()->status);
     }
 
-    public function test_a_new_image_is_added_alongside_the_existing_one(): void
+    /**
+     * Um testemunho leva uma imagem só. A acumulação continua a ser testada
+     * do lado das notícias, no NewsModerationTest, onde o limite são três.
+     */
+    public function test_a_second_image_is_refused(): void
     {
         Storage::fake('public');
         Storage::disk('public')->put('testimonials/antiga.jpg', 'conteudo');
@@ -137,19 +141,19 @@ class TestimonialModerationTest extends TestCase
             ->put(route('admin.testimonials.update', $testimonial), $this->validPayload([
                 'images' => [UploadedFile::fake()->create('nova.jpg', 100, 'image/jpeg')],
             ]))
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasErrors('images');
 
-        // já não se substitui, acrescenta-se: a antiga fica, a nova entra
+        // a que já lá estava não é tocada
         Storage::disk('public')->assertExists('testimonials/antiga.jpg');
-        $this->assertSame(2, $testimonial->fresh()->images()->count());
+        $this->assertSame(1, $testimonial->fresh()->images()->count());
     }
 
     public function test_the_limit_counts_images_already_saved(): void
     {
         Storage::fake('public');
 
-        // 3 já gravadas: não sobra nenhuma vaga
-        $testimonial = Testimonial::factory()->withImages(3)->create();
+        // a única vaga já está ocupada
+        $testimonial = Testimonial::factory()->withImages(1)->create();
 
         $response = $this->actingAs(User::factory()->create())
             ->put(route('admin.testimonials.update', $testimonial), $this->validPayload([
@@ -158,9 +162,9 @@ class TestimonialModerationTest extends TestCase
 
         $response->assertSessionHasErrors('images');
         $this->assertSame(
-            'Esta submissão só pode ter 3 imagens. Remove uma antes de acrescentar.',
+            'Esta submissão só pode ter uma imagem. Remove uma antes de acrescentar.',
             session('errors')->get('images')[0],
         );
-        $this->assertSame(3, $testimonial->fresh()->images()->count());
+        $this->assertSame(1, $testimonial->fresh()->images()->count());
     }
 }

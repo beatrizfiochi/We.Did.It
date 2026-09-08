@@ -32,7 +32,7 @@ class UpdateTestimonialRequest extends FormRequest
         // as que já lá estão contam: o limite é o total da submissão, não o
         // número de ficheiros deste pedido
         $existing = $this->route('testimonial')->images()->count();
-        $available = max(0, Image::MAX_POR_SUBMISSAO - $existing);
+        $available = max(0, Image::MAX_POR_SUBMISSAO_TESTEMUNHOS - $existing);
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -58,7 +58,7 @@ class UpdateTestimonialRequest extends FormRequest
             'description.required' => 'A descrição é obrigatória.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
-            'images.max' => 'Esta submissão só pode ter '.Image::MAX_POR_SUBMISSAO.' imagens. Remove uma antes de acrescentar.',
+            'images.max' => 'Esta submissão só pode ter '.Image::contagem(Image::MAX_POR_SUBMISSAO_TESTEMUNHOS).'. Remove uma antes de acrescentar.',
         ];
     }
 }
