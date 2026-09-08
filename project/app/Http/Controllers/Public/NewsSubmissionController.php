@@ -26,7 +26,7 @@ class NewsSubmissionController extends Controller
     {
         return Inertia::render('News/InsertForm', [
             'categories' => Category::all(['id', 'name']),
-            'maxImagens' => Image::MAX_POR_SUBMISSAO,
+            'maxImagens' => Image::MAX_POR_SUBMISSAO_NOTICIAS,
         ]);
     }
 

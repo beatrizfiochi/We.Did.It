@@ -26,7 +26,7 @@ class TestimonialSubmissionController extends Controller
     {
         return Inertia::render('Testimonials/InsertForm', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'maxImagens' => Image::MAX_POR_SUBMISSAO,
+            'maxImagens' => Image::MAX_POR_SUBMISSAO_TESTEMUNHOS,
         ]);
     }
 

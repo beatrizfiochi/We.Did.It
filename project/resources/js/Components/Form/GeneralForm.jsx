@@ -40,7 +40,9 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
         const combined = [...selectedFiles, ...newFiles] // sem slice para o utilizador receber erro se tentar carregar mais imagens que o valor maximo
         setImageWarning(
             combined.length > maxImagens
-                ? `Só podes enviar ${maxImagens} imagens — as restantes foram ignoradas.`
+                ? maxImagens === 1
+                    ? 'Só podes enviar uma imagem — as restantes foram ignoradas.'
+                    : `Só podes enviar ${maxImagens} imagens — as restantes foram ignoradas.`
                 : null
         )
         const cappedImages = combined.slice(0, maxImagens) // corta só agora
@@ -195,13 +197,14 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                                 )}
                                                             </div>
                                                             {imageWarning && (
-                                                                <small className={errorClass}>{imageWarning}</small>
+                                                                <>
+                                                                    <small className={errorClass}>{imageWarning}</small>
+                                                                    <SecondaryButton onClick={() => setImageWarning(null)} aria-label="Fechar aviso" className="mb-3">Fechar aviso</SecondaryButton>
+                                                                </>
                                                             )}
                                                         </>
                                                     )}
                                                 </>
-
-
                                             ) : item.type === 'textarea' ? (
 
                                                 <textarea className={inputClass} rows={4} name={item.name} aria-required={item.required} />
@@ -236,16 +239,10 @@ export default function GeneralForm({ formTitle, formMethod, formAction, fields 
                                                     <small key={key} className={errorClass}>{message}</small>
                                                 ))
                                         }
-                                        {item.type === 'file' && imageWarning && (
-                                            <SecondaryButton onClick={() => setImageWarning(null)} aria-label="Fechar aviso" className="mb-3">Ok</SecondaryButton>
-                                        )}
-
                                         {item.type === 'file' && imageUploaded && <div><button type="button" className="mt-1 text-sm font-semibold text-red-600 hover:text-red-800" onClick={handleRemoveImage}>Remover imagens</button></div>}
 
                                     </div>
                                 ))}
-
-
 
                                 {/* image rights - only enabled once a file is picked */}
                                 {imageUploaded && (

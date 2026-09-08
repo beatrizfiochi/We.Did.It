@@ -14,7 +14,7 @@ export default function InsertForm({ categories, maxImagens }) {
             { name: 'title', label: 'Título', type: 'text', required: true },
             { name: 'description', label: 'Descrição', type: 'textarea', required: true },
             { name: 'category_id', label: 'Categoria', type: 'select' },
-            { name: 'images', label: 'Imagens (até 3)', type: 'file' },
+            { name: 'images', label: `Imagem (até ${maxImagens})`, type: 'file' },
         ]
 
 
@@ -68,7 +68,7 @@ export default function InsertForm({ categories, maxImagens }) {
             // os três limites espelham o StoreTestimonialRequest: max:3 no
             // conjunto, max:5120 (5 MB) por ficheiro
             if (images.length > maxImagens) {
-                newErrors['images'] = "Podes enviar no máximo 3 imagens."
+                newErrors['images'] = `Podes enviar no máximo até ${maxImagens} imagens.`
             } else if (images.some((file) => file.size > 5 * 1024 * 1024)) {
                 newErrors['images'] = "Cada imagem deve ter no máximo 5 MB."
             }
