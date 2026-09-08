@@ -126,6 +126,14 @@ function editionImages(item) {
     return mirror ? [mirror] : [];
 }
 
+function ImageFrame({ src, alt, ratio }) {
+    return (
+        <div className={`${ratio} w-full overflow-hidden rounded-md border border-gray-200 bg-gray-100`}>
+            <img src={src} alt={alt} className="h-full w-full object-cover" />
+        </div>
+    );
+}
+
 function ImageLayout({ images, alt }) {
     const visibleImages = images.slice(0, 3);
 
@@ -135,11 +143,13 @@ function ImageLayout({ images, alt }) {
 
     if (visibleImages.length === 1) {
         return (
-            <img
-                src={visibleImages[0]}
-                alt={alt}
-                className="h-48 w-full object-cover print:h-32"
-            />
+            <div className="bg-gray-50 p-3">
+                <ImageFrame
+                    src={visibleImages[0]}
+                    alt={alt}
+                    ratio="aspect-[16/9]"
+                />
+            </div>
         );
     }
 
@@ -147,13 +157,12 @@ function ImageLayout({ images, alt }) {
         return (
             <div className="grid grid-cols-2 gap-3 bg-gray-50 p-3 print:grid-cols-1">
                 {visibleImages.map((src, index) => (
-                    <div key={src} className="overflow-hidden rounded-md border border-gray-200 bg-white">
-                        <img
-                            src={src}
-                            alt={`${alt} - imagem ${index + 1}`}
-                            className="h-48 w-full object-contain print:h-32"
-                        />
-                    </div>
+                    <ImageFrame
+                        key={src}
+                        src={src}
+                        alt={`${alt} - imagem ${index + 1}`}
+                        ratio="aspect-[4/3]"
+                    />
                 ))}
             </div>
         );
@@ -161,23 +170,20 @@ function ImageLayout({ images, alt }) {
 
     return (
         <div className="space-y-3 bg-gray-50 p-3">
-            <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
-                <img
-                    src={visibleImages[0]}
-                    alt={`${alt} - imagem 1`}
-                    className="h-48 w-full object-contain print:h-32"
-                />
-            </div>
+            <ImageFrame
+                src={visibleImages[0]}
+                alt={`${alt} - imagem 1`}
+                ratio="aspect-[16/9]"
+            />
 
             <div className="grid grid-cols-2 gap-3 print:grid-cols-1">
                 {visibleImages.slice(1).map((src, index) => (
-                    <div key={src} className="overflow-hidden rounded-md border border-gray-200 bg-white">
-                        <img
-                            src={src}
-                            alt={`${alt} - imagem ${index + 2}`}
-                            className="h-28 w-full object-contain print:h-32"
-                        />
-                    </div>
+                    <ImageFrame
+                        key={src}
+                        src={src}
+                        alt={`${alt} - imagem ${index + 2}`}
+                        ratio="aspect-[4/3]"
+                    />
                 ))}
             </div>
         </div>
@@ -352,7 +358,7 @@ export default function NewsletterTemplate({ newsletter }) {
                                             {images[0] && (
                                                 <img
                                                     src={images[0]}
-                                                    alt={item.name}
+                                                    alt={item.title}
                                                     className="h-16 w-16 shrink-0 rounded-full object-cover"
                                                 />
                                             )}
