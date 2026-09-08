@@ -28,17 +28,26 @@ export default function UpdateProfileInformation({
         <section className={className}>
             <header>
                 <h2 className="text-lg font-medium text-gray-900">
-                    Profile Information
+                    Dados da conta
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                    Update your account's profile information and email address.
+                    Atualiza o teu nome e o endereço de email da conta.
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
+            {/* noValidate como no GeneralForm dos formulários públicos: sem
+                isto o browser mostra a sua própria validação ("Please fill out
+                this field"), em inglês, porque essa mensagem segue o idioma do
+                browser e não o da página. Assim quem valida é o servidor, e a
+                mensagem que aparece é a nossa, em português.
+
+                O `required` fica nos inputs de propósito — deixa de mostrar a
+                janela do browser, mas continua a ser anunciado por leitores de
+                ecrã como campo obrigatório. */}
+            <form onSubmit={submit} className="mt-6 space-y-6" noValidate>
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
+                    <InputLabel htmlFor="name" value="Nome" />
 
                     <TextInput
                         id="name"
@@ -69,31 +78,34 @@ export default function UpdateProfileInformation({
                     <InputError className="mt-2" message={errors.email} />
                 </div>
 
+                {/* O User não implementa MustVerifyEmail — está comentado no
+                    modelo — por isso este bloco não aparece hoje. Fica
+                    traduzido para o dia em que a confirmação for ligada. */}
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
                         <p className="mt-2 text-sm text-gray-800">
-                            Your email address is unverified.
+                            O teu endereço de email ainda não foi confirmado.
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
                                 className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                Click here to re-send the verification email.
+                                Clica aqui para reenviar o email de confirmação.
                             </Link>
                         </p>
 
                         {status === 'verification-link-sent' && (
                             <div className="mt-2 text-sm font-medium text-green-600">
-                                A new verification link has been sent to your
-                                email address.
+                                Enviámos uma nova ligação de confirmação para
+                                o teu email.
                             </div>
                         )}
                     </div>
                 )}
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <PrimaryButton disabled={processing}>Guardar</PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
@@ -103,7 +115,7 @@ export default function UpdateProfileInformation({
                         leaveTo="opacity-0"
                     >
                         <p className="text-sm text-gray-600">
-                            Saved.
+                            Guardado.
                         </p>
                     </Transition>
                 </div>
