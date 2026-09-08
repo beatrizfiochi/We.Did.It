@@ -38,7 +38,7 @@ class StoreTestimonialRequest extends FormRequest
             'description' => ['required', 'string', 'min:100', 'max:1050'],
             // a opção "Nenhuma" do formulário envia string vazia
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO],
+            'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO_TESTEMUNHOS],
             ...$this->imageRules(),
             // honeypot: campo escondido que tem de vir vazio; os bots tendem a
             // preencher tudo o que encontram. Igual ao StoreNewsRequest.
@@ -69,7 +69,7 @@ class StoreTestimonialRequest extends FormRequest
             'title.max' => 'O título deve ter entre 5 e 255 caracteres.',
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
-            'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
+            'images.max' => 'Podes enviar no máximo '.Image::contagem(Image::MAX_POR_SUBMISSAO_TESTEMUNHOS).'.',
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
         ];

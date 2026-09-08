@@ -27,7 +27,7 @@ class UpdateNewsletterTestimonialsRequest extends FormRequest
             // { testimonial_id: [image_id, …] } — quais imagens saem nesta
             // edição (SCRUM-143). Ver UpdateNewsletterNewsRequest.
             'image_ids' => ['sometimes', 'array'],
-            'image_ids.*' => ['array', 'max:'.Image::MAX_POR_SUBMISSAO],
+            'image_ids.*' => ['array', 'max:'.Image::MAX_POR_SUBMISSAO_TESTEMUNHOS],
             'image_ids.*.*' => ['integer'],
         ];
     }
@@ -38,7 +38,7 @@ class UpdateNewsletterTestimonialsRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'image_ids.*.max' => 'Cada testemunho pode sair com no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
+            'image_ids.*.max' => 'Cada testemunho pode sair com no máximo '.Image::contagem(Image::MAX_POR_SUBMISSAO_TESTEMUNHOS).'.',
         ];
     }
 }

@@ -29,7 +29,7 @@ class UpdateNewsletterNewsRequest extends FormRequest
             // é o controller que garante; aqui trata-se só do formato e do
             // limite de 3 por item.
             'image_ids' => ['sometimes', 'array'],
-            'image_ids.*' => ['array', 'max:'.Image::MAX_POR_SUBMISSAO],
+            'image_ids.*' => ['array', 'max:'.Image::MAX_POR_SUBMISSAO_NOTICIAS],
             'image_ids.*.*' => ['integer'],
         ];
     }
@@ -40,7 +40,7 @@ class UpdateNewsletterNewsRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'image_ids.*.max' => 'Cada notícia pode sair com no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
+            'image_ids.*.max' => 'Cada notícia pode sair com no máximo '.Image::contagem(Image::MAX_POR_SUBMISSAO_NOTICIAS).'.',
         ];
     }
 }

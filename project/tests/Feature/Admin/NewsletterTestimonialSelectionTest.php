@@ -164,7 +164,7 @@ class NewsletterTestimonialSelectionTest extends TestCase
         $admin = User::factory()->create();
         $newsletter = Newsletter::factory()->create();
         $testimonial = Testimonial::factory()->withImages(3)->create(['status' => 'accepted']);
-        $chosen = $testimonial->images->pluck('id')->take(2)->all();
+        $chosen = $testimonial->images->pluck('id')->take(1)->all();
 
         $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
             'testimonial_ids' => [$testimonial->id],
@@ -211,18 +211,17 @@ class NewsletterTestimonialSelectionTest extends TestCase
         $testimonial = Testimonial::factory()->withImages(2)->create(['status' => 'accepted']);
         $other = Testimonial::factory()->withImages(2)->create(['status' => 'accepted']);
 
-        $mine = $testimonial->images->first()->id;
         $foreign = $other->images->first()->id;
 
         $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
             'testimonial_ids' => [$testimonial->id],
-            'image_ids' => [$testimonial->id => [$mine, $foreign]],
+            'image_ids' => [$testimonial->id => [$foreign]],
         ]);
 
-        $this->assertSame([$mine], $newsletter->fresh()->testimonials->first()->pivot->image_ids);
+        $this->assertSame([], $newsletter->fresh()->testimonials->first()->pivot->image_ids);
     }
 
-    public function test_more_than_three_images_per_testimonial_is_rejected(): void
+    public function test_more_than_one_image_per_testimonial_is_rejected(): void
     {
         $admin = User::factory()->create();
         $newsletter = Newsletter::factory()->create();
@@ -230,7 +229,7 @@ class NewsletterTestimonialSelectionTest extends TestCase
 
         $response = $this->actingAs($admin)->put(route('admin.newsletters.testimonials.update', $newsletter), [
             'testimonial_ids' => [$testimonial->id],
-            'image_ids' => [$testimonial->id => [1, 2, 3, 4]],
+            'image_ids' => [$testimonial->id => [1, 2]],
         ]);
 
         $response->assertSessionHasErrors('image_ids.'.$testimonial->id);

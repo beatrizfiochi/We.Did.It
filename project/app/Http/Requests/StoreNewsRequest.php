@@ -47,7 +47,7 @@ class StoreNewsRequest extends FormRequest
             'title' => ['required', 'string', 'min:5', 'max:255'],
             'description' => ['required', 'min:100', 'max:1050', 'string'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO],
+            'images' => ['nullable', 'array', 'max:'.Image::MAX_POR_SUBMISSAO_NOTICIAS],
             ...$this->imageRules(),
             // 'status' => ['sometimes', 'required', 'string', 'in:received,approved,refused'],
             // honeypot: hidden field that must stay empty; bots tend to fill every field they find
@@ -78,7 +78,7 @@ class StoreNewsRequest extends FormRequest
             'description.min' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'description.max' => 'A descrição deve ter entre 100 e 1050 caracteres.',
             'terms_conditions.accepted' => 'É necessário aceitar a Política de Privacidade.',
-            'images.max' => 'Podes enviar no máximo '.Image::MAX_POR_SUBMISSAO.' imagens.',
+            'images.max' => 'Podes enviar no máximo '.Image::contagem(Image::MAX_POR_SUBMISSAO_NOTICIAS).'.',
             'image_rights.accepted' => 'É necessário autorizar a utilização da imagem.',
 
             'event_start_date.required' => 'A data do evento é obrigatória.',

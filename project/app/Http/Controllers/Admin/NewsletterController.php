@@ -246,7 +246,7 @@ class NewsletterController extends Controller
             ->mapWithKeys(fn ($item) => [$item->id => $item->images->pluck('id')->all()]);
 
         $newsletter->news()->sync(
-            $this->contentSyncPayload($ids, $data['image_ids'] ?? [], $ownImages)
+            $this->contentSyncPayload($ids, $data['image_ids'] ?? [], $ownImages, Image::MAX_POR_SUBMISSAO_NOTICIAS)
         );
 
         // regista a newsletter, não os conteúdos: o enum só tem
@@ -300,7 +300,7 @@ class NewsletterController extends Controller
             ->mapWithKeys(fn ($item) => [$item->id => $item->images->pluck('id')->all()]);
 
         $newsletter->testimonials()->sync(
-            $this->contentSyncPayload($ids, $data['image_ids'] ?? [], $ownImages)
+            $this->contentSyncPayload($ids, $data['image_ids'] ?? [], $ownImages, Image::MAX_POR_SUBMISSAO_TESTEMUNHOS)
         );
 
         // regista a newsletter, não os conteúdos: o enum só tem
@@ -316,16 +316,19 @@ class NewsletterController extends Controller
      * A ordem de chegada dos ids é a ordem em que saem (order começa em 1, para
      * acompanhar o NewsletterSeeder). O image_ids guarda, por item, os ids das
      * imagens escolhidas para esta edição — só as que são mesmo daquele item,
-     * no máximo 3, pela ordem em que a pessoa as escolheu (SCRUM-143).
+     * no máximo $max, pela ordem em que a pessoa as escolheu (SCRUM-143).
+     *
+     * O limite vem de fora porque deixou de ser o mesmo: as notícias aceitam
+     * três imagens e os testemunhos uma só.
      *
      * @param  array<int, int>  $ids
      * @param  array<int|string, array<int, int>>  $imageSelection
      * @param  Collection<int, array<int, int>>  $ownImages
      * @return Collection<int, array<string, mixed>>
      */
-    private function contentSyncPayload(array $ids, array $imageSelection, $ownImages)
+    private function contentSyncPayload(array $ids, array $imageSelection, $ownImages, int $max)
     {
-        return collect($ids)->mapWithKeys(function ($id, $i) use ($imageSelection, $ownImages) {
+        return collect($ids)->mapWithKeys(function ($id, $i) use ($imageSelection, $ownImages, $max) {
             $chosen = $imageSelection[$id] ?? null;
 
             if (is_array($chosen)) {
@@ -333,7 +336,7 @@ class NewsletterController extends Controller
                     ->map(fn ($imageId) => (int) $imageId)
                     ->intersect($ownImages[$id] ?? [])
                     ->unique()
-                    ->take(Image::MAX_POR_SUBMISSAO)
+                    ->take($max)
                     ->values()
                     ->all();
             }
