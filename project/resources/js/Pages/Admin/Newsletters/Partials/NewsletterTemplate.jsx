@@ -126,6 +126,94 @@ function editionImages(item) {
     return mirror ? [mirror] : [];
 }
 
+function ImageFrame({ src, alt, ratio }) {
+    return (
+        <div className={`${ratio} w-full overflow-hidden rounded-md border border-gray-200 bg-gray-100`}>
+            <img src={src} alt={alt} className="h-full w-full object-cover" />
+        </div>
+    );
+}
+
+function ImageLayout({ images, alt }) {
+    const visibleImages = images.slice(0, 3);
+
+    if (visibleImages.length === 0) {
+        return null;
+    }
+
+    if (visibleImages.length === 1) {
+        return (
+            <div className="bg-gray-50 p-3">
+                <ImageFrame
+                    src={visibleImages[0]}
+                    alt={alt}
+                    ratio="aspect-[16/9]"
+                />
+            </div>
+        );
+    }
+
+    if (visibleImages.length === 2) {
+        return (
+            <div className="flex gap-3 bg-gray-50 p-3">
+                {visibleImages.map((src, index) => (
+                    <div key={src} className="min-w-0 flex-1">
+                        <ImageFrame
+                            src={src}
+                            alt={`${alt} - imagem ${index + 1}`}
+                            ratio="aspect-[4/3]"
+                        />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-3 bg-gray-50 p-3">
+            <ImageFrame
+                src={visibleImages[0]}
+                alt={`${alt} - imagem 1`}
+                ratio="aspect-[16/9]"
+            />
+
+            <div className="flex gap-3">
+                {visibleImages.slice(1).map((src, index) => (
+                    <div key={src} className="min-w-0 flex-1">
+                        <ImageFrame
+                            src={src}
+                            alt={`${alt} - imagem ${index + 2}`}
+                            ratio="aspect-[4/3]"
+                        />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function TestimonialContent({ item }) {
+    return (
+        <>
+            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+                {item.category?.name ?? 'Testemunho'}
+            </p>
+
+            <h3 className="mt-1 text-lg font-bold text-gray-950">
+                {item.title}
+            </h3>
+
+            <p className="mt-2 text-sm leading-6 text-gray-700">
+                {item.description}
+            </p>
+
+            <p className="mt-3 text-sm font-semibold text-gray-900">
+                {item.name}
+            </p>
+        </>
+    );
+}
+
 export default function NewsletterTemplate({ newsletter }) {
     const news = newsletter.news ?? [];
     const testimonials = newsletter.testimonials ?? [];
@@ -205,44 +293,14 @@ export default function NewsletterTemplate({ newsletter }) {
                     ) : (
                         <div className="grid gap-6 lg:grid-cols-2">
                             {news.map((item) => {
-                                const [hero, ...rest] = editionImages(item);
+                                const images = editionImages(item);
 
                                 return (
                                     <article
                                         key={item.id}
                                         className="overflow-hidden rounded-lg border border-gray-200 bg-white"
                                     >
-                                        {hero && (
-                                            <img
-                                                src={hero}
-                                                alt={item.title}
-                                                className="h-48 w-full object-cover print:h-32"
-                                            />
-                                        )}
-
-                                        {rest.length > 0 && (
-                                            // flex e não grid-cols-2: a regra do print.css que colapsa
-                                            // as grelhas de 2 colunas em papel faz match por substring
-                                            // (apanha lg:/md:grid-cols-2) e também apanhava esta,
-                                            // empilhando as miniaturas a toda a largura no PDF.
-                                            //
-                                            // Largura por imagem, não fixa a 50%: com 1 só imagem em
-                                            // `rest` (o caso de 2 imagens no total) ela ocupa o bloco
-                                            // inteiro em vez de deixar metade em branco — um dos três
-                                            // casos pedidos na reunião com o cliente (revisão SCRUM-143)
-                                            <div className="flex gap-1 p-1">
-                                                {rest.map((src) => (
-                                                    <img
-                                                        key={src}
-                                                        src={src}
-                                                        alt={item.title}
-                                                        className={`h-24 shrink-0 grow-0 object-cover print:h-20 ${
-                                                            rest.length === 1 ? 'w-full' : 'w-1/2'
-                                                        }`}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
+                                        <ImageLayout images={images} alt={item.title} />
 
                                         <div className="p-5">
                                             <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
@@ -276,7 +334,22 @@ export default function NewsletterTemplate({ newsletter }) {
                     ) : (
                         <div className="grid gap-5 md:grid-cols-2">
                             {testimonials.map((item) => {
-                                const [avatar, ...rest] = editionImages(item);
+                                const images = editionImages(item);
+
+                                if (images.length > 1) {
+                                    return (
+                                        <article
+                                            key={item.id}
+                                            className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50"
+                                        >
+                                            <ImageLayout images={images} alt={item.title} />
+
+                                            <div className="p-5">
+                                                <TestimonialContent item={item} />
+                                            </div>
+                                        </article>
+                                    );
+                                }
 
                                 return (
                                     <article
@@ -284,43 +357,16 @@ export default function NewsletterTemplate({ newsletter }) {
                                         className="rounded-lg border border-gray-200 bg-gray-50 p-5"
                                     >
                                         <div className="flex gap-4">
-                                            {avatar && (
+                                            {images[0] && (
                                                 <img
-                                                    src={avatar}
-                                                    alt={item.name}
+                                                    src={images[0]}
+                                                    alt={item.title}
                                                     className="h-16 w-16 shrink-0 rounded-full object-cover"
                                                 />
                                             )}
 
                                             <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
-                                                    {item.category?.name ?? 'Testemunho'}
-                                                </p>
-
-                                                <h3 className="mt-1 text-lg font-bold text-gray-950">
-                                                    {item.title}
-                                                </h3>
-
-                                                <p className="mt-2 text-sm leading-6 text-gray-700">
-                                                    {item.description}
-                                                </p>
-
-                                                <p className="mt-3 text-sm font-semibold text-gray-900">
-                                                    {item.name}
-                                                </p>
-
-                                                {rest.length > 0 && (
-                                                    <div className="mt-3 flex gap-2">
-                                                        {rest.map((src) => (
-                                                            <img
-                                                                key={src}
-                                                                src={src}
-                                                                alt={item.name}
-                                                                className="h-14 w-14 rounded object-cover"
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                <TestimonialContent item={item} />
                                             </div>
                                         </div>
                                     </article>
