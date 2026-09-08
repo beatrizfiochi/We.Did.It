@@ -143,7 +143,7 @@ function ImageLayout({ images, alt }) {
 
     if (visibleImages.length === 1) {
         return (
-            <div className="bg-gray-50 p-3">
+            <div className="newsletter-images bg-gray-50 p-3">
                 <ImageFrame
                     src={visibleImages[0]}
                     alt={alt}
@@ -155,7 +155,7 @@ function ImageLayout({ images, alt }) {
 
     if (visibleImages.length === 2) {
         return (
-            <div className="flex gap-3 bg-gray-50 p-3">
+            <div className="newsletter-images flex gap-3 bg-gray-50 p-3">
                 {visibleImages.map((src, index) => (
                     <div key={src} className="min-w-0 flex-1">
                         <ImageFrame
@@ -170,7 +170,7 @@ function ImageLayout({ images, alt }) {
     }
 
     return (
-        <div className="space-y-3 bg-gray-50 p-3">
+        <div className="newsletter-images space-y-3 bg-gray-50 p-3">
             <ImageFrame
                 src={visibleImages[0]}
                 alt={`${alt} - imagem 1`}
