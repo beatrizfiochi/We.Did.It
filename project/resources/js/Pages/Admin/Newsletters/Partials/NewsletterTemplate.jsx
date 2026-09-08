@@ -155,14 +155,15 @@ function ImageLayout({ images, alt }) {
 
     if (visibleImages.length === 2) {
         return (
-            <div className="grid grid-cols-2 gap-3 bg-gray-50 p-3 print:grid-cols-1">
+            <div className="flex gap-3 bg-gray-50 p-3">
                 {visibleImages.map((src, index) => (
-                    <ImageFrame
-                        key={src}
-                        src={src}
-                        alt={`${alt} - imagem ${index + 1}`}
-                        ratio="aspect-[4/3]"
-                    />
+                    <div key={src} className="min-w-0 flex-1">
+                        <ImageFrame
+                            src={src}
+                            alt={`${alt} - imagem ${index + 1}`}
+                            ratio="aspect-[4/3]"
+                        />
+                    </div>
                 ))}
             </div>
         );
@@ -176,14 +177,15 @@ function ImageLayout({ images, alt }) {
                 ratio="aspect-[16/9]"
             />
 
-            <div className="grid grid-cols-2 gap-3 print:grid-cols-1">
+            <div className="flex gap-3">
                 {visibleImages.slice(1).map((src, index) => (
-                    <ImageFrame
-                        key={src}
-                        src={src}
-                        alt={`${alt} - imagem ${index + 2}`}
-                        ratio="aspect-[4/3]"
-                    />
+                    <div key={src} className="min-w-0 flex-1">
+                        <ImageFrame
+                            src={src}
+                            alt={`${alt} - imagem ${index + 2}`}
+                            ratio="aspect-[4/3]"
+                        />
+                    </div>
                 ))}
             </div>
         </div>
