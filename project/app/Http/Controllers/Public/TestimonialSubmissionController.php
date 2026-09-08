@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTestimonialRequest;
 use App\Mail\NewSubmissionReceived;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ class TestimonialSubmissionController extends Controller
     {
         return Inertia::render('Testimonials/InsertForm', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'maxImagens' => Image::MAX_POR_SUBMISSAO_TESTEMUNHOS,
         ]);
     }
 

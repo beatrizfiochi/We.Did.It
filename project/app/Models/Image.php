@@ -15,7 +15,9 @@ class Image extends Model
         return $this->morphTo();
     }
 
-    public const MAX_POR_SUBMISSAO = 3;
+    public const MAX_POR_SUBMISSAO_NOTICIAS = 3;
+    public const MAX_POR_SUBMISSAO_TESTEMUNHOS = 1;
+
 
     /** Em kilobytes, que é a unidade da regra max: do Laravel. */
     public const MAX_KB_POR_FICHEIRO = 5120;
